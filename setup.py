@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(
-        name            =   'bsOperations',
+        name            =   'bsPlugins',
         version         =   '0.0.1',
         description     =   '',
         long_description=   open('README.md').read(),
@@ -11,7 +11,8 @@ setup(
         author_email    =   'webmaster.bbcf@epfl.ch',
         install_requires=   ['bbcflib'],
         classifiers     =   ['Topic :: Scientific/Engineering :: Bio-Informatics'],
-        packages        =   ['tw2',
-                             'base'
+        packages        =   ['bsPlugins',
+                             'bsPlugins.tw0',
+                             'bsPlugins.base'
                             ],
     )
