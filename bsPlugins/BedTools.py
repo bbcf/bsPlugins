@@ -82,8 +82,9 @@ class BedToolsForm(BaseForm):
         help_text='Select BedTool')
     for it in file_params['simple']:
         vars()[it] = twf.FileField(label=it + ': ', validator=twf.FileValidator())
-    for it in file_params['multiple']:
-        vars()[it] = MultipleFileUpload(label=it + ': ', validator=twf.FileValidator())
+    class AllMultiFiles(Multi):
+        for it in file_params['multiple']:
+            vars()[it] = twf.FileField(label=it + ': ', validator=twf.FileValidator())
     column = twf.TextField(label='column: ',
         validator=twc.IntValidator(min=1, max=100, required=True),
         value=1)
@@ -101,12 +102,12 @@ class BedToolsForm(BaseForm):
     submit = twf.SubmitButton(id="submit", value="Run")
 
 meta = {'version': "1.0.0",
-            'author': "BBCF",
-            'contact': "webmaster-bbcf@epfl.ch"}
+        'author': "BBCF",
+        'contact': "webmaster-bbcf@epfl.ch"}
 
 in_parameters = all_file_params + other_params
 
-out_parameters = [{'id': 'bedtools_result.txt', 'type': 'file'}]
+out_parameters = [{'id': 'bedtools_result', 'type': 'file'}]
 
 
 class BedToolsPlugin(OperationPlugin):
@@ -136,5 +137,5 @@ class BedToolsPlugin(OperationPlugin):
             kw['labels'] = kw['labels'].split(",")
         with execution(None) as ex:
             output = eval(all_tools[kw.pop('tool')])(ex, **kw)
-        self.new_file(output, 'bedtools_result.txt')
+        self.new_file(output, 'bedtools_result')
         return 1
