@@ -10,10 +10,10 @@ funcs = ['mean', 'sum', 'median', 'min', 'max']
 
 class QuantifyTableForm(BaseForm):
 
-    class signals(Multi):
-        files = twf.FileField(label='Signal: ',
-                              help_text='Select signal file (e.g. bedgraph)',
-                              validator=twf.FileValidator(required=True))
+    class SigMulti(Multi):
+        signals = twf.FileField(label='Signal: ',
+                                help_text='Select signal file (e.g. bedgraph)',
+                                validator=twf.FileValidator(required=True))
 
     score_op = twf.SingleSelectField(label_text='Score operation: ',
                                      options=funcs, prompt_text=None,

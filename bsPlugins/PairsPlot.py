@@ -16,8 +16,8 @@ cormax = 500
 
 class PairsPlotForm(BaseForm):
 
-    class signals(Multi):
-        files = twf.FileField(label='Signal: ',
+    class SigMulti(Multi):
+        signals = twf.FileField(label='Signal: ',
             help_text='Select signal file (e.g. bedgraph)',
             validator=twf.FileValidator(required=True))
 

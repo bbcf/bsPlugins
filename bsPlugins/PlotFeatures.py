@@ -12,8 +12,8 @@ max_pages = 200
 
 class PlotFeaturesForm(BaseForm):
 
-    class signals(Multi):
-        files = twf.FileField(label='Signal: ',
+    class SigMulti(Multi):
+        signals = twf.FileField(label='Signal: ',
             help_text='Select signal file (e.g. bedgraph)',
             validator=twf.FileValidator(required=True))
 

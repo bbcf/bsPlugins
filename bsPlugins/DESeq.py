@@ -18,10 +18,11 @@ __requires__ = ["ryp2", "numpy"]
 
 class DESeqForm(BaseForm):
 
-    class signals(Multi):
-        files = twf.FileField(label='Signal: ',
+    class SigMulti(Multi):
+        signals = twf.FileField(label='Signal: ',
             help_text='Select signal file (position and score, e.g. bedgraph)',
             validator=twf.FileValidator(required=True))
+
     child = twd.HidingTableLayout()
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
         options=ftypes, prompt_text=None,
