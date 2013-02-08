@@ -96,8 +96,5 @@ class OperationPlugin(object):
                 fname = '%s.%s' % (fname, ext)
 
         fpath = os.path.join(tmp_dir, fname)
-        print '##########################'
-        print fpath
-        print '##########################'
         self.tmp_files.append(tmp_dir)
         return fpath
