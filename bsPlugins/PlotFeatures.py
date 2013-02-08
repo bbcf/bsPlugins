@@ -9,7 +9,6 @@ prom_down_def = 100
 plot_types = [(0, 'heatmap'), (1, 'average lineplot'), (2, 'mosaic plot')]
 max_pages = 200
 
-
 class PlotFeaturesForm(BaseForm):
 
     class SigMulti(Multi):
@@ -62,11 +61,13 @@ class PlotFeaturesPlugin(OperationPlugin):
     def __call__(self, **kw):
         chrmeta = "guess"
         features = track(kw.get('features'), chrmeta=chrmeta)
-        signal = [track(sig) for sig in kw.get('signals')]
+        signals = kw.get('signals', [])
+        if not isinstance(signals, list): signals = [signals]
+        signals = [track(sig) for sig in signals]
         labels = None
         data = None
         for chrom in features.chrmeta:
-            _l, _d = feature_matrix([s.read(chrom) for s in signal],
+            _l, _d = feature_matrix([s.read(chrom) for s in signals],
                                     features.read(chrom), segment=True)
 
             if _d.size == 0:
