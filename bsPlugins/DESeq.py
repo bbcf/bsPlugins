@@ -112,6 +112,7 @@ Else they are considered as belonging to different groups.
             robjects.r("""
             Mdata <- read.table('%s',sep='\t',header=T,row.names=1)
             conds <- colnames(Mdata)
+            print(Mdata)
             """ % filename)
         else:
             from QuantifyTable import QuantifyTablePlugin
@@ -136,6 +137,7 @@ Else they are considered as belonging to different groups.
             t = track(table,chrmeta=chrmeta)
             _f = [f for f in t.fields if f.startswith('score')]
             de_list = list(t.read(fields=['name']+_f))
+            t.close(); os.remove(table)
             # Turn all scores into integers
             de_matrix = numpy.asarray([[int(float(s) * norm_factors[k] + .5) for k,s in enumerate(x[1:])]
                                        for x in de_list], dtype=numpy.float)
