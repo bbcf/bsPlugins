@@ -112,7 +112,6 @@ Else they are considered as belonging to different groups.
             robjects.r("""
             Mdata <- read.table('%s',sep='\t',header=T,row.names=1)
             conds <- colnames(Mdata)
-            print(Mdata)
             """ % filename)
         else:
             from QuantifyTable import QuantifyTablePlugin
