@@ -1,4 +1,4 @@
-from . import *
+from bsPlugins import *
 import re
 from bein import execution
 
