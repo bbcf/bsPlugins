@@ -19,18 +19,11 @@ __requires__ = ["ryp2", "numpy"]
 class DESeqForm(BaseForm):
     child = twd.HidingTableLayout()
 
-    class input_type(twd.HidingTableLayout):
-        ipt = twd.HidingRadioButtonList(label_text='Input type',
-            options=('Table', 'Signal'),
-            mapping={'Table':  ['table'],
-                     'Signal': ['signals','feature_type'],},
-            help_text='Select input type (Formatted table, or signal tracks)')
-
-    class SigMulti(Multi):
-        signals = twf.FileField(label='Signal: ',
-            help_text='Select signal file (position and score, e.g. bedgraph)',
-            validator=twf.FileValidator(required=True))
-
+    input_type = twd.HidingRadioButtonList(label_text='Input type',
+        options=('Table', 'Signal'),
+        mapping={'Table':  ['table'],
+                 'Signal': ['SigMulti','feature_type'],},
+        help_text='Select input type (Formatted table, or signal tracks)')
     table = twf.FileField(label='Table: ',
         help_text='Select scores table',
         validator=twf.FileValidator(required=True))
@@ -40,6 +33,10 @@ class DESeqForm(BaseForm):
                  1: ['upstream', 'downstream']},
         help_text='Choose a feature set or upload your own',
         validator=twc.Validator(required=True))
+    class SigMulti(Multi):
+        signals = twf.FileField(label='Signal: ',
+            help_text='Select signal file (position and score, e.g. bedgraph)',
+            validator=twf.FileValidator(required=True))
     features = twf.FileField(label='Custom feature set: ',
         help_text='Select a feature file (e.g. bed)',
         validator=twf.FileValidator())
@@ -63,7 +60,7 @@ meta = {'version': "1.0.0",
         'contact': "webmaster-bbcf@epfl.ch"}
 
 in_parameters = [
-        {'id': 'input_type', 'type': 'txt'},
+        {'id': 'input_type', 'type': 'radio'},
         {'id': 'signals', 'type': 'track', 'required': True, 'multiple': True},
         {'id': 'table', 'type': 'txt', 'required': True, 'multiple': True},
         {'id': 'feature_type', 'type': 'int'},
@@ -105,6 +102,7 @@ Else they are considered as belonging to different groups.
         }
 
     # from bsPlugins.DESeq import DESeqPlugin; DESeqPlugin()(**{'signals':['tests/DESeq/signal1.bedGraph', 'tests/DESeq/signal2.bedGraph'], 'features':'tests/DESeq/features.bed', 'feature_type':3})
+    # from bsPlugins.DESeq import DESeqPlugin; DESeqPlugin()(**{'table':'tests/DESeq/table.tab'})
 
     def __call__(self, **kw):
         def from_signal(**kw):
@@ -167,7 +165,7 @@ Else they are considered as belonging to different groups.
             del de_list
             return de_matrix, rownames, colnames
 
-        if input_type == 'table':
+        if kw.get('input_type') == 'Table':
             filename = kw.get('table')
             sep = kw.get('sep','\t')
             robjects.r.assign("""
