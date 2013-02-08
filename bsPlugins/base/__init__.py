@@ -15,8 +15,8 @@ class OperationPlugin():
         return tmpf.name
 
     def new_file(self, fname, descr):
-        self.files[fname] = descr
-        print "%s: %s" %(fname,descr)
+        self.files[descr] = fname
+        print "%s: %s" %(descr, fname)
 
     def display_time(self):
         return 1
