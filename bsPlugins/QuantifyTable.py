@@ -77,7 +77,10 @@ class QuantifyTablePlugin(OperationPlugin):
             exons = assembly.exon_track
         elif not(feature_type == 3):
             raise ValueError("Please specify an assembly")
-        signals = [track(sig, chrmeta=chrmeta) for sig in kw.get('signals', [])]
+        signals = kw.get('signals', [])
+        if not isinstance(signals, list):
+            signals = [signals]
+        signals = [track(sig, chrmeta=chrmeta) for sig in signals]
         if feature_type == 0:
             features = genes
         elif feature_type == 1:

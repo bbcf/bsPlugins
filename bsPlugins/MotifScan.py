@@ -3,7 +3,7 @@ from bein import execution
 from bbcflib import genrep
 from bbcflib.motif import save_motif_profile
 from bbcflib.btrack import track, FeatureStream
-import re
+import re, os
 
 
 input_types = [(0, 'Custom upload'), (1, 'From assembly')]
@@ -11,14 +11,7 @@ input_map = {input_types[0][1]: ['fastafile', 'background'],
              input_types[0][1]: ['assembly', 'regions']}
 
 class MotifForm(DynForm):
-    genomes = g.get_genrep_objects('genomes', 'genome') ####????
-    motif_list = []
-    for genome in genomes:
-        if genome.motif_matrix_url != None and genome.motif_matrix_url != 'null':
-            curMotifs = g.get_genrep_objects('genomes/' + str(genome.id) + '/get_matrix', 'motif') ####??
-            for motif in curMotifs:
-                motif_list.append((str(genome.id) + " " + motif.name, genome.name + " - " + motif.name))
-    motif_list.sort(key=lambda x: x[1])
+    motif_list = genrep.GenRep().motifs_available()
 
     #jQuery's already on the page
     twj.jquery_js.no_inject = True
@@ -98,23 +91,24 @@ class MotifScanPlugin(OperationPlugin):
 
         motifs = []
         if motif_add is not None:
-            motifs.append({"name": "Custom Motif", "file": motif_add})
+            mname = os.path.basename(os.path.splitext(x)[0])
+            motifs.append({"name": mname, "file": motif_add})
         for mot in motifs_list:
-            gid, name = mot.split(' ')
-            motif = g.get_genrep_objects('genomes/'+str(gid)+'/get_matrix', 'motif',
-                                         params={"gene_name": name})
-#### get file path directly?
-            motifs.append({"name": motif.name, "file": self.saveMotifToFile(motif)})
+            gid, mname = mot.split(' ')
+            pwmfile = self.temporary_path(fname='pwm_')
+            _ = genrep.GenRep().get_motif_PWM(gid, mname, output=pwmfile)
+            motifs.append({"name": mname, "file": pwmfile})
 
         if len(motifs) == 0:
             raise ValueError("Please give at least one motif to scan for")
 
+        track_output = self.temporary_path(fname='motifs_', ext="sql")
         with execution(None) as ex:
-            track_output = save_motif_profile( ex, motifs, assembly, regions_file, fasta_file, 
-                                               background=background, threshold=threshold, 
-                                               description=None, via='local' )
-        if track_output is not None:
-            self.new_file(track_output, 'motif_track')
+            _ = save_motif_profile( ex, motifs, assembly, regions_file, fasta_file, 
+                                    background=background, threshold=threshold, 
+                                    output = track_output,
+                                    description=None, via='local' )
+        self.new_file(track_output, 'motif_track')
         return 1
 
 
