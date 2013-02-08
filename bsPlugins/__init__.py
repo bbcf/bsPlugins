@@ -5,11 +5,17 @@ try:
 except ImportError:
     from tw0 import twf, twc, twd
 
-try:
-    from bs.operations.base import *
-except ImportError:
-    from base import *
 
+from base import OperationPlugin
+try:
+    from bs.operations.base import BaseForm, Multi, DynForm
+except ImportError:
+    class BaseForm():
+        pass
+    class DynForm():
+        pass
+    class Multi():
+        pass
 
 import os
 filterplugins = lambda x: x.endswith('.py') and x not in ('__init__.py',)
