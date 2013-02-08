@@ -112,6 +112,6 @@ class QuantifyTablePlugin(OperationPlugin):
         return output
 
     def __call__(self, **kw):
-        output = quantify(self,**kw)
+        output = self.quantify(**kw)
         self.new_file(output, 'features_quantification')
         return 1
