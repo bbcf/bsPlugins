@@ -102,35 +102,19 @@ Else they are considered as belonging to different groups.
         }
 
     def __call__(self, **kw):
-        def from_signal(**kw):
-            feature_type = int(kw.get('feature_type', 0))
-            assembly_id = kw.get('assembly')
-            chrmeta = "guess"
-            if assembly_id:
-                assembly = genrep.Assembly(assembly_id)
-                chrmeta = assembly.chrmeta
-                genes = assembly.gene_track
-                exons = assembly.exon_track
-            elif not(feature_type == 3):
-                raise ValueError("Please specify an assembly")
-            if feature_type == 0:
-                features = genes
-            elif feature_type == 1:
-                prom_pars = {'before_start': int(kw.get('upstream') or prom_up_def),
-                             'after_start': int(kw.get('downstream') or prom_down_def),
-                             'on_strand': True}
-                features = lambda c: neighborhood(genes(c), **prom_pars)
-            elif feature_type == 2:
-                features = exons
-            elif feature_type == 3:
-                assert os.path.exists(str(kw.get('features'))), "Features file not found: '%s'" % kw.get("features")
-                _t = track(kw.get('features'), chrmeta=chrmeta)
-                chrmeta = _t.chrmeta
-                features = _t.read
-            else:
-                return 2
 
-            signals = []
+        if kw.get('input_type') == 'Table':
+            filename = kw.get('table')
+            assert os.path.exists(str(filename)), "File not found: '%s'" % filename
+            colnames = open(filename).readline().split()[1:]
+            robjects.r("""
+            Mdata <- read.table('%s',sep='\t',header=T,row.names=1)
+            conds <- colnames(Mdata)
+            """ % filename)
+        else:
+            from QuantifyTable import QuantifyTablePlugin
+            table = QuantifyTablePlugin().quantify(**kw)
+            ########## normalization ###########
             norm_factors = []
             for f in kw.get('signals',[]):
                 assert os.path.exists(str(f)), "Signal file not found: '%s'." % sig
@@ -142,36 +126,22 @@ Else they are considered as belonging to different groups.
                     _nf = float(_t.info['nreads']) * 1e-7 / float(_t.info.get('read_extension', 1))
                 else:
                     _nf = 1
-                signals.append(_t)
                 norm_factors.append(_nf)
-            if len(signals) > 1:
-                _f = ["score" + str(i) for i in range(len(signals))]
-            else:
-                _f = ["score"]
-            de_list = []
-            for chrom in chrmeta:
-                sread = [sig.read(chrom) for sig in signals]
-                mread = score_by_feature(sread, features(chrom), fn='sum')
-                de_list.extend(list(mread))
-            name_idx = mread.fields.index("name")
-            # Turn all scores into integers
-            de_matrix = numpy.asarray([[int(s * norm_factors[k] + .5) for k,s in enumerate(x[-len(_f):])]
-                                       for x in de_list], dtype=numpy.float)
-            rownames = numpy.asarray([x[name_idx] for x in de_list])
-            colnames = numpy.asarray([s.info.get('name',os.path.splitext(os.path.basename(s.path))[0])
-                                      for s in signals])
-            del de_list
-            return de_matrix, rownames, colnames
-
-        if kw.get('input_type') == 'Table':
-            filename = kw.get('table')
-            sep = kw.get('sep','\t')
-            robjects.r.assign("""
-            Mdata <- read.table(%s,sep=%s,header=T,row.names=T, col.names)
-            conds <- colnames(Mdata)
-            """ % (filename,sep))
-        else:
-            de_matrix,rownames,colnames = from_signal(**kw)
+            def format_table(table,**kw):
+                #de_list = []
+                #for chrom in chrmeta:
+                #    sread = [sig.read(chrom) for sig in signals]
+                #    mread = score_by_feature(sread, features(chrom), fn='sum')
+                #    de_list.extend(list(mread))
+                #name_idx = mread.fields.index("name")
+                # Turn all scores into integers
+                de_matrix = numpy.asarray([[int(s * norm_factors[k] + .5) for k,s in enumerate(x[-len(_f):])]
+                                           for x in de_list], dtype=numpy.float)
+                rownames = numpy.asarray([x[name_idx] for x in de_list])
+                colnames = numpy.asarray([s.info.get('name',os.path.splitext(os.path.basename(s.path))[0])
+                                          for s in signals])
+                return de_matrix, rownames, colnames
+            de_matrix,rownames,colnames = format_table(table,**kw)
             robjects.r.assign('Mdata', numpy2ri.numpy2ri(de_matrix))
             robjects.r.assign('row_names', numpy2ri.numpy2ri(rownames))
             robjects.r.assign('col_names', numpy2ri.numpy2ri(colnames))

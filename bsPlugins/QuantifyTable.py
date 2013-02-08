@@ -5,7 +5,7 @@ from bbcflib import genrep
 
 prom_up_def = 1000
 prom_down_def = 100
-ftypes = [(0, 'gene bodies'), (1, 'gene promoters'), (2, 'custom upload')]
+ftypes = [(0, 'gene bodies'), (1, 'gene promoters'), (2, 'exons'), (3, 'custom upload')]
 funcs = ['mean', 'sum', 'median', 'min', 'max']
 
 class QuantifyTableForm(BaseForm):
@@ -65,27 +65,30 @@ class QuantifyTablePlugin(OperationPlugin):
         'out': out_parameters,
         'meta': meta,
         }
-
-    def __call__(self, **kw):
+    def quantify(self,**kw):
         feature_type = int(kw.get('feature_type', 0))
         func = str(kw.get('score_op', 'mean'))
-        assembly_id = kw.get('assembly') or None
+        assembly_id = kw.get('assembly')
         chrmeta = "guess"
         if assembly_id:
             assembly = genrep.Assembly(assembly_id)
             chrmeta = assembly.chrmeta
             genes = assembly.gene_track
-        elif not(feature_type == 2):
+            exons = assembly.exon_track
+        elif not(feature_type == 3):
             raise ValueError("Please specify an assembly")
         signals = [track(sig, chrmeta=chrmeta) for sig in kw.get('signals', [])]
         if feature_type == 0:
             features = genes
         elif feature_type == 1:
             prom_pars = {'before_start': int(kw.get('upstream') or prom_up_def),
-                          'after_start': int(kw.get('downstream') or prom_down_def),
-                          'on_strand': True}
+                         'after_start': int(kw.get('downstream') or prom_down_def),
+                         'on_strand': True}
             features = lambda c: neighborhood(genes(c), **prom_pars)
         elif feature_type == 2:
+                features = exons
+        elif feature_type == 3:
+            assert os.path.exists(str(kw.get('features'))), "Features file not found: '%s'" % kw.get("features")
             _t = track(kw.get('features'), chrmeta=chrmeta)
             chrmeta = _t.chrmeta
             features = _t.read
@@ -103,5 +106,9 @@ class QuantifyTablePlugin(OperationPlugin):
             tout.write(score_by_feature(sread, features(chrom), fn=func),
                        chrom=chrom, clip=True)
         tout.close()
+        return output
+
+    def __call__(self, **kw):
+        output = quantify(self,**kw)
         self.new_file(output, 'features_quantification')
         return 1
