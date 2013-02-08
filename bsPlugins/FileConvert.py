@@ -1,4 +1,4 @@
-from . import *
+from bsPlugins import *
 from bbcflib.btrack import convert
 from bbcflib import genrep
 import os

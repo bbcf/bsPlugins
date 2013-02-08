@@ -1,4 +1,4 @@
-from . import *
+from bsPlugins import *
 from bbcflib.bFlatMajor import stream as gm_stream
 from bbcflib.btrack import track
 from bbcflib import genrep

@@ -9,3 +9,7 @@ try:
     from bs.operations.base import *
 except ImportError: 
     from base import *
+
+
+PLUGINS_FILES = ['Annotate', 'Bam2Wig', 'DESeq', 'Smoothing', 'FileConvert']
+

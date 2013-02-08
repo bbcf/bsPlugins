@@ -1,4 +1,4 @@
-from . import *
+from bsPlugins import *
 from bein import execution
 from bbcflib.btrack import track
 from bbcflib.mapseq import bam_to_density

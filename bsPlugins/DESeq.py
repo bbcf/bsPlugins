@@ -1,4 +1,4 @@
-from . import *
+from bsPlugins import *
 from bbcflib.bFlatMajor.stream import neighborhood, score_by_feature
 from bbcflib.btrack import track
 from bbcflib import genrep
