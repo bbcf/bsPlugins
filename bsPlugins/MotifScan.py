@@ -91,7 +91,7 @@ class MotifScanPlugin(OperationPlugin):
 
         motifs = []
         if motif_add is not None:
-            mname = os.path.splitext(motif_add)[0]
+            mname = os.path.basename(os.path.splitext(x)[0])
             motifs.append({"name": mname, "file": motif_add})
         for mot in motifs_list:
             gid, mname = mot.split(' ')
