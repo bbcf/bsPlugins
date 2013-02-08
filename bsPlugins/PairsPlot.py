@@ -1,4 +1,4 @@
-from . import *
+from bsPlugins import *
 from bbcflib.bFlatMajor.common import sorted_stream
 from bbcflib.bFlatMajor.stream import neighborhood, score_by_feature
 from bbcflib.bFlatMajor.numeric import score_array, correlation

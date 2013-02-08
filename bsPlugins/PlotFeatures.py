@@ -1,4 +1,4 @@
-from . import *
+from bsPlugins import *
 from bbcflib.bFlatMajor.numeric import feature_matrix
 from bbcflib.bFlatMajor.figure import heatmap, lineplot
 from bbcflib.btrack import track

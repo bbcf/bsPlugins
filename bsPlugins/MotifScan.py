@@ -1,4 +1,4 @@
-from . import *
+from bsPlugins import *
 from bein import execution
 from bbcflib import genrep
 from bbcflib.motif import save_motif_profile
