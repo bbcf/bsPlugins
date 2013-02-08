@@ -1,5 +1,4 @@
 from bsPlugins import *
-from bbcflib.bFlatMajor.stream import neighborhood, score_by_feature
 from bbcflib.btrack import track
 from bbcflib import genrep
 import rpy2.robjects as robjects
@@ -103,6 +102,9 @@ Else they are considered as belonging to different groups.
 
     def __call__(self, **kw):
 
+        assembly = genrep.Assembly(kw.get('assembly'))
+        chrmeta = assembly.chrmeta or "guess"
+
         if kw.get('input_type') == 'Table':
             filename = kw.get('table')
             assert os.path.exists(str(filename)), "File not found: '%s'" % filename
@@ -113,35 +115,33 @@ Else they are considered as belonging to different groups.
             """ % filename)
         else:
             from QuantifyTable import QuantifyTablePlugin
+            kw['score_op'] = 'sum'
             table = QuantifyTablePlugin().quantify(**kw)
-            ########## normalization ###########
+            signals = kw.get('signals',[])
+            stracks = []
             norm_factors = []
-            for f in kw.get('signals',[]):
-                assert os.path.exists(str(f)), "Signal file not found: '%s'." % sig
-            for sig in kw.get('signals',[]):
+            for sig in signals:
+                assert os.path.exists(str(sig)), "Signal file not found: '%s'." % sig
                 _t = track(sig, chrmeta=chrmeta)
                 if 'normalization' in _t.info:
+                    print 'normalized'
                     _nf = float(_t.info['normalization'])
                 elif 'nreads' in _t.info:
+                    print 'nreads'
                     _nf = float(_t.info['nreads']) * 1e-7 / float(_t.info.get('read_extension', 1))
                 else:
                     _nf = 1
+                stracks.append(_t)
                 norm_factors.append(_nf)
-            def format_table(table,**kw):
-                #de_list = []
-                #for chrom in chrmeta:
-                #    sread = [sig.read(chrom) for sig in signals]
-                #    mread = score_by_feature(sread, features(chrom), fn='sum')
-                #    de_list.extend(list(mread))
-                #name_idx = mread.fields.index("name")
-                # Turn all scores into integers
-                de_matrix = numpy.asarray([[int(s * norm_factors[k] + .5) for k,s in enumerate(x[-len(_f):])]
-                                           for x in de_list], dtype=numpy.float)
-                rownames = numpy.asarray([x[name_idx] for x in de_list])
-                colnames = numpy.asarray([s.info.get('name',os.path.splitext(os.path.basename(s.path))[0])
-                                          for s in signals])
-                return de_matrix, rownames, colnames
-            de_matrix,rownames,colnames = format_table(table,**kw)
+            t = track(table,chrmeta=chrmeta)
+            _f = [f for f in t.fields if f.startswith('score')]
+            de_list = list(t.read(fields=['name']+_f))
+            # Turn all scores into integers
+            de_matrix = numpy.asarray([[int(float(s) * norm_factors[k] + .5) for k,s in enumerate(x[1:])]
+                                       for x in de_list], dtype=numpy.float)
+            rownames = numpy.asarray([x[0] for x in de_list])
+            colnames = numpy.asarray([s.info.get('name',os.path.splitext(os.path.basename(s.path))[0])
+                                      for s in stracks])
             robjects.r.assign('Mdata', numpy2ri.numpy2ri(de_matrix))
             robjects.r.assign('row_names', numpy2ri.numpy2ri(rownames))
             robjects.r.assign('col_names', numpy2ri.numpy2ri(colnames))
@@ -178,4 +178,4 @@ Else they are considered as belonging to different groups.
             """ % (c[0], c[1], out)
             robjects.r(r_cmd)
             self.new_file(out, 'differential_expression')
-        return 1
+        return out
