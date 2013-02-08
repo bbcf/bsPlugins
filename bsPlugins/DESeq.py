@@ -126,7 +126,7 @@ Else they are considered as belonging to different groups.
             elif feature_type == 2:
                 features = exons
             elif feature_type == 3:
-                assert os.path.exists(kw.get('features'))
+                assert os.path.exists(str(kw.get('features'))), "Features file not found: '%s'" % kw.get("features")
                 _t = track(kw.get('features'), chrmeta=chrmeta)
                 chrmeta = _t.chrmeta
                 features = _t.read
@@ -135,8 +135,9 @@ Else they are considered as belonging to different groups.
 
             signals = []
             norm_factors = []
-            for sig in kw.get('signals', []):
-                assert os.path.exists(sig), "File not found: %s." % sig
+            for f in kw.get('signals',[]):
+                assert os.path.exists(str(f)), "Signal file not found: '%s'." % sig
+            for sig in kw.get('signals',[]):
                 _t = track(sig, chrmeta=chrmeta)
                 if 'normalization' in _t.info:
                     _nf = float(_t.info['normalization'])
