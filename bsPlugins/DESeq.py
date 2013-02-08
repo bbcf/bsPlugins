@@ -101,9 +101,6 @@ Else they are considered as belonging to different groups.
         'meta': meta,
         }
 
-    # from bsPlugins.DESeq import DESeqPlugin; DESeqPlugin()(**{'signals':['tests/DESeq/signal1.bedGraph', 'tests/DESeq/signal2.bedGraph'], 'features':'tests/DESeq/features.bed', 'feature_type':3})
-    # from bsPlugins.DESeq import DESeqPlugin; DESeqPlugin()(**{'table':'tests/DESeq/table.tab'})
-
     def __call__(self, **kw):
         def from_signal(**kw):
             feature_type = int(kw.get('feature_type', 0))
