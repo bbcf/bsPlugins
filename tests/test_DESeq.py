@@ -23,7 +23,7 @@ class Test_DESeqPlugin(TestCase):
             self.assertEqual(len(content),20)
 
     def tearDown(self):
-        tmpdir = os.path.dirname(self.out_signals) or os.path.dirname(self.out_table)
-        shutil.rmtree(tmpdir)
-
+        for f in os.listdir('.'):
+            if f.startswith('tmp'):
+                shutil.rmtree(f)
 

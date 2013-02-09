@@ -108,9 +108,11 @@ Else they are considered as belonging to different groups.
         if kw.get('input_type') == 'Table':
             filename = kw.get('table')
             assert os.path.exists(str(filename)), "File not found: '%s'" % filename
-            colnames = open(filename).readline().split()[1:]
+            colnames = numpy.asarray(open(filename).readline().split()[1:])
+            robjects.r.assign('col_names', numpy2ri.numpy2ri(colnames))
             robjects.r("""
             Mdata <- read.table('%s',sep='\t',header=T,row.names=1)
+            conds <- unlist(strsplit(col_names,".",fixed=T))
             conds <- colnames(Mdata)
             """ % filename)
         else:
