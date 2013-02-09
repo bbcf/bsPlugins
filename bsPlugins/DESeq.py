@@ -179,4 +179,4 @@ Else they are considered as belonging to different groups.
             """ % (c[0], c[1], out)
             robjects.r(r_cmd)
             self.new_file(out, 'differential_expression')
-        return out
+        return self.output_files[0][0]

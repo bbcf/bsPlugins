@@ -1,6 +1,6 @@
-from bsPlugins.DESeq import DESeqPlugin
-import os
 from unittest2 import TestCase, skip
+from bsPlugins.DESeq import DESeqPlugin
+import os, shutil
 
 path = 'testing_files/DESeq/'
 
@@ -23,7 +23,7 @@ class Test_DESeqPlugin(TestCase):
             self.assertEqual(len(content),20)
 
     def tearDown(self):
-        if os.path.exists(self.out_signals): os.remove(self.out_signals)
-        if os.path.exists(self.out_table): os.remove(self.out_table)
+        tmpdir = os.path.dirname(self.out_signals) or os.path.dirname(self.out_table)
+        shutil.rmtree(tmpdir)
 
 
