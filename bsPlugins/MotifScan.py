@@ -106,8 +106,7 @@ class MotifScanPlugin(OperationPlugin):
         with execution(None) as ex:
             _ = save_motif_profile( ex, motifs, assembly, regions_file, fasta_file, 
                                     background=background, threshold=threshold, 
-                                    output = track_output,
-                                    description=None, via='local' )
+                                    output=track_output, description=None, via='local' )
         self.new_file(track_output, 'motif_track')
         return 1
 
