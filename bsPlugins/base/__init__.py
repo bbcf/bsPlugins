@@ -98,3 +98,26 @@ class OperationPlugin(object):
         fpath = os.path.join(tmp_dir, fname)
         self.tmp_files.append(tmp_dir)
         return fpath
+
+
+def test_form(clz, port=8000):
+    """
+    Pass your Form class as an argument.
+    For instance : 
+    >>> import bsPlugins
+    >>> from bsPlugins.Smoothing import SmoothingForm
+    >>> bsPlugins.base.test_form(SmoothingForm, port=8080)
+    """
+    try:
+        import tw2.core as twc
+        import tw2.forms as twf
+        import tw2.devtools as twdev
+    except ImportError:
+        from bsPlugins.tw0 import twf, twc, twd, twdev
+
+    class Index(twf.FormPage):
+        title = 'Test bs plugin output'
+
+        child = clz
+
+    twdev.dev_server(port=port)
