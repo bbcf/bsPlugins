@@ -102,22 +102,21 @@ class OperationPlugin(object):
 
 def test_form(clz, port=8000):
     """
-    Pass your Form class as an argument.
-    For instance : 
-    >>> import bsPlugins
-    >>> from bsPlugins.Smoothing import SmoothingForm
-    >>> bsPlugins.base.test_form(SmoothingForm, port=8080)
+    :param clz: Form class to test.
+    Example ::
+
+        import bsPlugins
+        from bsPlugins.Smoothing import SmoothingForm
+        bsPlugins.base.test_form(SmoothingForm, port=8080)
     """
     try:
-        import tw2.core as twc
         import tw2.forms as twf
         import tw2.devtools as twdev
     except ImportError:
-        from bsPlugins.tw0 import twf, twc, twd, twdev
+        from bsPlugins.tw0 import twf, twdev
 
     class Index(twf.FormPage):
-        title = 'Test bs plugin output'
-
+        title = 'Test bs plugin form'
         child = clz
 
     twdev.dev_server(port=port)
