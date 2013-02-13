@@ -1,12 +1,10 @@
 from bsPlugins import *
-from bbcflib.bFlatMajor.stream import neighborhood, score_by_feature
 from bbcflib.btrack import track
 from bbcflib import genrep
-import rpy2.robjects as robjects
-import rpy2.robjects.numpy2ri as numpy2ri
 import numpy
 import os
 import itertools
+from bbcfutils.maplot import MAplot
 
 
 ftypes = [(0, 'genes bodies'), (1, 'gene promoters'), (2, 'exons'), (3, 'custom upload')]
@@ -86,8 +84,22 @@ class MaplotPlugin(OperationPlugin):
         'meta': meta,
         }
 
-    # from bsPlugins.Maplot import MaplotPlugin; DESeqPlugin()(**{'table':'tests/DESeq/table.tab'})
-
     def __call__(self, **kw):
+
+        assembly = genrep.Assembly(kw.get('assembly'))
+        chrmeta = assembly.chrmeta or "guess"
+
+        if kw.get('input_type') == 'Table':
+            table = kw.get('table')
+            assert os.path.exists(str(filename)), "File not found: '%s'" % filename
+        else:
+            from QuantifyTable import QuantifyTablePlugin
+            kw['score_op'] = 'sum'
+            table = QuantifyTablePlugin().quantify(**kw)
+            signals = kw.get('signals',[])
+
+        output = self.temporary_path(fname='DE')
+
+
         self.new_file(out, 'maplot.png')
         return 1

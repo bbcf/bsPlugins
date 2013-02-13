@@ -1,12 +1,8 @@
 from bsPlugins import *
-from bbcflib.bFlatMajor.stream import neighborhood, score_by_feature
 from bbcflib.btrack import track
 from bbcflib import genrep
-import rpy2.robjects as robjects
-import rpy2.robjects.numpy2ri as numpy2ri
-import numpy
 import os
-import itertools
+from bbcflib.bFlatMajor.stream.scores import normalize
 
 
 ftypes = [(0, 'genes bodies'), (1, 'gene promoters'), (2, 'exons'), (3, 'custom upload')]
@@ -92,8 +88,27 @@ class NormalizePlugin(OperationPlugin):
         'meta': meta,
         }
 
-    # from bsPlugins.Normalize import NormalizePlugin; DESeqPlugin()(**{'table':'tests/DESeq/table.tab'})
-
     def __call__(self, **kw):
-        self.new_file(out, 'normalized')
+
+        assembly = genrep.Assembly(kw.get('assembly'))
+        chrmeta = assembly.chrmeta or "guess"
+
+        if kw.get('input_type') == 'Table':
+            table = kw.get('table')
+            assert os.path.exists(str(filename)), "File not found: '%s'" % filename
+        else:
+            from QuantifyTable import QuantifyTablePlugin
+            kw['score_op'] = 'sum'
+            table = QuantifyTablePlugin().quantify(**kw)
+            signals = kw.get('signals',[])
+        t = track(table)
+        _f = [f for f in t.fields if f.startswith("score")]
+        norm = normalize(t.read(fields=["name"]+_f))
+
+        output = self.temporary_path(fname='DE')
+        out = track(output)
+        out.write(norm)
+
+
+        self.new_file(output, 'normalized')
         return 1

@@ -21,7 +21,7 @@ class DESeqForm(BaseForm):
     input_type = twd.HidingRadioButtonList(label_text='Input type',
         options=('Table', 'Signal'),
         mapping={'Table':  ['table'],
-                 'Signal': ['SigMulti','feature_type'],},
+                 'Signal': ['SigMulti','feature_type','assembly'],},
         help_text='Select input type (Formatted table, or signal tracks)')
     table = twf.FileField(label='Table: ',
         help_text='Select scores table',
