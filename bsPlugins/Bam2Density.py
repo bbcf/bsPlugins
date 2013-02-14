@@ -10,7 +10,7 @@ meta = {'version': "1.0.0",
 
 in_parameters = [{'id': 'sample', 'type': 'bam', 'required': True},
                  {'id': 'control', 'type': 'bam'},
-                 {'id': 'format', 'type': 'txt'},
+                 {'id': 'format', 'type': 'text'},
                  {'id': 'normalization', 'type': 'int'},
                  {'id': 'merge_strands', 'type': 'int'},
                  {'id': 'read_extension', 'type': 'int'}]
@@ -75,12 +75,12 @@ class Bam2DensityPlugin(OperationPlugin):
             suffixes = ["fwd", "rev"]
         read_extension = int(kw.get('read_extension') or -1)
         output = self.temporary_path(fname='density_')
-        format = kw.get("format","sql")
+        format = kw.get("format", "sql")
         with execution(None) as ex:
             files = bam_to_density(ex, kw['sample'], output,
                                     nreads=nreads, merge=merge_strands,
                                     read_extension=read_extension,
-                                    sql=(format==sql), args=b2wargs)
+                                    sql=(format == "sql"), args=b2wargs)
         for n, x in enumerate(files):
             if format == "sql":
                 tsql = track(x, format='sql', fields=['start', 'end', 'score'],
@@ -90,6 +90,6 @@ class Bam2DensityPlugin(OperationPlugin):
             elif format == "wig":
                 self.new_file(x, 'density_' + suffixes[n])
             else:
-                convert(x, x+'.'+format, chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'}, mode="overwrite")
-                self.new_file(x+'.'+format, 'density_' + suffixes[n])
+                convert(x, x + '.' + format, chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'}, mode="overwrite")
+                self.new_file(x + '.' + format, 'density_' + suffixes[n])
         return 1
