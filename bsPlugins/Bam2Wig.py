@@ -1,6 +1,6 @@
 from bsPlugins import *
 from bein import execution
-from bbcflib.btrack import track
+from bbcflib.btrack import track, convert
 from bbcflib.mapseq import bam_to_density
 
 
@@ -10,6 +10,7 @@ meta = {'version': "1.0.0",
 
 in_parameters = [{'id': 'sample', 'type': 'bam', 'required': True},
                  {'id': 'control', 'type': 'bam'},
+                 {'id': 'format', 'type': 'txt'},
                  {'id': 'normalization', 'type': 'int'},
                  {'id': 'merge_strands', 'type': 'int'},
                  {'id': 'read_extension', 'type': 'int'}]
@@ -20,12 +21,16 @@ out_parameters = [{'id': 'density_merged', 'type': 'track'},
 __requires__ = ["pysam"]
 
 
-class Bam2WigForm(BaseForm):
-    sample = twf.FileField(label_text='Test Bam: ',
+class Bam2DensityForm(BaseForm):
+    sample = twf.FileField(label_text='Test BAM: ',
         help_text='Select main bam file',
         validator=twf.FileValidator(required=True))
-    control = twf.FileField(label_text='Control Bam: ',
+    control = twf.FileField(label_text='Control BAM: ',
         help_text='Select control bam file to compute enrichment')
+    format = twf.SingleSelectField(label='Output format: ',
+        options=["wig","sql","bedGraph","bigWig"],
+        validator=twc.Validator(required=True),
+        help_text='Format of the output file')
     normalization = twf.TextField(label_text='Normalization: ',
         validator=twc.IntValidator(required=False),
         help_text='Normalization factor, default is total number of reads')
@@ -35,16 +40,16 @@ class Bam2WigForm(BaseForm):
     read_extension = twf.TextField(label_text='Read extension: ',
         validator=twc.IntValidator(required=False),
         help_text='Enter read extension (in bp) to be applied when constructing densities')
-    submit = twf.SubmitButton(id="submit", value='bam2wig')
+    submit = twf.SubmitButton(id="submit", value='bam2density')
 
 
-class Bam2WigPlugin(OperationPlugin):
+class Bam2DensityPlugin(OperationPlugin):
 
     info = {
-        'title': 'Bam2wig',
-        'description': 'Bam2wig generates genome-wide densities from bam files',
-        'path': ['Files', 'Bam2wig'],
-        'output': Bam2WigForm,
+        'title': 'Bam2density',
+        'description': 'Bam2density generates genome-wide densities from bam files',
+        'path': ['Files', 'Bam2density'],
+        'output': Bam2DensityForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
@@ -70,14 +75,21 @@ class Bam2WigPlugin(OperationPlugin):
             suffixes = ["fwd", "rev"]
         read_extension = int(kw.get('read_extension') or -1)
         output = self.temporary_path(fname='density_')
+        format = kw.get("format","sql")
         with execution(None) as ex:
             files = bam_to_density(ex, kw['sample'], output,
                                     nreads=nreads, merge=merge_strands,
                                     read_extension=read_extension,
-                                    sql=True, args=b2wargs)
+                                    sql=(format==sql), args=b2wargs)
         for n, x in enumerate(files):
-            tout = track(x, format='sql', fields=['start', 'end', 'score'],
-                          chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'})
-            tout.save()
-            self.new_file(x, 'density_' + suffixes[n])
+            if format == "sql":
+                tsql = track(x, format='sql', fields=['start', 'end', 'score'],
+                              chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'})
+                tsql.save()
+                self.new_file(x, 'density_' + suffixes[n])
+            elif format == "wig":
+                self.new_file(x, 'density_' + suffixes[n])
+            else:
+                convert(x, x+'.'+format, chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'}, mode="overwrite")
+                self.new_file(x+'.'+format, 'density_' + suffixes[n])
         return 1

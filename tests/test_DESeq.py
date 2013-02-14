@@ -1,5 +1,6 @@
 from unittest2 import TestCase, skip
-from bsPlugins.DESeq import DESeqPlugin
+from bsPlugins.base import test_form
+from bsPlugins.DESeq import DESeqPlugin, DESeqForm
 import os, shutil
 
 path = 'testing_files/DESeq/'
@@ -21,6 +22,10 @@ class Test_DESeqPlugin(TestCase):
         with open(self.out_table,'rb') as f:
             content = f.readlines()
             self.assertEqual(len(content),20)
+
+    @skip('')
+    def test_form(self):
+        test_form(DESeqForm, port=8080)
 
     def tearDown(self):
         for f in os.listdir('.'):
