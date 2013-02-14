@@ -76,7 +76,7 @@ class Bam2DensityPlugin(OperationPlugin):
             files = bam_to_density(ex, kw['sample'], output,
                                     nreads=nreads, merge=merge_strands,
                                     read_extension=read_extension,
-                                    sql=(format==sql), args=b2wargs)
+                                    sql=(format=="sql"), args=b2wargs)
         if isinstance(files,list): # sql format, cf the mess with bam_to_density
             if merge_strands >= 0: suffixes = ["_merged"]
             else: suffixes = ["_fwd", "_rev"]
