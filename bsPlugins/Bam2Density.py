@@ -29,7 +29,7 @@ class Bam2DensityForm(BaseForm):
     control = twf.FileField(label_text='Control BAM: ',
         help_text='Select control bam file to compute enrichment')
     format = twf.SingleSelectField(label='Output format: ',
-        options=["wig","sql","bedGraph","bigWig"],
+        options=["wig", "sql", "bedGraph", "bigWig"],
         validator=twc.Validator(required=True),
         help_text='Format of the output file')
     normalization = twf.TextField(label_text='Normalization: ',
@@ -82,10 +82,12 @@ class Bam2DensityPlugin(OperationPlugin):
             files = bam_to_density(ex, sample, output,
                                     nreads=nreads, merge=merge_strands,
                                     read_extension=read_extension,
-                                    sql=(format=="sql"), args=b2wargs)
-        if isinstance(files,list): # sql format, cf the mess with bam_to_density
-            if merge_strands >= 0: suffixes = ["_merged"]
-            else: suffixes = ["_fwd", "_rev"]
+                                    sql=(format == "sql"), args=b2wargs)
+        if isinstance(files, list):  # sql format, cf the mess with bam_to_density
+            if merge_strands >= 0:
+                suffixes = ["_merged"]
+            else:
+                suffixes = ["_fwd", "_rev"]
             for n, x in enumerate(files):
                 tsql = track(x, format='sql', fields=['start', 'end', 'score'],
                               chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'})
@@ -93,11 +95,11 @@ class Bam2DensityPlugin(OperationPlugin):
                 self.new_file(x, 'density' + suffixes[n])
         elif format == "bedGraph":
             suffix = "_merged" if merge_strands >= 0 else ""
-            self.new_file(files, 'density'+suffix)
+            self.new_file(files, 'density' + suffix)
         else:
             suffix = "_merged" if merge_strands >= 0 else ""
             informat = "bedGraph" if merge_strands >= 0 else "bed"
-            convert((files,informat), (output+"_temp",format),
+            convert((files, informat), (output + "_temp", format),
                     chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'}, mode="overwrite")
-            self.new_file(output+"_temp", 'density'+suffix)
+            self.new_file(output + "_temp", 'density' + suffix)
         return self.display_time()
