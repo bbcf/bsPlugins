@@ -69,10 +69,6 @@ class Bam2DensityPlugin(OperationPlugin):
             else:
                 b2wargs += ["-r"]
         merge_strands = int(kw.get('merge_strands') or -1)
-        if merge_strands >= 0:
-            suffixes = ["merged"]
-        else:
-            suffixes = ["fwd", "rev"]
         read_extension = int(kw.get('read_extension') or -1)
         output = self.temporary_path(fname='density_')
         format = kw.get("format","sql")
@@ -81,15 +77,20 @@ class Bam2DensityPlugin(OperationPlugin):
                                     nreads=nreads, merge=merge_strands,
                                     read_extension=read_extension,
                                     sql=(format==sql), args=b2wargs)
-        for n, x in enumerate(files):
-            if format == "sql":
-                tsql = track(x, format='sql', fields=['start', 'end', 'score'],
-                              chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'})
-                tsql.save()
-                self.new_file(x, 'density_' + suffixes[n])
-            elif format == "wig":
-                self.new_file(x, 'density_' + suffixes[n])
-            else:
-                convert(x, x+'.'+format, chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'}, mode="overwrite")
-                self.new_file(x+'.'+format, 'density_' + suffixes[n])
+        if isinstance(files,list): # sql format, cf the mess with bam_to_density
+            if merge_strands >= 0: suffixes = ["_merged"]
+            else: suffixes = ["_fwd", "_rev"]
+            for n, x in enumerate(files):
+                if format == "sql":
+                    tsql = track(x, format='sql', fields=['start', 'end', 'score'],
+                                  chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'})
+                    tsql.save()
+                    self.new_file(x, 'density' + suffixes[n])
+        elif format == "bedGraph":
+            suffix = "_merged" if merge_strands >= 0 else ""
+            self.new_file(x, 'density'+suffix+".bedGraph")
+        else:
+            suffix = "_merged" if merge_strands >= 0 else ""
+            convert(x, (y,format), chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'}, mode="overwrite")
+            self.new_file(y, 'density'+suffix+'.'+format)
         return 1

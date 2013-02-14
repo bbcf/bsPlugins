@@ -4,7 +4,7 @@ from bbcflib import genrep
 import numpy
 import os
 import itertools
-from bbcfutils.maplot import MAplot
+from maplot import MAplot
 
 
 ftypes = [(0, 'genes bodies'), (1, 'gene promoters'), (2, 'exons'), (3, 'custom upload')]
