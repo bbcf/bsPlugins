@@ -10,7 +10,7 @@ meta = {'version': "1.0.0",
 
 in_parameters = [{'id': 'sample', 'type': 'bam', 'required': True},
                  {'id': 'control', 'type': 'bam'},
-                 {'id': 'format', 'type': 'txt'},
+                 {'id': 'format', 'type': 'text'},
                  {'id': 'normalization', 'type': 'int'},
                  {'id': 'merge_strands', 'type': 'int'},
                  {'id': 'read_extension', 'type': 'int'}]
@@ -71,7 +71,7 @@ class Bam2DensityPlugin(OperationPlugin):
         merge_strands = int(kw.get('merge_strands') or -1)
         read_extension = int(kw.get('read_extension') or -1)
         output = self.temporary_path(fname='density_')
-        format = kw.get("format","sql")
+        format = kw.get("format", "sql")
         with execution(None) as ex:
             files = bam_to_density(ex, kw['sample'], output,
                                     nreads=nreads, merge=merge_strands,
@@ -93,4 +93,4 @@ class Bam2DensityPlugin(OperationPlugin):
             suffix = "_merged" if merge_strands >= 0 else ""
             convert(x, (y,format), chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'}, mode="overwrite")
             self.new_file(y, 'density'+suffix+'.'+format)
-        return 1
+        return self.output_files
