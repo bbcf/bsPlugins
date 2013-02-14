@@ -90,14 +90,15 @@ class Bam2DensityPlugin(OperationPlugin):
                 tsql = track(x, format='sql', fields=['start', 'end', 'score'],
                               chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'})
                 tsql.save()
-                self.new_file(x, 'density' + suffixes[n])
+                self.new_file(x, 'density'+suffixes[n])
         elif format == "bedGraph":
             suffix = "_merged" if merge_strands >= 0 else ""
             self.new_file(files, 'density'+suffix)
         else:
             suffix = "_merged" if merge_strands >= 0 else ""
             informat = "bedGraph" if merge_strands >= 0 else "bed"
-            convert((files,informat), (output+"_temp",format),
+            outname = output+suffix+'.'+format
+            convert((files,informat), (outname,format),
                     chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'}, mode="overwrite")
-            self.new_file(output+"_temp", 'density'+suffix)
+            self.new_file(outname, 'density'+suffix)
         return self.output_files
