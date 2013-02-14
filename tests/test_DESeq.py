@@ -1,5 +1,4 @@
 from unittest2 import TestCase, skip
-from bsPlugins.base import test_form
 from bsPlugins.DESeq import DESeqPlugin, DESeqForm
 import os, shutil
 
@@ -23,12 +22,9 @@ class Test_DESeqPlugin(TestCase):
             content = f.readlines()
             self.assertEqual(len(content),20)
 
-    @skip('')
-    def test_form(self):
-        test_form(DESeqForm, port=8080)
-
     def tearDown(self):
         for f in os.listdir('.'):
             if f.startswith('tmp'):
-                shutil.rmtree(f)
+                os.system("rm -rf %s" % f)
+                #shutil.rmtree(f)
 

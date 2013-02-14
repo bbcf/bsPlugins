@@ -67,8 +67,8 @@ class Bam2DensityPlugin(OperationPlugin):
             assert os.path.exists(str(control)), "Control file not found: '%s'." % control
             control = os.path.abspath(control)
         sample = os.path.abspath(sample)
-        bamfile = track(sample, format='bam')
         nreads = int(kw.get('normalization') or -1)
+        bamfile = track(sample, format='bam')
         if nreads < 0:
             if control is None:
                 nreads = len(set((t[4] for t in bamfile.read())))
@@ -76,7 +76,7 @@ class Bam2DensityPlugin(OperationPlugin):
                 b2wargs += ["-r"]
         merge_strands = int(kw.get('merge_strands') or -1)
         read_extension = int(kw.get('read_extension') or -1)
-        output = self.temporary_path(fname='density_')
+        output = self.temporary_path(fname='density')
         format = kw.get("format", "sql")
         with execution(None) as ex:
             files = bam_to_density(ex, sample, output,
@@ -87,11 +87,10 @@ class Bam2DensityPlugin(OperationPlugin):
             if merge_strands >= 0: suffixes = ["_merged"]
             else: suffixes = ["_fwd", "_rev"]
             for n, x in enumerate(files):
-                if format == "sql":
-                    tsql = track(x, format='sql', fields=['start', 'end', 'score'],
-                                  chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'})
-                    tsql.save()
-                    self.new_file(x, 'density' + suffixes[n])
+                tsql = track(x, format='sql', fields=['start', 'end', 'score'],
+                              chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'})
+                tsql.save()
+                self.new_file(x, 'density' + suffixes[n])
         elif format == "bedGraph":
             suffix = "_merged" if merge_strands >= 0 else ""
             self.new_file(files, 'density'+suffix)
@@ -101,5 +100,4 @@ class Bam2DensityPlugin(OperationPlugin):
             convert((files,informat), (output+"_temp",format),
                     chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'}, mode="overwrite")
             self.new_file(output+"_temp", 'density'+suffix)
-        print self.output_files
         return self.output_files
