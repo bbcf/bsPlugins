@@ -52,26 +52,26 @@ class SmoothingPlugin(OperationPlugin):
 
     def __call__(self, **kw):
         tinput = track.track(kw.get('track'), chrmeta=kw.get('assembly') or None)
+        outformat = kw.get('format',tinput.format)
         wsize = int(kw.get('window_size', size_def))
         wstep = int(kw.get('window_step', step_def))
         featurewise = kw.get('by_feature', False)
         if isinstance(featurewise, basestring):
             featurewise = (featurewise.lower() in ['1', 'true', 't'])
-        output = self.temporary_path(fname='smoothed_track', ext='sql')
+        output = self.temporary_path(fname='smoothed_track', ext=outformat)
         if featurewise:
             outfields = tinput.fields
             datatype = "qualitative"
         else:
             outfields = ["start", "end", "score"]
             datatype = "quantitative"
-        tout = track.track(output, fields=outfields,
-                           chrmeta=tinput.chrmeta,
-                           info={'datatype': datatype})
+        tout = track.track(output, format=outformat, fields=outfields, chrmeta=tinput.chrmeta, info={'datatype': datatype})
         for chrom in tout.chrmeta.keys():
-            tout.write(gm_stream.window_smoothing(
+            s = gm_stream.window_smoothing(
                     tinput.read(selection=chrom, fields=outfields),
                     window_size=wsize, step_size=wstep,
-                    featurewise=featurewise), chrom=chrom)
+                    featurewise=featurewise)
+            tout.write(s, chrom=chrom)
         tout.close()
         self.new_file(output, 'smoothed_track')
         return self.display_time()

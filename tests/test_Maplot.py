@@ -2,7 +2,7 @@ from unittest2 import TestCase, skip
 from bsPlugins.Maplot import MaplotPlugin
 import os
 
-path = 'testing_files/DESeq/'
+path = 'testing_files/'
 
 class Test_DESeqPlugin(TestCase):
     def setUp(self):
