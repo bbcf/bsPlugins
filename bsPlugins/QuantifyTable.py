@@ -28,6 +28,10 @@ class QuantifyTableForm(BaseForm):
     features = twf.FileField(label='Custom feature set: ',
         help_text='Select a feature file (e.g. bed)',
         validator=twf.FileValidator(required=True))
+    format = twf.SingleSelectField(label='Output format: ',
+        options=["txt", "sql"],
+        validator=twc.Validator(required=True),
+        help_text='Format of the output file')
     assembly = twf.SingleSelectField(label='Assembly: ',
         options=genrep.GenRep().assemblies_available(),
         help_text='Reference genome')
@@ -49,6 +53,7 @@ meta = {'version': "1.0.0",
 in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': True, 'required': True},
                  {'id': 'feature_type', 'type': 'list'},
                  {'id': 'features', 'type': 'userfile'},
+                 {'id': 'format', 'type': 'text'},
                  {'id': 'assembly', 'type': 'assembly'},
                  {'id': 'upstream', 'type': 'int', 'required': True},
                  {'id': 'downstream', 'type': 'int', 'required': True}]
@@ -69,6 +74,7 @@ class QuantifyTablePlugin(OperationPlugin):
         feature_type = int(kw.get('feature_type', 0))
         func = str(kw.get('score_op', 'mean'))
         assembly_id = kw.get('assembly')
+        format = kw.get('format','sql')
         chrmeta = "guess"
         if assembly_id:
             assembly = genrep.Assembly(assembly_id)
@@ -96,13 +102,13 @@ class QuantifyTablePlugin(OperationPlugin):
             features = _t.read
         else:
             return 2
-        output = self.temporary_path(fname='features_quantification.sql')
+        output = self.temporary_path(fname='features_quantification.'+format)
         if len(signals) > 1:
             _f = ["score" + str(i) for i in range(len(signals))]
         else:
             _f = ["score"]
-        tout = track(output, format='sql', fields=['start', 'end', 'name'] + _f,
-                     chrmeta=chrmeta, info={'datatype': 'qualitative'})
+        tout = track(output, format, fields=['chr','start','end','name'] + _f,
+                     chrmeta=chrmeta, info={'datatype':'qualitative'})
         for chrom in chrmeta:
             sread = [sig.read(chrom) for sig in signals]
             tout.write(score_by_feature(sread, features(chrom), fn=func),
