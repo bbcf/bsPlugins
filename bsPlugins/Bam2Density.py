@@ -103,4 +103,4 @@ class Bam2DensityPlugin(OperationPlugin):
             convert((files,informat), (outname,format),
                     chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'}, mode="overwrite")
             self.new_file(outname, 'density'+suffix)
-        return 1 #self.output_files
+        return self.display_time()

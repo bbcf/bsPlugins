@@ -33,8 +33,8 @@ class OperationPlugin(object):
         self.service = None
         self.output_files = []
         self.tmp_files = []
-        self.start_time = None
-        self.end_time = None
+        self.start_time = 0
+        self.end_time = 0
 
     def _start_timer(self):
         self.start_time = time.time()

@@ -1,24 +1,23 @@
 from unittest2 import TestCase, skip
-from bsPlugins.DESeq import DESeqPlugin, DESeqForm
-import os, shutil
+from bsPlugins.DESeq import DESeqPlugin
+import os
 
-path = 'testing_files/DESeq/'
+path = 'testing_files/'
 
 class Test_DESeqPlugin(TestCase):
     def setUp(self):
-        self.out_signals = ''
-        self.out_table = ''
+        self.plugin = DESeqPlugin()
 
     def test_with_signals(self):
-        self.out_signals = DESeqPlugin()(**{'input_type':'Signal','signals':[path+'KO50.bedGraph', path+'WT50.bedGraph'],
+        self.plugin(**{'input_type':'Signal','signals':[path+'KO50.bedGraph', path+'WT50.bedGraph'],
                                'features':path+'features.bed', 'feature_type':3, 'assembly':'mm9'})
-        with open(self.out_signals,'rb') as f:
+        with open(self.plugin.output_files[0][0],'rb') as f:
             content = f.readlines()
-            self.assertEqual(len(content),9)
+            self.assertEqual(len(content),10)
 
     def test_with_table(self):
-        self.out_table = DESeqPlugin()(**{'input_type':'Table','table':path+'genes_table.tab', 'assembly':'mm9'})
-        with open(self.out_table,'rb') as f:
+        self.plugin(**{'input_type':'Table','table':path+'genes_table.tab', 'assembly':'mm9'})
+        with open(self.plugin.output_files[0][0],'rb') as f:
             content = f.readlines()
             self.assertEqual(len(content),20)
 
@@ -26,5 +25,4 @@ class Test_DESeqPlugin(TestCase):
         for f in os.listdir('.'):
             if f.startswith('tmp'):
                 os.system("rm -rf %s" % f)
-                #shutil.rmtree(f)
 

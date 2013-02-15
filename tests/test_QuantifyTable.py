@@ -1,26 +1,26 @@
 from unittest2 import TestCase, skip
 from bsPlugins.QuantifyTable import QuantifyTablePlugin
-import os, shutil
+import os
 
-path = 'testing_files/DESeq/'
+path = 'testing_files/'
 
-class Test_DESeqPlugin(TestCase):
+class Test_QuantifyTablePlugin(TestCase):
     def setUp(self):
-        self.out_signals = ''
+        self.plugin = QuantifyTablePlugin()
 
     def test_quantify_table(self):
-        self.out_signals = QuantifyTablePlugin()(**{'input_type':'Signal','signals':[path+'KO50.bedGraph', path+'WT50.bedGraph'],
+        self.plugin(**{'input_type':'Signal','signals':[path+'KO50.bedGraph', path+'WT50.bedGraph'],
                                'features':path+'features.bed', 'feature_type':3, 'assembly':'mm9'})
         from bbcflib.btrack import track
-        with track(self.out_signals) as t:
-            for line in t.read():
-                print line
-            raise
-            #self.assertEqual(len(content),9)
+        with track(self.plugin.output_files[0][0]) as t:
+            content = list(t.read())
+            for x in content: print x
+            print "fields", t.fields
+            self.assertListEqual(t.fields, ["chr","start","end","name","score0","score1"])
+            self.assertEqual(len(content),9)
 
     def tearDown(self):
         for f in os.listdir('.'):
             if f.startswith('tmp'):
                 os.system("rm -rf %s" % f)
-                #shutil.rmtree(f)
 
