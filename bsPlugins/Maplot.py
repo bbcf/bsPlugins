@@ -1,17 +1,14 @@
 from bsPlugins import *
 from bbcflib.btrack import track
 from bbcflib import genrep
-import numpy
-import os
-import itertools
+import os, shutil
 from maplot import MAplot
 
+__requires__ = ["numpy"]
 
 ftypes = [(0, 'genes bodies'), (1, 'gene promoters'), (2, 'exons'), (3, 'custom upload')]
 prom_up_def = 1000
 prom_down_def = 100
-
-__requires__ = ["numpy"]
 
 
 class MaplotForm(BaseForm):
@@ -20,7 +17,7 @@ class MaplotForm(BaseForm):
     input_type = twd.HidingRadioButtonList(label_text='Input type',
         options=('Table', 'Signal'),
         mapping={'Table':  ['table'],
-                 'Signal': ['SigMulti','feature_type'],},
+                 'Signal': ['SigMulti','feature_type','assembly'],},
         help_text='Select input type (Formatted table, or signal tracks)')
     table = twf.FileField(label='Table: ',
         help_text='Select scores table',
@@ -50,7 +47,7 @@ class MaplotForm(BaseForm):
         options=genrep.GenRep().assemblies_available(),
         validator=twc.Validator(required=True),
         help_text='Reference genome')
-    submit = twf.SubmitButton(id="submit", value="Quantify")
+    submit = twf.SubmitButton(id="submit", value="MA-plot")
 
 
 meta = {'version': "1.0.0",
@@ -67,7 +64,7 @@ in_parameters = [
         {'id': 'assembly', 'type': 'assembly'},
         {'id': 'features', 'type': 'userfile'},
 ]
-out_parameters = [{'id': 'differential_expression', 'type': 'file'}]
+out_parameters = [{'id': 'MA-plot', 'type': 'file'}]
 
 
 class MaplotPlugin(OperationPlugin):
@@ -77,7 +74,7 @@ class MaplotPlugin(OperationPlugin):
     info = {
         'title': 'MA-plot',
         'description': description,
-        'path': ['Signal', 'Maplot'],
+        'path': ['Signal', 'MA-plot'],
         'output': MaplotForm,
         'in': in_parameters,
         'out': out_parameters,
@@ -86,20 +83,22 @@ class MaplotPlugin(OperationPlugin):
 
     def __call__(self, **kw):
 
-        assembly = genrep.Assembly(kw.get('assembly'))
-        chrmeta = assembly.chrmeta or "guess"
-
         if kw.get('input_type') == 'Table':
             table = kw.get('table')
             assert os.path.exists(str(filename)), "File not found: '%s'" % filename
+            with open(table) as t:
+                line1 = t.readline()
+                nscores = len(line1.split())-1
         else:
             from QuantifyTable import QuantifyTablePlugin
             kw['score_op'] = 'sum'
             table = QuantifyTablePlugin().quantify(**kw)
             signals = kw.get('signals',[])
+            nscores = len(signals)
 
-        output = self.temporary_path(fname='DE')
-
-
-        self.new_file(out, 'maplot.png')
-        return 1
+        table = track(table, format='txt', fields=["name"]+['score'+str(i) for i in range(nscores)])
+        output_filename = MAplot(table)
+        output = self.temporary_path(fname='maplot.png')
+        shutil.copy(output_filename,output)
+        self.new_file(output, 'MA-plot')
+        return self.display_time()
