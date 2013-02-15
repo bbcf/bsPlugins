@@ -69,7 +69,6 @@ class PlotFeaturesPlugin(OperationPlugin):
         for chrom in features.chrmeta:
             _l, _d = feature_matrix([s.read(chrom) for s in signals],
                                     features.read(chrom), segment=True)
-
             if _d.size == 0:
                 continue
             if data is None:
