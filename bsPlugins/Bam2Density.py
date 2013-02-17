@@ -16,8 +16,7 @@ in_parameters = [{'id': 'sample', 'type': 'bam', 'required': True},
                  {'id': 'read_extension', 'type': 'int'}]
 out_parameters = [{'id': 'density_merged', 'type': 'track'},
                   {'id': 'density_fwd', 'type': 'track'},
-                  {'id': 'density_rev', 'type': 'track'},
-                  {'id': 'density', 'type': 'track'}]
+                  {'id': 'density_rev', 'type': 'track'}]
 
 __requires__ = ["pysam"]
 
@@ -29,7 +28,7 @@ class Bam2DensityForm(BaseForm):
     control = twf.FileField(label_text='Control BAM: ',
         help_text='Select control bam file to compute enrichment')
     format = twf.SingleSelectField(label='Output format: ',
-        options=["wig", "sql", "bedGraph", "bigWig"],
+        options=["bedGraph", "bigWig", "sql"],
         validator=twc.Validator(required=True),
         help_text='Format of the output file')
     normalization = twf.TextField(label_text='Normalization: ',
@@ -76,33 +75,26 @@ class Bam2DensityPlugin(OperationPlugin):
                 b2wargs += ["-r"]
         merge_strands = int(kw.get('merge_strands') or -1)
         read_extension = int(kw.get('read_extension') or -1)
-        output = self.temporary_path(fname='density')
+        output = self.temporary_path(fname='density_')
         format = kw.get("format", "sql")
         with execution(None) as ex:
             files = bam_to_density(ex, sample, output,
                                    nreads=nreads, merge=merge_strands,
                                    read_extension=read_extension,
-                                   sql=(format == "sql"), args=b2wargs)
-        if format == "sql":
-            if merge_strands >= 0:
-                suffixes = ["_merged"]
-            else:
-                suffixes = ["_fwd", "_rev"]
-            for n, x in enumerate(files):
-                tsql = track(x, format='sql', fields=['start', 'end', 'score'],
-                             chrmeta=bamfile.chrmeta,
-                             info={'datatype': 'quantitative'})
-                tsql.save()
-                self.new_file(x, 'density'+suffixes[n])
-        elif format == "bedGraph":
-            suffix = "_merged" if merge_strands >= 0 else ""
-            self.new_file(files, 'density' + suffix)
+                                   sql=True, args=b2wargs)
+        if merge_strands >= 0:
+            suffixes = ["merged"]
         else:
-            suffix = "_merged" if merge_strands >= 0 else ""
-            informat = "bedGraph" if merge_strands >= 0 else "bed"
-            outname = output+suffix+'.'+format
-            convert((files,informat), (outname,format),
-                    chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'}, 
-                    mode="overwrite")
-            self.new_file(outname, 'density'+suffix)
+            suffixes = ["fwd", "rev"]
+        for n, x in enumerate(files):
+            tsql = track(x, format='sql', fields=['start', 'end', 'score'],
+                         chrmeta=bamfile.chrmeta,
+                         info={'datatype': 'quantitative'})
+            tsql.save()
+            if format == "sql":
+                outname = x
+            else:
+                outname = os.path.splitext(x)[0]+"."+format
+                convert(x, outname, mode="overwrite")
+            self.new_file(outname, 'density_'+suffixes[n])
         return self.display_time()
