@@ -48,7 +48,7 @@ in_parameters = [{'id': 'sequenceSource', 'type': 'text', 'required': True},
                  {'id': 'motifs', 'type': 'text'},
                  {'id': 'customMotif', 'type': 'txt'},
                  {'id': 'threshold', 'type': 'float', 'required': True}]
-out_parameters = [{'id': 'motif_results', 'type': 'track'}]
+out_parameters = [{'id': 'motif_track', 'type': 'track'}]
 
 class MotifScanPlugin(OperationPlugin):
     info = {
@@ -63,7 +63,6 @@ class MotifScanPlugin(OperationPlugin):
 
 
     def __call__(self, **kw):
-        sequence_source = kw.get('sequenceSource')
         fasta_file = kw.get('fastafile')
         background = kw.get('background') or None
         assembly_id = kw.get('assembly') or None
@@ -75,13 +74,13 @@ class MotifScanPlugin(OperationPlugin):
         if motifs_list is None: motifs_list = []
         if not isinstance(motifs_list, list): motifs_list = [motifs_list]
  
-        if background is None and assembly is None:
-            background = self.temporary_path(fname='background_')
+        if background is None and assembly_id is None:
+            background = self.temporary_path(fname='background.txt')
             stats = {'A': 0.25,'C': 0.25, 'G': 0.25, 'T': 0.25}
             if fasta_file:
                 with execution(None) as ex:
                     stats = fasta_composition(ex,fasta_file,frequency=True)
-             with open(background,"w") as bgr: 
+            with open(background,"w") as bgr: 
                 bgr.write(" ".join(["1"]+[str(stats[n]) for n in ['A','C','G','T']]))
         if assembly_id is not None:
             assembly = genrep.Assembly(assembly_id)
@@ -90,20 +89,20 @@ class MotifScanPlugin(OperationPlugin):
                 raise ValueError("Please specify an assembly if you specify regions.")
             assembly = None
 
-        motifs = []
+        motifs = {}
         if motif_add is not None:
             mname = os.path.basename(os.path.splitext(x)[0])
-            motifs.append({"name": mname, "file": motif_add})
+            motifs[mname] = motif_add
         for mot in motifs_list:
             gid, mname = mot.split(' ')
-            pwmfile = self.temporary_path(fname='pwm_')
-            _ = g.get_motif_PWM(gid, mname, output=pwmfile)
-            motifs.append({"name": mname, "file": pwmfile})
+            pwmfile = self.temporary_path()
+            _ = g.get_motif_PWM(int(gid), mname, output=pwmfile)
+            motifs[mname] = pwmfile
 
         if len(motifs) == 0:
             raise ValueError("Please give at least one motif to scan for")
 
-        track_output = self.temporary_path(fname='motifs_', ext="sql")
+        track_output = self.temporary_path(fname='motif_scan', ext="sql")
         with execution(None) as ex:
             _ = save_motif_profile( ex, motifs, assembly, regions_file, fasta_file, 
                                     background=background, threshold=threshold, 

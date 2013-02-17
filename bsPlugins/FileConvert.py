@@ -6,7 +6,7 @@ import os
 format_list = ['bedgraph', 'wig', 'bed', 'sql', 'gff', 'sga', 'bigwig']
 
 
-class ConvertForm(BaseForm):
+class FileConvertForm(BaseForm):
     hover_help = True
     show_errors = True
     infile = twf.FileField(label='File: ', help_text='Select file.',
@@ -39,12 +39,12 @@ in_parameters = [{'id': 'infile', 'type': 'track', 'required': True},
 out_parameters = [{'id': 'converted_file', 'type': 'track'}]
 
 
-class FileConvert(OperationPlugin):
+class FileConvertPlugin(OperationPlugin):
     info = {
         'title': 'Convert file',
         'description': 'Convert a file to a different format',
         'path': ['Files', 'Convert'],
-        'output': ConvertForm,
+        'output': FileConvertForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,

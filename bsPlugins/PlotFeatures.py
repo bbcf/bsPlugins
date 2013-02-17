@@ -77,7 +77,7 @@ class PlotFeaturesPlugin(OperationPlugin):
             else:
                 labels = concatenate((labels, _l))
                 data = vstack((data, _d))
-        pdf = self.temporary_path(fname='plot_features', ext='.pdf')
+        pdf = self.temporary_path(fname='plot_features.pdf')
         if data is None:
             raise ValueError("No data")
         kw['mode'] = int(kw.get('mode', 0))
