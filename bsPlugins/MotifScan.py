@@ -1,36 +1,33 @@
 from bsPlugins import *
 from bein import execution
 from bbcflib import genrep
+from bbcflib.common import fasta_composition
 from bbcflib.motif import save_motif_profile
 from bbcflib.btrack import track, FeatureStream
 import re, os
 
 
-input_types = [(0, 'Custom upload'), (1, 'From assembly')]
-input_map = {input_types[0][1]: ['fastafile', 'background'],
-             input_types[0][1]: ['assembly', 'regions']}
+g = genrep.GenRep()
+input_types = [(0, 'Fasta upload'), (1, 'Select regions from genome')]
+input_map = {0: ['fastafile'], 1: ['assembly', 'regions']}
 
 class MotifForm(DynForm):
-    motif_list = genrep.GenRep().motifs_available()
+    motif_list = g.motifs_available()
+    assembly_list = g.assemblies_available()
 
-    #jQuery's already on the page
-    twj.jquery_js.no_inject = True
-
-    sequenceSource = twd.HidingRadioButtonList(label='Sequence source', 
-                                               options=input_types, mapping=input_map)
+    input_type = twd.HidingRadioButtonList(label_text='Sequence source ', 
+                                           options=input_types, mapping=input_map,
+                                           help_text='')
     _ = twf.Spacer()
     fastafile = twf.FileField(label='Fasta file: ', help_text='Sequences to scan')
-#### TextField?
-    background = twf.FileField(label='Background: ',
-                               help_text='File of background frequencies (default: genome-wide frequencies)')
-    assembly = twf.SingleSelectField(label='Assembly: ',
-                                     options=genrep.GenRep().assemblies_available(),
+    assembly = twf.SingleSelectField(label='Assembly: ', options=assembly_list,
                                      help_text='Assembly to fetch sequences from')
     regions = twf.FileField(label='Regions: ', help_text='Genomic regions to scan (e.g. bed)')
     _ = twf.Spacer()
-    motifs = twjqSelect.Select2MultipleSelectField(placeholder='Select the motifs to scan for', 
-                                                   options=motif_list,
-                                                   help_text='')
+    background = twf.FileField(label='Background: ',
+                               help_text='File of background frequencies (default: genome-wide frequencies)')
+    motifs = twf.MultipleSelectField(label='Select motifs to be scanned', options=motif_list,
+                                     help_text='')
     customMotif = twf.FileField(label='Custom motif: ',
                                 help_text='An optional custom/additional motif to scan (.mat)')
     threshold = twf.TextField(label='Threshold: ',
@@ -80,8 +77,12 @@ class MotifScanPlugin(OperationPlugin):
  
         if background is None and assembly is None:
             background = self.temporary_path(fname='background_')
-            with open(background,"w") as bgr: bgr.write('1 0.25 0.25 0.25 0.25')
-
+            stats = {'A': 0.25,'C': 0.25, 'G': 0.25, 'T': 0.25}
+            if fasta_file:
+                with execution(None) as ex:
+                    stats = fasta_composition(ex,fasta_file,frequency=True)
+             with open(background,"w") as bgr: 
+                bgr.write(" ".join(["1"]+[str(stats[n]) for n in ['A','C','G','T']]))
         if assembly_id is not None:
             assembly = genrep.Assembly(assembly_id)
         else:
@@ -96,7 +97,7 @@ class MotifScanPlugin(OperationPlugin):
         for mot in motifs_list:
             gid, mname = mot.split(' ')
             pwmfile = self.temporary_path(fname='pwm_')
-            _ = genrep.GenRep().get_motif_PWM(gid, mname, output=pwmfile)
+            _ = g.get_motif_PWM(gid, mname, output=pwmfile)
             motifs.append({"name": mname, "file": pwmfile})
 
         if len(motifs) == 0:
@@ -106,7 +107,8 @@ class MotifScanPlugin(OperationPlugin):
         with execution(None) as ex:
             _ = save_motif_profile( ex, motifs, assembly, regions_file, fasta_file, 
                                     background=background, threshold=threshold, 
-                                    output=track_output, description=None, via='local' )
+                                    output = track_output,
+                                    description=None, via='local' )
         self.new_file(track_output, 'motif_track')
         return 1
 

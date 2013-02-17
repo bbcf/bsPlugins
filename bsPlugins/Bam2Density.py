@@ -80,17 +80,18 @@ class Bam2DensityPlugin(OperationPlugin):
         format = kw.get("format", "sql")
         with execution(None) as ex:
             files = bam_to_density(ex, sample, output,
-                                    nreads=nreads, merge=merge_strands,
-                                    read_extension=read_extension,
-                                    sql=(format == "sql"), args=b2wargs)
-        if isinstance(files, list):  # sql format, cf the mess with bam_to_density
+                                   nreads=nreads, merge=merge_strands,
+                                   read_extension=read_extension,
+                                   sql=(format == "sql"), args=b2wargs)
+        if format == "sql":
             if merge_strands >= 0:
                 suffixes = ["_merged"]
             else:
                 suffixes = ["_fwd", "_rev"]
             for n, x in enumerate(files):
                 tsql = track(x, format='sql', fields=['start', 'end', 'score'],
-                              chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'})
+                             chrmeta=bamfile.chrmeta,
+                             info={'datatype': 'quantitative'})
                 tsql.save()
                 self.new_file(x, 'density'+suffixes[n])
         elif format == "bedGraph":
@@ -101,6 +102,7 @@ class Bam2DensityPlugin(OperationPlugin):
             informat = "bedGraph" if merge_strands >= 0 else "bed"
             outname = output+suffix+'.'+format
             convert((files,informat), (outname,format),
-                    chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'}, mode="overwrite")
+                    chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'}, 
+                    mode="overwrite")
             self.new_file(outname, 'density'+suffix)
         return self.display_time()
