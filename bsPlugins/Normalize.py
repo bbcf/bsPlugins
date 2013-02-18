@@ -15,7 +15,7 @@ __requires__ = ["numpy"]
 class NormalizeForm(BaseForm):
     child = twd.HidingTableLayout()
 
-    input_type = twd.HidingRadioButtonList(label_text='Input type',
+    input_type = twd.HidingRadioButtonList(label='Input type',
         options=('Table', 'Signal'),
         mapping={'Table':  ['table'],
                  'Signal': ['SigMulti','feature_type'],},
@@ -34,7 +34,7 @@ class NormalizeForm(BaseForm):
             help_text='Select signal file (position and score, e.g. bedgraph)',
             validator=twf.FileValidator(required=True))
 
-    method = twf.RadioButton(label_text='Method',
+    method = twf.RadioButton(label='Method',
         options=('total','deseq','quantile'),
         help_text='Select input type (Formatted table, or signal tracks)')
 

@@ -18,7 +18,7 @@ __requires__ = ["ryp2", "numpy"]
 class DESeqForm(BaseForm):
     child = twd.HidingTableLayout()
 
-    input_type = twd.HidingRadioButtonList(label_text='Input type',
+    input_type = twd.HidingRadioButtonList(label='Input type',
         options=('Table', 'Signal'),
         mapping={'Table':  ['table'],
                  'Signal': ['SigMulti','feature_type','assembly'],},

@@ -14,7 +14,7 @@ prom_down_def = 100
 class MaplotForm(BaseForm):
     child = twd.HidingTableLayout()
 
-    input_type = twd.HidingRadioButtonList(label_text='Input type',
+    input_type = twd.HidingRadioButtonList(label='Input type',
         options=('Table', 'Signal'),
         mapping={'Table':  ['table'],
                  'Signal': ['SigMulti','feature_type','assembly'],},

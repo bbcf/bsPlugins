@@ -15,7 +15,7 @@ class MotifForm(DynForm):
     motif_list = g.motifs_available()
     assembly_list = g.assemblies_available()
 
-    input_type = twd.HidingRadioButtonList(label_text='Sequence source ', 
+    input_type = twd.HidingRadioButtonList(label='Sequence source ', 
                                            options=input_types, mapping=input_map,
                                            help_text='')
     _ = twf.Spacer()

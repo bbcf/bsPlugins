@@ -21,7 +21,7 @@ class FileConvertForm(BaseForm):
     dtype = twf.SingleSelectField(label='Output datatype: ', prompt_text=None,
         options=['quantitative', 'qualitative'],
         help_text='Choose sql data type attribute')
-    assembly = twf.SingleSelectField(label_text='Assembly: ',
+    assembly = twf.SingleSelectField(label='Assembly: ',
         options=genrep.GenRep().assemblies_available(),
         help_text='Reference genome')
     submit = twf.SubmitButton(id="submit", value="Convert")

@@ -15,7 +15,7 @@ class QuantifyTableForm(BaseForm):
                                 help_text='Select signal file (e.g. bedgraph)',
                                 validator=twf.FileValidator(required=True))
 
-    score_op = twf.SingleSelectField(label_text='Score operation: ',
+    score_op = twf.SingleSelectField(label='Score operation: ',
                                      options=funcs, prompt_text=None,
                                      help_text='Operation performed on scores within each feature')
     child = twd.HidingTableLayout()

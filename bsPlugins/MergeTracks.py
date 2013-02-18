@@ -6,16 +6,16 @@ from bbcflib import genrep
 
 
 class MergeTracksForm(BaseForm):
-    forward = twf.FileField(label_text='Forward: ',
+    forward = twf.FileField(label='Forward: ',
         help_text='Select forward density file',
         validator=twf.FileValidator(required=True))
-    reverse = twf.FileField(label_text='Reverse: ',
+    reverse = twf.FileField(label='Reverse: ',
         help_text='Select reverse density file',
         validator=twf.FileValidator(required=True))
-    assembly = twf.SingleSelectField(label_text='Assembly: ',
+    assembly = twf.SingleSelectField(label='Assembly: ',
         options=genrep.GenRep().assemblies_available(),
         help_text='Reference genome')
-    shift = twf.TextField(label_text='Shift: ',
+    shift = twf.TextField(label='Shift: ',
         validator=twc.IntValidator(required=True),
         value=0,
         help_text='Enter positive downstream shift ([fragment_size-read_length]/2), or a negative value to estimate shift by cross-correlation')

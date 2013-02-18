@@ -78,7 +78,7 @@ gr_operations = ["sum", "count", "count_distinct", "min", "max",
 
 class BedToolsForm(BaseForm):
     child = twd.HidingTableLayout()
-    tool = twd.HidingSingleSelectField(label_text='Tool: ',
+    tool = twd.HidingSingleSelectField(label='Tool: ',
         prompt_text=None,
         options=list(enumerate(all_tools)),
         mapping=tools_map,
@@ -99,9 +99,9 @@ class BedToolsForm(BaseForm):
         validator=twc.IntValidator(min=1, max=100, required=True),
         value=1)
     labels = twf.TextField(label='labels: ')
-    operation = twf.SingleSelectField(label_text='operation: ',
+    operation = twf.SingleSelectField(label='operation: ',
         options=gr_operations, prompt_text=None)
-    useropts = twf.TextField(label_text='Options: ',
+    useropts = twf.TextField(label='Options: ',
         help_text='Additional command-line options')
     submit = twf.SubmitButton(id="submit", value="Run")
 
