@@ -104,23 +104,21 @@ class OperationPlugin(object):
         return fpath
 
 
+
 def test_form(clz, port=8000):
     """
     :param clz: Form class to test.
     Example ::
 
-        import bsPlugins
-        from bsPlugins.Smoothing import SmoothingForm
-        bsPlugins.base.test_form(SmoothingForm, port=8080)
+    >>> import bsPlugins
+    >>> from bsPlugins.Smoothing import SmoothingForm
+    >>> bsPlugins.base.test_form(SmoothingForm, port=8080)
     """
-    try:
-        import tw2.forms as twf
-        import tw2.devtools as twdev
-    except ImportError:
-        from bsPlugins.tw0 import twf, twdev
+    import tw2.forms
+    import tw2.devtools
 
-    class Index(twf.FormPage):
+    class Index(tw2.forms.FormPage):
         title = 'Test bs plugin form'
         child = clz
 
-    twdev.dev_server(port=port)
+    tw2.devtools.dev_server(port=port)

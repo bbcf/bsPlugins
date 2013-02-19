@@ -10,8 +10,12 @@ from base import OperationPlugin
 try:
     from bs.operations.base import BaseForm, Multi, DynForm
 except ImportError:
-    class BaseForm():
-        pass
+    try:
+        class BaseForm(twf.TableForm):
+            pass
+    except AttributeError:
+        class BaseForm():
+            pass
     class DynForm():
         pass
     class Multi():
