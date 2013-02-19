@@ -115,8 +115,9 @@ class NormalizePlugin(OperationPlugin):
         result = []
         result.append(title.split())
         for i in range(len(norm[0])):
-            result.append([id[0], str(norm[0][i]), str(norm[1][i])])
+            result.append([id[i], str(norm[0][i]), str(norm[1][i])])
         #output = self.temporary_path(fname='DE')
+        print "result=", result
         out = open("output.tab", "w")
         out.write(str(result))
         #self.new_file(output, 'normalized')
