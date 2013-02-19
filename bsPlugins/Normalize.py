@@ -2,8 +2,8 @@ from bsPlugins import *
 from bbcflib.btrack import track
 from bbcflib import genrep
 import os
-from bbcflib.bFlatMajor.stream.scores import normalize
-
+from bbcflib.bFlatMajor import common
+from numpy import asarray, transpose
 
 ftypes = [(0, 'genes bodies'), (1, 'gene promoters'), (2, 'exons'), (3, 'custom upload')]
 prom_up_def = 1000
@@ -34,9 +34,9 @@ class NormalizeForm(BaseForm):
             help_text='Select signal file (position and score, e.g. bedgraph)',
             validator=twf.FileValidator(required=True))
 
-    method = twf.RadioButton(label='Method',
-        options=('total','deseq','quantile'),
-        help_text='Select input type (Formatted table, or signal tracks)')
+#    method = twf.RadioButton(label='Method',
+#        options=('total','deseq','quantile'),
+#        help_text='Select input type (Formatted table, or signal tracks)')
 
     features = twf.FileField(label='Custom feature set: ',
         help_text='Select a feature file (e.g. bed)',
@@ -82,7 +82,7 @@ class NormalizePlugin(OperationPlugin):
         'title': 'Normalization',
         'description': description,
         'path': ['Signal', 'DESeq'],
-        'output': DESeqForm,
+        'output': NormalizeForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
@@ -94,21 +94,31 @@ class NormalizePlugin(OperationPlugin):
         chrmeta = assembly.chrmeta or "guess"
 
         if kw.get('input_type') == 'Table':
-            table = kw.get('table')
+            filename = kw.get('table')
             assert os.path.exists(str(filename)), "File not found: '%s'" % filename
-        else:
-            from QuantifyTable import QuantifyTablePlugin
-            kw['score_op'] = 'sum'
-            table = QuantifyTablePlugin().quantify(**kw)
-            signals = kw.get('signals',[])
-        t = track(table)
-        _f = [f for f in t.fields if f.startswith("score")]
-        norm = normalize(t.read(fields=["name"]+_f))
+            file = open(filename, "r")
+            title = file.readline()
+            matrix_table = []
+            id = []
+            for line in file:
+                newline = line.split()
+                id.append(newline[0])
+                matrix_table.append(map(int, newline[1:len(title)]))
+#        else:
+#            from QuantifyTable import QuantifyTablePlugin
+#            kw['score_op'] = 'sum'
+#            table = QuantifyTablePlugin().quantify(**kw)
+#            signals = kw.get('signals',[])
 
-        output = self.temporary_path(fname='DE')
-        out = track(output)
-        out.write(norm)
-
-
-        self.new_file(output, 'normalized')
+        matrix_table = asarray(matrix_table).transpose()
+        norm = common.normalize(matrix_table, 'total')
+        result = []
+        result.append(title.split())
+        for i in range(len(norm[0])):
+            result.append([id[i], str(norm[0][i]), str(norm[1][i])])
+        #output = self.temporary_path(fname='DE')
+        print "result=", result
+        out = open("output.tab", "w")
+        out.write(str(result))
+        #self.new_file(output, 'normalized')
         return 1
