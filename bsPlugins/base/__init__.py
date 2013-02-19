@@ -104,7 +104,6 @@ class OperationPlugin(object):
         return fpath
 
 
-
 def test_form(clz, port=8000):
     """
     :param clz: Form class to test.

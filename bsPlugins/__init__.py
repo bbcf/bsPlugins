@@ -16,9 +16,14 @@ except ImportError:
     except AttributeError:
         class BaseForm():
             pass
+    try:
+        class Multi(twd.GrowingGridLayout):
+            pass
+    except AttributeError:
+        class Multi():
+            pass
+
     class DynForm():
-        pass
-    class Multi():
         pass
 
 import os
