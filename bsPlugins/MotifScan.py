@@ -11,28 +11,28 @@ g = genrep.GenRep()
 input_types = [(0, 'Fasta upload'), (1, 'Select regions from genome')]
 input_map = {0: ['fastafile'], 1: ['assembly', 'regions']}
 
-class MotifForm(DynForm):
+class MotifScanForm(BaseForm):
+
     motif_list = g.motifs_available()
     assembly_list = g.assemblies_available()
 
-    input_type = twd.HidingRadioButtonList(label='Sequence source ', 
-                                           options=input_types, mapping=input_map,
-                                           help_text='')
-    _ = twf.Spacer()
+    child = twd.HidingTableLayout()
+    input_type = twd.HidingRadioButtonList(label='Sequence source: ', 
+                                           options=input_types,
+                                           mapping=input_map)
+    s1 = twf.Spacer()
     fastafile = twf.FileField(label='Fasta file: ', help_text='Sequences to scan')
     assembly = twf.SingleSelectField(label='Assembly: ', options=assembly_list,
                                      help_text='Assembly to fetch sequences from')
     regions = twf.FileField(label='Regions: ', help_text='Genomic regions to scan (e.g. bed)')
-    _ = twf.Spacer()
+    s2 = twf.Spacer()
     background = twf.FileField(label='Background: ',
                                help_text='File of background frequencies (default: genome-wide frequencies)')
-    motifs = twf.MultipleSelectField(label='Select motifs to be scanned', options=motif_list,
-                                     help_text='')
+    motifs = twf.MultipleSelectField(label='Motifs: ', options=motif_list,
+                                     help_text='Select motifs to be scanned')
     customMotif = twf.FileField(label='Custom motif: ',
                                 help_text='An optional custom/additional motif to scan (.mat)')
-    threshold = twf.TextField(label='Threshold: ',
-                              value='0.0',
-                              validator=twc.RegexValidator(required=True, regex=re.compile('^\d+(\.\d+)?$')))
+    threshold = twf.TextField(label='Threshold: ', value='0.0')
     submit = twf.SubmitButton(id="submit", value='Scan sequences')
 
 
@@ -40,12 +40,12 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'sequenceSource', 'type': 'text', 'required': True},
-                 {'id': 'fastafile', 'type': 'txt'},
+in_parameters = [{'id': 'input_type', 'type': 'radio'},
+                 {'id': 'fastafile', 'type': 'userfile'},
                  {'id': 'background', 'type': 'txt'},
                  {'id': 'assembly', 'type': 'assembly'},
                  {'id': 'regions', 'type': 'userfile'},
-                 {'id': 'motifs', 'type': 'text'},
+                 {'id': 'motifs', 'type': 'list'},
                  {'id': 'customMotif', 'type': 'txt'},
                  {'id': 'threshold', 'type': 'float', 'required': True}]
 out_parameters = [{'id': 'motif_track', 'type': 'track'}]
@@ -55,7 +55,7 @@ class MotifScanPlugin(OperationPlugin):
         'title': 'Motif scanner',
         'description': 'Scan motifs PWM on a set of a sequences',
         'path': ['Signal', 'Motif scanner'],
-        'output': MotifForm,
+        'output': MotifScanForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,

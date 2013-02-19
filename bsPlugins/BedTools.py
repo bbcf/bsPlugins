@@ -13,7 +13,7 @@ all_tools = ["annotateBed", "bamToBed", "bamToFastq", "bed12ToBed6",
              "unionBedGraphs", "windowBed", "windowMaker"]
 
 tools_map = {
-    0: ["bedfile", "AllFilesMulti.files"],
+    0: ["bedfile", "Mfiles"],
     1: ["bamfile"],
     2: ["bamfile"],
     3: ["bedfile"],
@@ -35,8 +35,8 @@ tools_map = {
     19: ["afile", "bfile"],
     20: ["bedfile", "fastafile"],
     21: ["bedfile"],
-    22: ["bedfile", "AllFilesMulti.bamfiles"],
-    23: ["AllFilesMulti.bedfiles"],
+    22: ["bedfile", "Mbamfiles"],
+    23: ["Mbedfiles"],
     24: ["bedfile", "fastafile"],
     25: ["bfile", "afile", "bamfile"],
     26: ["afile", "bfile"],
@@ -45,8 +45,8 @@ tools_map = {
     29: ["bedfile", "genomefile"],
     30: ["bedfile"],
     31: ["afile", "bfile"],
-    32: ["AllFilesMulti.bedfiles", "labels", "bamfile"],
-    33: ["AllFilesMulti.files"],
+    32: ["Mbedfiles", "labels", "bamfile"],
+    33: ["Mfiles"],
     34: ["bfile", "afile", "bamfile"],
     35: ["bedfile", "genomefile"]}
 
@@ -55,7 +55,7 @@ all_params = dict((y, '') for x in tools_map.values() for y in x).keys()
 file_params = {"simple": [x for x in all_params if x[-4:] == "file"],
                "multiple": [x for x in all_params if x[-5:] == "files"]}
 
-all_file_params = [{'id': x[14:], 'type': 'file', 'multiple': True}
+all_file_params = [{'id': x[1:], 'type': 'file', 'multiple': True}
                    for x in all_params if x[-5:] == 'files']+\
                    [{'id': x, 'type': 'file', 'multiple': False}
                     for x in all_params if x[-4:] == 'file']
@@ -67,8 +67,7 @@ other_params = [
     {'id': 'opcol', 'type': 'int', 'required': True},
     {'id': 'labels', 'type': 'text'},
     {'id': 'operation', 'type': 'list'},
-    {'id': 'useropts', 'type': 'text'},
-]
+    {'id': 'useropts', 'type': 'text'}]
 
 
 gr_operations = ["sum", "count", "count_distinct", "min", "max",
@@ -86,9 +85,13 @@ class BedToolsForm(BaseForm):
         help_text='Select BedTool')
     for it in file_params['simple']:
         vars()[it] = twf.FileField(label=it + ': ', validator=twf.FileValidator())
-    class AllMultiFiles(Multi):
-        for it in file_params['multiple']:
-            vars()[it[14:]] = twf.FileField(label=it[14:]+': ', validator=twf.FileValidator())
+    class Mfiles(Multi):
+        files = twf.FileField(label='files: ', validator=twf.FileValidator())
+    class Mbamfiles(Multi):
+        bamfiles = twf.FileField(label='bamfiles: ', validator=twf.FileValidator())
+    class Mbedfiles(Multi):
+        bedfiles = twf.FileField(label='bedfiles: ', validator=twf.FileValidator())
+
     column = twf.TextField(label='column: ',
         validator=twc.IntValidator(min=1, max=100, required=True),
         value=1)

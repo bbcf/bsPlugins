@@ -13,32 +13,32 @@ meta = {'version': "1.0.0",
         'contact': "webmaster-bbcf@epfl.ch"}
 
 in_parameters = [{'id': 'track', 'type': 'track', 'required': True},
-        {'id': 'assembly', 'type': 'assembly'},
-        {'id': 'promoter', 'type': 'int', 'required': True},
-        {'id': 'intergenic', 'type': 'int', 'required': True},
-        {'id': 'UTR', 'type': 'int', 'required': True}]
+                 {'id': 'assembly', 'type': 'assembly'},
+                 {'id': 'promoter', 'type': 'int', 'required': True},
+                 {'id': 'intergenic', 'type': 'int', 'required': True},
+                 {'id': 'UTR', 'type': 'int', 'required': True}]
 out_parameters = [{'id': 'table', 'type': 'file'}]
 
 
 class AnnotateForm(BaseForm):
     track = twf.FileField(label='Features: ',
-        help_text='Select features file (e.g. bed)',
-        validator=twf.FileValidator(required=True))
+                          help_text='Select features file (e.g. bed)',
+                          validator=twf.FileValidator(required=True))
     assembly = twf.SingleSelectField(label='Assembly: ',
-        options=genrep.GenRep().assemblies_available(),
-        help_text='Reference genome')
+                                     options=genrep.GenRep().assemblies_available(),
+                                     help_text='Reference genome')
     promoter = twf.TextField(label='Promoter size: ',
-        validator=twc.IntValidator(required=True),
-        value=prom_def,
-        help_text='Upstream distance from TSS in bp to be included in the promoter')
+                             validator=twc.IntValidator(required=True),
+                             value=prom_def,
+                             help_text='Upstream distance from TSS in bp to be included in the promoter')
     intergenic = twf.TextField(label='Intergenic distance: ',
-        validator=twc.IntValidator(required=True),
-        value=inter_def,
-        help_text='Maximum distance to be associated with a gene')
+                               validator=twc.IntValidator(required=True),
+                               value=inter_def,
+                               help_text='Maximum distance to be associated with a gene')
     UTR = twf.TextField(label="3' UTR ratio: ",
-        validator=twc.IntValidator(required=True),
-        value=utr_def,
-        help_text="3' UTR to promoter ratio in %")
+                        validator=twc.IntValidator(required=True),
+                        value=utr_def,
+                        help_text="3' UTR to promoter ratio in %")
     submit = twf.SubmitButton(id="submit", value="Annotate")
 
 

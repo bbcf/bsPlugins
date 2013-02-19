@@ -20,10 +20,10 @@ class QuantifyTableForm(BaseForm):
                                      help_text='Operation performed on scores within each feature')
     child = twd.HidingTableLayout()
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
-        options=ftypes, prompt_text=None,
-        mapping={ftypes[-1][0]: ['features'],
-                 1: ['upstream', 'downstream']},
-        help_text='Choose a feature set or upload your own',
+                                               options=ftypes, prompt_text=None,
+                                               mapping={ftypes[-1][0]: ['features'],
+                                                        1: ['upstream', 'downstream']},
+                                               help_text='Choose a feature set or upload your own',
         validator=twc.Validator(required=True))
     features = twf.FileField(label='Custom feature set: ',
         help_text='Select a feature file (e.g. bed)',

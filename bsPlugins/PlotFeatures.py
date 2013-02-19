@@ -81,31 +81,31 @@ class PlotFeaturesPlugin(OperationPlugin):
         if data is None:
             raise ValueError("No data")
         kw['mode'] = int(kw.get('mode', 0))
-        if kw['mode'] == 0:
+        if kw['mode'] == 0: #heatmap
             new = True
-            for n in range(data.shape[-1] - 1):
+            for n in range(data.shape[-1]-1):
                 heatmap(data[:, :, n], output=pdf, new=new, last=False,
                         rows=labels, orderRows=True, orderCols=False)
                 new = False
             heatmap(data[:, :, -1], output=pdf, new=new, last=True,
                     rows=labels, orderRows=True, orderCols=False)
-        elif kw['mode'] == 1:
+        elif kw['mode'] == 1: #average lineplot
             X = range(data.shape[1])
             Y = data.mean(axis=0)
             lineplot(X, [Y[:, n] for n in range(data.shape[-1])],
                      output=pdf, new=True, last=True)
-        elif kw['mode'] == 2:
+        elif kw['mode'] == 2: #mosaic
             X = range(data.shape[1])
             new = True
             mfrow = [4, 3]
-            nplot = min(data.shape[0], max_pages * mfrow[0] * mfrow[1])
-            for reg in range(nplot - 1):
+            nplot = min(data.shape[0], max_pages*mfrow[0]*mfrow[1])
+            for reg in range(nplot-1):
                 lineplot(X, [data[reg, :, n] for n in range(data.shape[-1])],
-                         output=pdf, new=new, last=False, mfrow=mfrow)
+                         output=pdf, new=new, last=False, mfrow=mfrow, main=labels[reg])
                 new = False
                 mfrow = []
-            lineplot(X, [data[nplot - 1, :, n] for n in range(data.shape[-1])],
-                     output=pdf, new=new, last=True)
+            lineplot(X, [data[nplot-1, :, n] for n in range(data.shape[-1])],
+                     output=pdf, new=new, last=True, main=labels[-1])
         else:
             raise ValueError("Mode not implemented: %s" % kw['mode'])
         self.new_file(pdf, 'plot_features')
