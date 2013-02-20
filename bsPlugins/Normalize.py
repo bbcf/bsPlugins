@@ -121,4 +121,4 @@ class NormalizePlugin(OperationPlugin):
         out = open("output.tab", "w")
         out.write(str(result))
         #self.new_file(output, 'normalized')
-        return 1
+        return self.display_time()

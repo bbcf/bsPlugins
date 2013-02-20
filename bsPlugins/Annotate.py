@@ -73,4 +73,5 @@ class AnnotatePlugin(OperationPlugin):
             mode = 'append'
         tout.close()
         self.new_file(output, 'table')
-        return 1
+        return self.display_time()
+

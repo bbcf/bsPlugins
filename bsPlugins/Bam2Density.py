@@ -23,23 +23,23 @@ __requires__ = ["pysam"]
 
 class Bam2DensityForm(BaseForm):
     sample = twf.FileField(label='Test BAM: ',
-        help_text='Select main bam file',
-        validator=twf.FileValidator(required=True))
+                           help_text='Select main bam file',
+                           validator=twf.FileValidator(required=True))
     control = twf.FileField(label='Control BAM: ',
-        help_text='Select control bam file to compute enrichment')
+                            help_text='Select control bam file to compute enrichment')
     format = twf.SingleSelectField(label='Output format: ',
-        options=["bedGraph", "bigWig", "sql"],
-        validator=twc.Validator(required=True),
-        help_text='Format of the output file')
+                                   options=["bedGraph", "bigWig", "sql"],
+                                   validator=twc.Validator(required=True),
+                                   help_text='Format of the output file')
     normalization = twf.TextField(label='Normalization: ',
-        validator=twc.IntValidator(required=False),
-        help_text='Normalization factor, default is total number of reads')
+                                  validator=twc.IntValidator(required=False),
+                                  help_text='Normalization factor, default is total number of reads')
     merge_strands = twf.TextField(label='Shift and merge strands',
-        validator=twc.IntValidator(required=False),
-        help_text='Enter shift value (in bp) if you want to merge strand-specific densities')
+                                  validator=twc.IntValidator(required=False),
+                                  help_text='Enter shift value (in bp) if you want to merge strand-specific densities')
     read_extension = twf.TextField(label='Read extension: ',
-        validator=twc.IntValidator(required=False),
-        help_text='Enter read extension (in bp) to be applied when constructing densities')
+                                   validator=twc.IntValidator(required=False),
+                                   help_text='Enter read extension (in bp) to be applied when constructing densities')
     submit = twf.SubmitButton(id="submit", value='bam2density')
 
 

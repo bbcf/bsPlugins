@@ -2,8 +2,11 @@ from bsPlugins import *
 from bbcflib.bFlatMajor.numeric import feature_matrix
 from bbcflib.bFlatMajor.figure import heatmap, lineplot
 from bbcflib.btrack import track
-from numpy import vstack, concatenate
+from numpy import vstack, concatenate, array
 
+nbin = 50
+upstr = (.1,5)
+downstr = (.1,5)
 prom_up_def = 1000
 prom_down_def = 100
 plot_types = [(0, 'heatmap'), (1, 'average lineplot'), (2, 'mosaic plot')]
@@ -63,12 +66,15 @@ class PlotFeaturesPlugin(OperationPlugin):
         features = track(kw.get('features'), chrmeta=chrmeta)
         signals = kw.get('signals', [])
         if not isinstance(signals, list): signals = [signals]
+        snames = [os.path.splitext(os.path.basename(sig))[0] for sig in signals]
+        sname = "c('"+"','".join(snames)+"')"
         signals = [track(sig) for sig in signals]
         labels = None
         data = None
         for chrom in features.chrmeta:
             _l, _d = feature_matrix([s.read(chrom) for s in signals],
-                                    features.read(chrom), segment=True)
+                                    features.read(chrom), segment=True, 
+                                    nbin=nbin, upstream=upstr, downstream=downstr)
             if _d.size == 0:
                 continue
             if data is None:
@@ -90,12 +96,12 @@ class PlotFeaturesPlugin(OperationPlugin):
             heatmap(data[:, :, -1], output=pdf, new=new, last=True,
                     rows=labels, orderRows=True, orderCols=False)
         elif kw['mode'] == 1: #average lineplot
-            X = range(data.shape[1])
+            X = array(range(-upstr[1]+1,nbin+downstr[1]))/(1.0*nbin)  #range(data.shape[1])
             Y = data.mean(axis=0)
             lineplot(X, [Y[:, n] for n in range(data.shape[-1])],
-                     output=pdf, new=True, last=True)
+                     output=pdf, new=True, last=True, legend=snames)
         elif kw['mode'] == 2: #mosaic
-            X = range(data.shape[1])
+            X = array(range(-upstr[1]+1,nbin+downstr[1]))/(1.0*nbin)  #range(data.shape[1])
             new = True
             mfrow = [4, 3]
             nplot = min(data.shape[0], max_pages*mfrow[0]*mfrow[1])
@@ -105,8 +111,9 @@ class PlotFeaturesPlugin(OperationPlugin):
                 new = False
                 mfrow = []
             lineplot(X, [data[nplot-1, :, n] for n in range(data.shape[-1])],
-                     output=pdf, new=new, last=True, main=labels[-1])
+                     output=pdf, new=new, last=True, main=labels[-1], 
+                     legend=snames)
         else:
             raise ValueError("Mode not implemented: %s" % kw['mode'])
         self.new_file(pdf, 'plot_features')
-        return 1
+        return self.display_time()

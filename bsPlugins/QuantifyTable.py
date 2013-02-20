@@ -101,7 +101,7 @@ class QuantifyTablePlugin(OperationPlugin):
             chrmeta = _t.chrmeta
             features = _t.read
         else:
-            return 2
+            raise ValueError("Take feature_type in %s." %ftypes)
         output = self.temporary_path(fname='features_quantification.'+format)
         if len(signals) > 1:
             _f = ["score" + str(i) for i in range(len(signals))]
@@ -114,7 +114,8 @@ class QuantifyTablePlugin(OperationPlugin):
             tout.write(score_by_feature(sread, features(chrom), fn=func),
                        chrom=chrom, clip=True)
         tout.close()
-        return output
+        return self.display_time()
+
 
     def __call__(self, **kw):
         output = self.quantify(**kw)

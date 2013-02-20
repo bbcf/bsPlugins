@@ -78,11 +78,11 @@ gr_operations = ["sum", "count", "count_distinct", "min", "max",
 class BedToolsForm(BaseForm):
     child = twd.HidingTableLayout()
     tool = twd.HidingSingleSelectField(label='Tool: ',
-        prompt_text=None,
-        options=list(enumerate(all_tools)),
-        mapping=tools_map,
-        value=0,
-        help_text='Select BedTool')
+                                       prompt_text=None,
+                                       options=list(enumerate(all_tools)),
+                                       mapping=tools_map,
+                                       value=0,
+                                       help_text='Select BedTool')
     for it in file_params['simple']:
         vars()[it] = twf.FileField(label=it + ': ', validator=twf.FileValidator())
     class Mfiles(Multi):
@@ -93,19 +93,19 @@ class BedToolsForm(BaseForm):
         bedfiles = twf.FileField(label='bedfiles: ', validator=twf.FileValidator())
 
     column = twf.TextField(label='column: ',
-        validator=twc.IntValidator(min=1, max=100, required=True),
-        value=1)
+                           validator=twc.IntValidator(min=1, max=100, required=True),
+                           value=1)
     groupcol = twf.TextField(label='groupcol: ',
-        validator=twc.IntValidator(min=1, max=100, required=True),
-        value=1)
+                             validator=twc.IntValidator(min=1, max=100, required=True),
+                             value=1)
     opcol = twf.TextField(label='opcol: ',
-        validator=twc.IntValidator(min=1, max=100, required=True),
-        value=1)
+                          validator=twc.IntValidator(min=1, max=100, required=True),
+                          value=1)
     labels = twf.TextField(label='labels: ')
     operation = twf.SingleSelectField(label='operation: ',
-        options=gr_operations, prompt_text=None)
+                                      options=gr_operations, prompt_text=None)
     useropts = twf.TextField(label='Options: ',
-        help_text='Additional command-line options')
+                             help_text='Additional command-line options')
     submit = twf.SubmitButton(id="submit", value="Run")
 
 meta = {'version': "1.0.0",
@@ -145,4 +145,5 @@ class BedToolsPlugin(OperationPlugin):
         with execution(None) as ex:
             output = eval(all_tools[kw.pop('tool')])(ex, **kw)
         self.new_file(output, 'bedtools_result')
-        return 1
+        return self.display_time()
+

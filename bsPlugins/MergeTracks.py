@@ -7,18 +7,18 @@ from bbcflib import genrep
 
 class MergeTracksForm(BaseForm):
     forward = twf.FileField(label='Forward: ',
-        help_text='Select forward density file',
-        validator=twf.FileValidator(required=True))
+                            help_text='Select forward density file',
+                            validator=twf.FileValidator(required=True))
     reverse = twf.FileField(label='Reverse: ',
-        help_text='Select reverse density file',
-        validator=twf.FileValidator(required=True))
+                            help_text='Select reverse density file',
+                            validator=twf.FileValidator(required=True))
     assembly = twf.SingleSelectField(label='Assembly: ',
-        options=genrep.GenRep().assemblies_available(),
-        help_text='Reference genome')
+                                     options=genrep.GenRep().assemblies_available(),
+                                     help_text='Reference genome')
     shift = twf.TextField(label='Shift: ',
-        validator=twc.IntValidator(required=True),
-        value=0,
-        help_text='Enter positive downstream shift ([fragment_size-read_length]/2), or a negative value to estimate shift by cross-correlation')
+                          validator=twc.IntValidator(required=True),
+                          value=0,
+                          help_text='Enter positive downstream shift ([fragment_size-read_length]/2), or a negative value to estimate shift by cross-correlation')
     submit = twf.SubmitButton(id="submit", value='Merge tracks')
 
 
@@ -81,7 +81,7 @@ class MergeTracksPlugin(OperationPlugin):
                                    limits=(-xcor_lim, xcor_lim))
                 max_xcor_idx = xcor.argmax()
                 if xcor[max_xcor_idx] > 0.2:
-                    shiftval = (max_xcor_idx - xcor_lim - 1) / 2
+                    shiftval = (max_xcor_idx - xcor_lim - 1)/2
                     #print "Autocorrelation shift=%i, correlation is %f at index %d for chromosome %s." \
                     #       % (shiftval,xcor[max_xcor_idx],max_xcor_idx,chrom)
                     break
@@ -102,4 +102,5 @@ class MergeTracksPlugin(OperationPlugin):
         trev.close()
         tfwd.close()
         self.new_file(output, 'density_merged')
-        return 1
+        return self.display_time()
+

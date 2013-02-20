@@ -17,15 +17,6 @@ cormax = 500
 class PairsPlotForm(BaseForm):
 
     child = twd.HidingTableLayout()
-
-    input_type = twd.HidingRadioButtonList(label='Input type',
-                                           options=('Table', 'Signal'),
-                                           mapping={'Table':  ['table'],
-                                                    'Signal': ['SigMulti','feature_type','assembly'],},
-                                           help_text='Select input type (Formatted table, or signal tracks)')
-    table = twf.FileField(label='Table: ',
-                          help_text='Select scores table',
-                          validator=twf.FileValidator(required=True))
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
                                                options=ftypes, prompt_text=None,
                                                mapping={ftypes[-1][0]: ['features'],
@@ -64,7 +55,6 @@ meta = {'version': "1.0.0",
 
 in_parameters = [{'id': 'input_type', 'type': 'radio'},
                  {'id': 'signals', 'type': 'track', 'required': True, 'multiple': True},
-                 {'id': 'table', 'type': 'txt', 'required': True, 'multiple': True},
                  {'id': 'feature_type', 'type': 'list'},
                  {'id': 'features', 'type': 'userfile'},
                  {'id': 'upstream', 'type': 'int', 'required': True},
@@ -89,23 +79,6 @@ class PairsPlotPlugin(OperationPlugin):
     def __call__(self, **kw):
         assembly = genrep.Assembly(kw.get('assembly'))
         chrmeta = assembly.chrmeta or "guess"
-
-        if kw.get('input_type') == 'Table':
-            filename = kw.get('table')
-            assert os.path.exists(str(filename)), "File not found: '%s'" % filename
-            colnames = numpy.asarray(open(filename).readline().split()[1:])
-            robjects.r.assign('col_names', numpy2ri.numpy2ri(colnames))
-            robjects.r("""
-            Mdata <- read.table('%s',sep='\t',header=T,row.names=1)
-            conds <- unlist(strsplit(col_names,".",fixed=T))
-            conds <- colnames(Mdata)
-            """ % filename)
-        else:
-            from QuantifyTable import QuantifyTablePlugin
-            kw['score_op'] = 'sum'
-            table = QuantifyTablePlugin().quantify(**kw)
-
-
         feature_type = int(kw.get('feature_type') or 0)
         signals = kw.get('signals', [])
         if not isinstance(signals, list): signals = [signals]
@@ -149,4 +122,5 @@ class PairsPlotPlugin(OperationPlugin):
             raise ValueError("No data")
         pairs(narr, xarr, output=pdf)
         self.new_file(pdf, 'plot_pairs')
-        return 1
+        return self.display_time()
+

@@ -109,6 +109,7 @@ class MotifScanPlugin(OperationPlugin):
                                     output = track_output,
                                     description=None, via='local' )
         self.new_file(track_output, 'motif_track')
-        return 1
+        return self.display_time()
+
 
 
