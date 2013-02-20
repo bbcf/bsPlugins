@@ -2,8 +2,9 @@ try:
     from tw2 import core as twc
     from tw2 import forms as twf
     from tw2 import dynforms as twd
+    from tw2 import bs as twb
 except ImportError:
-    from tw0 import twf, twc, twd
+    from tw0 import twf, twc, twd, twb
 
 
 from base import OperationPlugin

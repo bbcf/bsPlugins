@@ -12,6 +12,7 @@ prom_down_def = 100
 plot_types = [(0, 'heatmap'), (1, 'average lineplot'), (2, 'mosaic plot')]
 max_pages = 200
 
+
 class PlotFeaturesForm(BaseForm):
 
     class SigMulti(Multi):

@@ -6,7 +6,7 @@ import rpy2.robjects.numpy2ri as numpy2ri
 import numpy
 import os,shutil
 import itertools
-
+import tw2.bs as twb
 
 ftypes = [(0, 'genes bodies'), (1, 'gene promoters'), (2, 'exons'), (3, 'custom upload')]
 prom_up_def = 1000
@@ -46,6 +46,10 @@ class DESeqForm(BaseForm):
         help_text='Choose a feature set or upload your own',
         validator=twc.Validator(required=True))
 
+    class SigMulti(twb.BsMultiple):
+        signals = twb.BsFileField(label='Signal: ',
+            help_text='Select signal file (position and score, e.g. bedgraph)',
+            validator=twb.BsFileFieldValidator(required=True))
     features = twf.FileField(label='Custom feature set: ',
         help_text='Select a feature file (e.g. bed)',
         validator=twf.FileValidator())
