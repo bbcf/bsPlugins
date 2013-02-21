@@ -14,6 +14,16 @@ attribute_gene = "external_gene_id"
 filter_go = "with_go"
 
 
+class TopGoForm(BaseForm):
+    gene_list = twf.FileField(label='Genes: ',
+                              help_text='Provide a list of ensmbl IDs',
+                              validator=twf.FileValidator(required=True))
+    assembly = twf.SingleSelectField(label='Assembly: ',
+                                     options=mart_map().keys(),
+                                     help_text='Reference genome')
+    submit = twf.SubmitButton(id="submit", value="TopGo analysis")
+
+
 meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
@@ -24,35 +34,25 @@ out_parameters = [{'id': 'TopGO_table', 'type': 'txt'},
                   {'id': 'TopGO_plots', 'type': 'pdf'}]
 
 
-class TopGoForm(BaseForm):
-   gene_list = twf.FileField(label='Genes: ',
-                             help_text='Provide a list of ensmbl IDs',
-                             validator=twf.FileValidator(required=True))
-    assembly = twf.SingleSelectField(label='Assembly: ',
-                                     options=mart_map().keys(),
-                                     help_text='Reference genome')
-    submit = twf.SubmitButton(id="submit", value="TopGo analysis")
-
-
 class TopGoPlugin(OperationPlugin):
 
     info = {
-        'title': 'TopGo',
-        'description': 'Makes a GO analysis on a list of Ensembl IDs',
-        'path': ['Features', 'TopGo'],
-        'output': TopGoForm,
-        'in': in_parameters,
-        'out': out_parameters,
-        'meta': meta,
-        }
+       'title': 'TopGo',
+       'description': 'Makes a GO analysis on a list of Ensembl IDs',
+       'path': ['Features', 'TopGo'],
+       'output': TopGoForm,
+       'in': in_parameters,
+       'out': out_parameters,
+       'meta': meta,
+       }
 
     def __call__(self, **kw):
-        assembly_id = kw.get('assembly') or None
-        filename = kw.get('gene_list')
-        assert os.path.exists(str(filename)), "File not found: '%s'" % filename
-        pdf = self.temporary_path(fname='TopGO_plots.pdf')
-        table = self.temporary_path(fname='TopGO_tables.txt')
-        robjects.r("""
+       assembly_id = kw.get('assembly') or None
+       filename = kw.get('gene_list')
+       assert os.path.exists(str(filename)), "File not found: '%s'" % filename
+       pdf = self.temporary_path(fname='TopGO_plots.pdf')
+       table = self.temporary_path(fname='TopGO_tables.txt')
+       robjects.r("""
 id_set = scan("%s",what=character())
 pdf("%s",paper="a4",height=8,width=11)
 output = "%s"
@@ -93,8 +93,8 @@ for (ontol in c("BP","CC","MF")) {
     append = TRUE
 }
 dev.off()
-        """ % (filename,pdf,table,biomart,ensembl_url,assembly_id,
-               attribute_go,attribute_gene,filter_go)
-        self.new_file(pdf, 'TopGO_plots')
-        self.new_file(table, 'TopGO_table')
-        return self.display_time()
+         """ % (filename,pdf,table,biomart,ensembl_url,assembly_id,
+                attribute_go,attribute_gene,filter_go))
+    self.new_file(pdf, 'TopGO_plots')
+    self.new_file(table, 'TopGO_table')
+    return self.display_time()
