@@ -67,7 +67,7 @@ class PlotFeaturesPlugin(OperationPlugin):
         signals = kw.get('signals', [])
         if not isinstance(signals, list): signals = [signals]
         snames = [os.path.splitext(os.path.basename(sig))[0] for sig in signals]
-        sname = "c('"+"','".join(snames)+"')"
+        snames = "c('"+"','".join(snames)+"')"
         signals = [track(sig) for sig in signals]
         labels = None
         data = None

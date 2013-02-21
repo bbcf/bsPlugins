@@ -5,8 +5,7 @@ from bbcflib.bFlatMajor.numeric import score_array, correlation
 from bbcflib.bFlatMajor.figure import pairs
 from bbcflib.btrack import track
 from bbcflib import genrep
-from numpy import vstack
-import array
+from numpy import vstack, array
 
 ftypes = [(0, 'genes bodies'), (1, 'gene promoters'), (2, 'exons'), (3, 'custom upload')]
 prom_up_def = 1000
@@ -77,20 +76,31 @@ class PairsPlotPlugin(OperationPlugin):
         }
 
     def __call__(self, **kw):
-        assembly = genrep.Assembly(kw.get('assembly'))
-        chrmeta = assembly.chrmeta or "guess"
         feature_type = int(kw.get('feature_type') or 0)
+        assembly_id = kw.get('assembly') or None
+        chrmeta = "guess"
+        if assembly_id:
+            assembly = genrep.Assembly(assembly_id)
+            chrmeta = assembly.chrmeta
+            genes = assembly.gene_track
+            exons = assembly.exon_track
+        elif not(feature_type == 2):
+            raise ValueError("Please specify an assembly")
         signals = kw.get('signals', [])
         if not isinstance(signals, list): signals = [signals]
+        snames = [os.path.splitext(os.path.basename(sig))[0] for sig in signals]
+        snames = "c('"+"','".join(snames)+"')"
         signals = [track(sig, chrmeta=chrmeta) for sig in signals]
-        if feature_type == 0:
+        if feature_type == 0: #bodies
             features = genes
-        elif feature_type == 1:
+        elif feature_type == 1: #promoters
             prom_pars = {'before_start': int(kw.get('upstream') or prom_up_def),
                          'after_start': int(kw.get('downstream') or prom_down_def),
                          'on_strand': True}
             features = lambda c: neighborhood(genes(c), **prom_pars)
-        elif feature_type == 2:
+        elif feature_type == 2: #exons
+            features = exons
+        elif feature_type == 3: #custom track
             _t = track(kw.get('features'), chrmeta=chrmeta)
             chrmeta = _t.chrmeta
             features = _t.read
@@ -98,7 +108,7 @@ class PairsPlotPlugin(OperationPlugin):
             raise ValueError("Feature type not known: %i" % feature_type)
         pdf = self.temporary_path(fname='plot_pairs.pdf')
         narr = None
-        if int(kw['mode']) == 0:
+        if int(kw['mode']) == 0: #correl
             xarr = array(range(-cormax, cormax + 1))
             srtdchrom = sorted(chrmeta.keys())
             features = [x[:3] for chrom in srtdchrom
@@ -106,7 +116,7 @@ class PairsPlotPlugin(OperationPlugin):
             _f = ['chr', 'start', 'end', 'score']
             narr = correlation([s.read(fields=_f) for s in signals],
                                features, (-cormax, cormax), True)
-        elif int(kw['mode']) == 1:
+        elif int(kw['mode']) == 1: #density
             xarr = None
             for chrom in chrmeta:
                 feat = features(chrom)
@@ -120,7 +130,7 @@ class PairsPlotPlugin(OperationPlugin):
             raise ValueError("Mode not implemented: %s" % kw['mode'])
         if narr is None:
             raise ValueError("No data")
-        pairs(narr, xarr, output=pdf)
+        pairs(narr, xarr, labels=snames, output=pdf)
         self.new_file(pdf, 'plot_pairs')
         return self.display_time()
 
