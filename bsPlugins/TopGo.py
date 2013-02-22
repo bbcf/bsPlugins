@@ -19,7 +19,7 @@ class TopGoForm(BaseForm):
                               help_text='Provide a list of ensmbl IDs',
                               validator=twf.FileValidator(required=True))
     assembly = twf.SingleSelectField(label='Assembly: ',
-                                     options=mart_map().keys(),
+                                     options=mart_map,
                                      help_text='Reference genome')
     submit = twf.SubmitButton(id="submit", value="TopGo analysis")
 
@@ -74,7 +74,7 @@ genome = data.frame(gene_name=genome[I,attr2],row.names=genome[I,"ensembl_gene_i
 allGenes = row.names(genome)
 genome[which(!nchar(genome[,1])),1] = allGenes[which(!nchar(genome[,1]))]
 tab = list()
-geneList = factor(as.integer(allGenes %in% id_set))
+geneList = factor(!is.na(match(allGenes,id_set)))
 names(geneList) = allGenes
 append = FALSE
 for (ontol in c("BP","CC","MF")) {

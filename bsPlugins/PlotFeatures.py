@@ -4,7 +4,7 @@ from bbcflib.bFlatMajor.figure import heatmap, lineplot
 from bbcflib.btrack import track
 from numpy import vstack, concatenate, array
 
-nbin = 50
+nbins = 50
 upstr = (.1,5)
 downstr = (.1,5)
 prom_up_def = 1000
@@ -74,7 +74,7 @@ class PlotFeaturesPlugin(OperationPlugin):
         for chrom in features.chrmeta:
             _l, _d = feature_matrix([s.read(chrom) for s in signals],
                                     features.read(chrom), segment=True, 
-                                    nbin=nbin, upstream=upstr, downstream=downstr)
+                                    nbins=nbins, upstream=upstr, downstream=downstr)
             if _d.size == 0:
                 continue
             if data is None:
@@ -87,21 +87,21 @@ class PlotFeaturesPlugin(OperationPlugin):
         if data is None:
             raise ValueError("No data")
         kw['mode'] = int(kw.get('mode', 0))
+        X = array(range(-upstr[1]+1,nbins+downstr[1]))/(1.0*nbins)
         if kw['mode'] == 0: #heatmap
             new = True
             for n in range(data.shape[-1]-1):
                 heatmap(data[:, :, n], output=pdf, new=new, last=False,
-                        rows=labels, orderRows=True, orderCols=False)
+                        rows=labels, columns=X,
+                        orderRows=True, orderCols=False)
                 new = False
             heatmap(data[:, :, -1], output=pdf, new=new, last=True,
                     rows=labels, orderRows=True, orderCols=False)
         elif kw['mode'] == 1: #average lineplot
-            X = array(range(-upstr[1]+1,nbin+downstr[1]))/(1.0*nbin)  #range(data.shape[1])
             Y = data.mean(axis=0)
             lineplot(X, [Y[:, n] for n in range(data.shape[-1])],
                      output=pdf, new=True, last=True, legend=snames)
         elif kw['mode'] == 2: #mosaic
-            X = array(range(-upstr[1]+1,nbin+downstr[1]))/(1.0*nbin)  #range(data.shape[1])
             new = True
             mfrow = [4, 3]
             nplot = min(data.shape[0], max_pages*mfrow[0]*mfrow[1])

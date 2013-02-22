@@ -89,7 +89,6 @@ class PairsPlotPlugin(OperationPlugin):
         signals = kw.get('signals', [])
         if not isinstance(signals, list): signals = [signals]
         snames = [os.path.splitext(os.path.basename(sig))[0] for sig in signals]
-        snames = "c('"+"','".join(snames)+"')"
         signals = [track(sig, chrmeta=chrmeta) for sig in signals]
         if feature_type == 0: #bodies
             features = genes
