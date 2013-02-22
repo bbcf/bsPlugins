@@ -66,7 +66,7 @@ class PlotFeaturesPlugin(OperationPlugin):
         features = track(kw.get('features'), chrmeta=chrmeta)
         signals = kw.get('signals', [])
         if not isinstance(signals, list): signals = [signals]
-        snames = ['"'+os.path.splitext(os.path.basename(sig))[0]+'"' 
+        snames = [os.path.splitext(os.path.basename(sig))[0] 
                   for sig in signals]
         signals = [track(sig) for sig in signals]
         labels = None
@@ -92,28 +92,33 @@ class PlotFeaturesPlugin(OperationPlugin):
             new = True
             for n in range(data.shape[-1]-1):
                 heatmap(data[:, :, n], output=pdf, new=new, last=False,
-                        rows=labels, columns=X,
+                        rows=labels, columns=X, main=snames[n],
                         orderRows=True, orderCols=False)
                 new = False
             heatmap(data[:, :, -1], output=pdf, new=new, last=True,
-                    rows=labels,  columns=X,
+                    rows=labels,  columns=X, main=snames[n],
                     orderRows=True, orderCols=False)
         elif kw['mode'] == 1: #average lineplot
             Y = data.mean(axis=0)
+            ymin = min([x.min() for x in Y]+[0])
+            ymax = max([x.max() for x in Y])
             lineplot(X, [Y[:, n] for n in range(data.shape[-1])],
-                     output=pdf, new=True, last=True, legend=snames)
+                     output=pdf, new=True, last=True, legend=snames, ylim=(ymin,ymax))
         elif kw['mode'] == 2: #mosaic
             new = True
             mfrow = [4, 3]
             nplot = min(data.shape[0], max_pages*mfrow[0]*mfrow[1])
+            ymin = min([data.min(),0])
+            ymax = data.max()
             for reg in range(nplot-1):
                 lineplot(X, [data[reg, :, n] for n in range(data.shape[-1])],
-                         output=pdf, new=new, last=False, mfrow=mfrow, main=labels[reg])
+                         output=pdf, new=new, last=False, mfrow=mfrow, 
+                         main=labels[reg], ylim=(ymin,ymax))
                 new = False
                 mfrow = []
             lineplot(X, [data[nplot-1, :, n] for n in range(data.shape[-1])],
                      output=pdf, new=new, last=True, main=labels[-1], 
-                     legend=snames)
+                     legend=snames, ylim=(ymin,ymax))
         else:
             raise ValueError("Mode not implemented: %s" % kw['mode'])
         self.new_file(pdf, 'plot_features')
