@@ -89,8 +89,9 @@ for (ontol in c("BP","CC","MF")) {
     tab = cbind(tab,genes=sapply(tab$GO.ID, function(x){
              paste(sort(genome[unlist(genesInTerm(data,x)),1]),collapse=', ')
                }))
-    write.table(tab,file=output,quote=F,sep="\t",row.names=F,append=append)
+    write(c("",ontol,""),file=output,append=append)
     append = TRUE
+    write.table(tab,file=output,quote=F,sep="\t",row.names=F,append=append)
 }
 dev.off()
          """ % (filename,pdf,table,biomart,ensembl_url,assembly_id,
