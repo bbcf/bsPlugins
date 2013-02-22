@@ -95,6 +95,6 @@ for (ontol in c("BP","CC","MF")) {
 dev.off()
          """ % (filename,pdf,table,biomart,ensembl_url,assembly_id,
                 attribute_go,attribute_gene,filter_go))
-    self.new_file(pdf, 'TopGO_plots')
-    self.new_file(table, 'TopGO_table')
-    return self.display_time()
+       self.new_file(pdf, 'TopGO_plots')
+       self.new_file(table, 'TopGO_table')
+       return self.display_time()
