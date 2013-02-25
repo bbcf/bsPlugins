@@ -96,7 +96,7 @@ class PlotFeaturesPlugin(OperationPlugin):
                         orderRows=True, orderCols=False)
                 new = False
             heatmap(data[:, :, -1], output=pdf, new=new, last=True,
-                    rows=labels,  columns=X, main=snames[n],
+                    rows=labels,  columns=X, main=snames[-1],
                     orderRows=True, orderCols=False)
         elif kw['mode'] == 1: #average lineplot
             Y = data.mean(axis=0)
