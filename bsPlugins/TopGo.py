@@ -74,7 +74,7 @@ genome = data.frame(gene_name=genome[I,attr2],row.names=genome[I,"ensembl_gene_i
 allGenes = row.names(genome)
 genome[which(!nchar(genome[,1])),1] = allGenes[which(!nchar(genome[,1]))]
 tab = list()
-geneList = factor(!is.na(match(allGenes,id_set)))
+geneList = factor(as.numeric(!is.na(match(allGenes,id_set))))
 names(geneList) = allGenes
 append = FALSE
 for (ontol in c("BP","CC","MF")) {
