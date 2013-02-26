@@ -69,7 +69,17 @@ out_parameters = [{'id': 'MA-plot', 'type': 'file'}]
 
 class MaplotPlugin(OperationPlugin):
 
-    description = """
+    description = """Creates an MA-plot to compare levels of expression of genomic features
+across two samples. <br /><br />
+
+The input can be of two different types: <br />
+* Two 'signal' files, i.e. bedGraph-type text files,
+  and a list of genomic features - either from a pre-defined list such as Ensembl genes,
+  or a custom bed-like file. The name of each sample is the one given in the track
+  definition line ("track name=... description=... etc."), if specified, otherwise the name of
+  the file (without extension). <br />
+* A tab-delimited table with feature names in the first column, then one column of respective
+  scores per sample. The first line is a header of the type "id  sample1  sample2 ...". <br />
     """
     info = {
         'title': 'MA-plot',
@@ -100,7 +110,8 @@ class MaplotPlugin(OperationPlugin):
             qtable = track(qtable, format='txt', fields=['chr','start','end','name']+['score'+str(i) for i in range(nscores)])
             table = self.temporary_path('scores_table.txt')
             strack = track(table, fields=['name']+['score'+str(i) for i in range(nscores)])
-            signames = [os.path.splitext(os.path.basename(s))[0] for s in signals]
+            signal_tracks = [track(s) for s in signals]
+            signames = [s.info.get('name',os.path.splitext(os.path.basename(s.path))[0]) for s in signal_tracks]
             strack.write([('Name',signames[0],signames[1])])
             strack.write(qtable.read(fields=strack.fields))
 

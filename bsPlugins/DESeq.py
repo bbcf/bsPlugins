@@ -77,13 +77,13 @@ class DESeqPlugin(OperationPlugin):
 for differential analysis within them. <br /><br />
 
 The input can be of two different types: <br />
-* a set of 'signal' files, i.e. bedGraph-type text files,
+* A set of 'signal' files, i.e. bedGraph-type text files,
   and a list of genomic features - either from a pre-defined list such as Ensembl genes,
   or a custom bed-like file. For every feature, a score is given for each of the signal samples,
   and DESeq is run on the resulting table. The name of each sample is the one given in the track
   definition line ("track name=... description=... etc."), if specified, otherwise the name of
   the file (without extension). <br />
-* a tab-delimited table with feature names in the first column, then one column of respective
+* A tab-delimited table with feature names in the first column, then one column of respective
   scores per sample. The first line is a header of the type "id  sample1  sample2 ...". <br />
 
 If sample names are in the format 'group_name.run_id', all samples with
