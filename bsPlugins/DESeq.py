@@ -21,21 +21,29 @@ class DESeqForm(BaseForm):
     input_type = twd.HidingRadioButtonList(label='Input type',
         options=('Table', 'Signals'),
         mapping={'Table':  ['table'],
-                 'Signals': ['SigMulti','feature_type','assembly'],},
+                 'Signals': ['Group1','Group2','feature_type','assembly'],},
         help_text='Select input type (Formatted table, or signal tracks)')
+
     table = twf.FileField(label='Table: ',
         help_text='Select scores table',
         validator=twf.FileValidator(required=True))
+
+    class Group1(Multi):
+        signals1 = twf.FileField(label='Signals group 1: ',
+            help_text='Select signal files (position and score, e.g. bedgraph)',
+            validator=twf.FileValidator(required=True))
+    class Group2(Multi):
+        signals2 = twf.FileField(label='Signals group 2: ',
+            help_text='Select signal files (position and score, e.g. bedgraph)',
+            validator=twf.FileValidator(required=True))
+
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
         options=ftypes, prompt_text=None,
         mapping={ftypes[-1][0]: ['features'],
                  1: ['upstream', 'downstream']},
         help_text='Choose a feature set or upload your own',
         validator=twc.Validator(required=True))
-    class SigMulti(Multi):
-        signals = twf.FileField(label='Signals: ',
-            help_text='Select signal file (position and score, e.g. bedgraph)',
-            validator=twf.FileValidator(required=True))
+
     features = twf.FileField(label='Custom feature set: ',
         help_text='Select a feature file (e.g. bed)',
         validator=twf.FileValidator())
@@ -47,6 +55,7 @@ class DESeqForm(BaseForm):
         validator=twc.IntValidator(required=True),
         value=prom_down_def,
         help_text='Size of promoter downstream of TSS')
+
     assembly = twf.SingleSelectField(label='Assembly: ',
         options=genrep.GenRep().assemblies_available(),
         validator=twc.Validator(required=True),
@@ -60,7 +69,8 @@ meta = {'version': "1.0.0",
 
 in_parameters = [
         {'id': 'input_type', 'type': 'radio'},
-        {'id': 'signals', 'type': 'track', 'required': True, 'multiple': True},
+        {'id': 'signals1', 'type': 'track', 'required': True, 'multiple': True},
+        {'id': 'signals2', 'type': 'track', 'required': True, 'multiple': True},
         {'id': 'table', 'type': 'txt', 'required': True, 'multiple': True},
         {'id': 'feature_type', 'type': 'int'},
         {'id': 'upstream', 'type': 'int'},
@@ -108,8 +118,7 @@ Else they are considered as belonging to different groups.
         filename_clean = self.temporary_path()
         with open(filename,"rb") as f:
             with open(filename_clean,"wb") as g:
-                header = f.readline().split('\t')
-                #['id','baseMean','baseMeanA','baseMeanB','foldChange','log2FoldChange','pval','padj','resVarA','resVarB']
+                f.readline() # header
                 A = 'Mean.'+contrast[0].strip()
                 B = 'Mean.'+contrast[1].strip()
                 g.write('-'.join(contrast)+'\n')
