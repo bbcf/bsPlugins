@@ -150,8 +150,11 @@ Else they are considered as belonging to different groups.
         else:
             from QuantifyTable import QuantifyTablePlugin
             kw['score_op'] = 'sum'
+            signals1 = kw.get('signals1',[])
+            signals2 = kw.get('signals2',[])
+            kw['signals'] = signals1 + signals2
+            signals = kw['signals']
             table = QuantifyTablePlugin().quantify(**kw)
-            signals = kw.get('signals',[])
             stracks = []
             norm_factors = []
             for sig in signals:
@@ -177,12 +180,22 @@ Else they are considered as belonging to different groups.
             rownames = numpy.asarray([x[0] for x in de_list])
             colnames = numpy.asarray([s.info.get('name',os.path.splitext(os.path.basename(s.path))[0])
                                       for s in stracks])
+             # if all prefixes are identical within a group
+            if len(list(set( [x.split('.')[0] for x in colnames[:len(signals1)]] ))) == 1 \
+            and len(list(set( [x.split('.')[0] for x in colnames[len(signals1):]] ))) == 1:
+                group1 = colnames[0].split('.')[0]
+                group2 = colnames[-1].split('.')[0]
+            else:
+                group1 = "Group1"
+                group2 = "Group2"
+            conds = [group1]*len(signals1) + [group2]*len(signals2)
             robjects.r.assign('Mdata', numpy2ri.numpy2ri(de_matrix))
             robjects.r.assign('row_names', numpy2ri.numpy2ri(rownames))
             robjects.r.assign('col_names', numpy2ri.numpy2ri(colnames))
+            robjects.r.assign('conds', numpy2ri.numpy2ri(conds))
             robjects.r("""
             Mdata <- as.data.frame(Mdata,row.names=row_names)
-            conds <- unlist(strsplit(col_names,".",fixed=T))
+            conds <- unlist(col_names)
             colnames(Mdata) <- conds
             """)
 
