@@ -21,7 +21,6 @@ class Test_QuantifyTablePlugin(TestCase):
     def test_quantify_table_text(self):
         self.plugin(**{'input_type':'Signal','signals':[path+'KO50.bedGraph', path+'WT50.bedGraph'],
                        'features':path+'features.bed', 'feature_type':3, 'assembly':'mm9', 'format':'txt'})
-        print 'out:',self.plugin.output_files[0][0]
         with track(self.plugin.output_files[0][0], fields=["chr","start","end","name","score0","score1"]) as t:
             s = t.read()
             content = list(s)

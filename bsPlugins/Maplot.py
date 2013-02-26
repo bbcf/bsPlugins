@@ -91,10 +91,8 @@ class MaplotPlugin(OperationPlugin):
                 nscores = len(line1.split())-1
         else:
             from QuantifyTable import QuantifyTablePlugin
-            QTP = QuantifyTablePlugin()
             kw['score_op'] = 'sum'
-            QTP.quantify(**kw)
-            table = QTP.output_files[0][0]
+            table = QuantifyTablePlugin().quantify(**kw)
             signals = kw.get('signals',[])
             nscores = len(signals)
 
