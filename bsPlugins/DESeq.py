@@ -4,7 +4,7 @@ from bbcflib import genrep
 import rpy2.robjects as robjects
 import rpy2.robjects.numpy2ri as numpy2ri
 import numpy
-import os
+import os,shutil
 import itertools
 
 
@@ -74,7 +74,8 @@ out_parameters = [{'id': 'differential_expression', 'type': 'file'}]
 class DESeqPlugin(OperationPlugin):
 
     description = """Gets the score associated to each feature in each sample and runs DESeq
-for differential analysis within them. <br /><br />
+for differential analysis within them. It returns a tab-delimited file with the following fields:<br />
+Name, MeanA, MeanB, fold change, adjusted p-value.<br /><br />
 
 The input can be of two different types: <br />
 * A set of 'signal' files, i.e. bedGraph-type text files,
@@ -84,7 +85,7 @@ The input can be of two different types: <br />
   definition line ("track name=... description=... etc."), if specified, otherwise the name of
   the file (without extension). <br />
 * A tab-delimited table with feature names in the first column, then one column of respective
-  scores per sample. The first line is a header of the type "id  sample1  sample2 ...". <br />
+  scores per sample. The first line is a header of the type "id  sample1  sample2 ...". <br /><br />
 
 If sample names are in the format 'group_name.run_id', all samples with
 the same group_name will be considered as replicates of the same group/condition.
@@ -100,8 +101,30 @@ Else they are considered as belonging to different groups.
         'meta': meta,
         }
 
-    def __call__(self, **kw):
+    def clean_deseq_output(self,filename,contrast):
+        """Delete all lines of *filename* with NA's everywhere, add 0.5 to zero scores
+        before recalculating the fold change, remove row numbers, and keep only the following
+        fields: Name, MeanA, MeanB, fold change, adjusted p-value. Return the new file name."""
+        filename_clean = self.temporary_path()
+        with open(filename,"rb") as f:
+            with open(filename_clean,"wb") as g:
+                header = f.readline().split('\t')
+                #['id','baseMean','baseMeanA','baseMeanB','foldChange','log2FoldChange','pval','padj','resVarA','resVarB']
+                A = 'Mean.'+contrast[0].strip()
+                B = 'Mean.'+contrast[1].strip()
+                g.write('-'.join(contrast)+'\n')
+                g.write('\t'.join(['Name',A,B,'foldChange','padj'])+'\n')
+                for line in f:
+                    line = line.split("\t")
+                    if not (line[2]=="0" and line[3]=="0") and not (line[2]=='NA' or line[3]=='NA'):
+                        meanA = float(line[2]) or 0.5
+                        meanB = float(line[3]) or 0.5
+                        fold = meanB/meanA
+                        line = '\t'.join([line[0],str(meanA),str(meanB),str(fold),line[7]])+'\n'
+                        g.write(line)
+        return filename_clean
 
+    def __call__(self, **kw):
         assembly = genrep.Assembly(kw.get('assembly'))
         chrmeta = assembly.chrmeta or "guess"
 
@@ -177,8 +200,12 @@ Else they are considered as belonging to different groups.
             r_cmd = """
             res <- nbinomTest(cds, '%s', '%s')
             res <- res[order(res[,8]),]
-            write.table(res, '%s', row.names=F)
+            write.table(res, '%s', row.names=F, quote=F, sep='\t')
             """ % (c[0], c[1], out)
             robjects.r(r_cmd)
+            if kw.get('complete') is None:
+                clean = self.clean_deseq_output(out,c)
+                shutil.move(clean,out)
             self.new_file(out, 'differential_expression')
         return self.display_time()
+
