@@ -19,9 +19,9 @@ class DESeqForm(BaseForm):
     child = twd.HidingTableLayout()
 
     input_type = twd.HidingRadioButtonList(label='Input type',
-        options=('Table', 'Signal'),
+        options=('Table', 'Signals'),
         mapping={'Table':  ['table'],
-                 'Signal': ['SigMulti','feature_type','assembly'],},
+                 'Signals': ['SigMulti','feature_type','assembly'],},
         help_text='Select input type (Formatted table, or signal tracks)')
     table = twf.FileField(label='Table: ',
         help_text='Select scores table',
@@ -33,7 +33,7 @@ class DESeqForm(BaseForm):
         help_text='Choose a feature set or upload your own',
         validator=twc.Validator(required=True))
     class SigMulti(Multi):
-        signals = twf.FileField(label='Signal: ',
+        signals = twf.FileField(label='Signals: ',
             help_text='Select signal file (position and score, e.g. bedgraph)',
             validator=twf.FileValidator(required=True))
     features = twf.FileField(label='Custom feature set: ',
