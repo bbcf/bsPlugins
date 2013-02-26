@@ -29,10 +29,12 @@ class DESeqForm(BaseForm):
         validator=twf.FileValidator(required=True))
 
     class Group1(Multi):
+        label = "Group 1"
         signals1 = twf.FileField(label='Signals group 1: ',
             help_text='Select signal files (position and score, e.g. bedgraph)',
             validator=twf.FileValidator(required=True))
     class Group2(Multi):
+        label = "Group 2"
         signals2 = twf.FileField(label='Signals group 2: ',
             help_text='Select signal files (position and score, e.g. bedgraph)',
             validator=twf.FileValidator(required=True))
