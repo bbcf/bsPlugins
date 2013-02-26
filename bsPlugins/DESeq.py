@@ -116,9 +116,13 @@ Else they are considered as belonging to different groups.
             conds <- colnames(Mdata)
             """ % filename)
         else:
+            print kw
             from QuantifyTable import QuantifyTablePlugin
+            QTP = QuantifyTablePlugin()
             kw['score_op'] = 'sum'
-            table = QuantifyTablePlugin().quantify(**kw)
+            QTP.quantify(**kw)
+            print QTP.output_files
+            table = QTP.output_files[0]
             signals = kw.get('signals',[])
             stracks = []
             norm_factors = []
@@ -135,7 +139,7 @@ Else they are considered as belonging to different groups.
                     _nf = 1
                 stracks.append(_t)
                 norm_factors.append(_nf)
-            t = track(table,chrmeta=chrmeta)
+            t = track(table,chrmeta=chrmeta,format='txt')
             _f = [f for f in t.fields if f.startswith('score')]
             de_list = list(t.read(fields=['name']+_f))
             t.close(); os.remove(table)

@@ -114,7 +114,7 @@ class QuantifyTablePlugin(OperationPlugin):
             tout.write(score_by_feature(sread, features(chrom), fn=func),
                        chrom=chrom, clip=True)
         tout.close()
-        return self.display_time()
+        return output
 
 
     def __call__(self, **kw):

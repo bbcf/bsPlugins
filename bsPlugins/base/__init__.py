@@ -64,7 +64,7 @@ class OperationPlugin(object):
 
     def new_file(self, fpath, fparam):
         """
-        Append a file to the result
+        Append a file to self.output_files .
         """
         added = False
         for p in self.out_parameters:

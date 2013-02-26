@@ -85,18 +85,20 @@ class MaplotPlugin(OperationPlugin):
 
         if kw.get('input_type') == 'Table':
             table = kw.get('table')
-            assert os.path.exists(str(filename)), "File not found: '%s'" % filename
+            assert os.path.exists(str(table)), "File not found: '%s'" % table
             with open(table) as t:
                 line1 = t.readline()
                 nscores = len(line1.split())-1
         else:
             from QuantifyTable import QuantifyTablePlugin
+            QTP = QuantifyTablePlugin()
             kw['score_op'] = 'sum'
-            table = QuantifyTablePlugin().quantify(**kw)
+            QTP.quantify(**kw)
+            table = QTP.output_files[0][0]
             signals = kw.get('signals',[])
             nscores = len(signals)
 
-        table = track(table, format='txt', fields=["name"]+['score'+str(i) for i in range(nscores)])
+        #table = track(table, format='txt', fields=["name"]+['score'+str(i) for i in range(nscores)])
         output_filename = MAplot(table)
         output = self.temporary_path(fname='maplot.png')
         shutil.copy(output_filename,output)
