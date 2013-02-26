@@ -4,7 +4,7 @@ import os
 
 path = 'testing_files/'
 
-class Test_DESeqPlugin(TestCase):
+class Test_MaplotPlugin(TestCase):
     def setUp(self):
         self.plugin = MaplotPlugin()
 
