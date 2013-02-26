@@ -15,7 +15,6 @@ class Test_DESeqPlugin(TestCase):
             content = f.readlines()
             self.assertEqual(len(content),10)
 
-    @skip('')
     def test_with_table(self):
         self.plugin(**{'input_type':'Table','table':path+'genes_table.tab', 'assembly':'mm9'})
         with open(self.plugin.output_files[0][0],'rb') as f:
