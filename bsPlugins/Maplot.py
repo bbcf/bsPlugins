@@ -91,12 +91,19 @@ class MaplotPlugin(OperationPlugin):
                 nscores = len(line1.split())-1
         else:
             from QuantifyTable import QuantifyTablePlugin
-            kw['score_op'] = 'sum'
-            table = QuantifyTablePlugin().quantify(**kw)
             signals = kw.get('signals',[])
             nscores = len(signals)
+            kw['score_op'] = 'sum'
+            kw['format'] = 'txt'
+            qtable = QuantifyTablePlugin().quantify(**kw)
+            # Remove useless fields and add header based on file names
+            qtable = track(qtable, format='txt', fields=['chr','start','end','name']+['score'+str(i) for i in range(nscores)])
+            table = self.temporary_path(fname='scores_table.txt')
+            strack = track(table, fields=['name']+['score'+str(i) for i in range(nscores)])
+            signames = [os.path.splitext(os.path.basename(s))[0] for s in signals]
+            strack.write([('Name',signames[0],signames[1])])
+            strack.write(qtable.read(fields=strack.fields))
 
-        #table = track(table, format='txt', fields=["name"]+['score'+str(i) for i in range(nscores)])
         output_filename = MAplot(table)
         output = self.temporary_path(fname='maplot.png')
         shutil.copy(output_filename,output)
