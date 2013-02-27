@@ -15,23 +15,33 @@ class MaplotForm(BaseForm):
     child = twd.HidingTableLayout()
 
     input_type = twd.HidingRadioButtonList(label='Input type',
-        options=('Table', 'Signal'),
+        options=('Table', 'Signals'),
         mapping={'Table':  ['table'],
-                 'Signal': ['SigMulti','feature_type','assembly'],},
+                 'Signals': ['Group1','Group2','feature_type','assembly'],},
         help_text='Select input type (Formatted table, or signal tracks)')
+
     table = twf.FileField(label='Table: ',
         help_text='Select scores table',
         validator=twf.FileValidator(required=True))
+
+    class Group1(Multi):
+        label = "Group 1"
+        signals1 = twf.FileField(label='Signals group 1: ',
+            help_text='Select signal files (position and score, e.g. bedgraph)',
+            validator=twf.FileValidator(required=True))
+    class Group2(Multi):
+        label = "Group 2"
+        signals2 = twf.FileField(label='Signals group 2: ',
+            help_text='Select signal files (position and score, e.g. bedgraph)',
+            validator=twf.FileValidator(required=True))
+
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
         options=ftypes, prompt_text=None,
         mapping={ftypes[-1][0]: ['features'],
                  1: ['upstream', 'downstream']},
         help_text='Choose a feature set or upload your own',
         validator=twc.Validator(required=True))
-    class SigMulti(Multi):
-        signals = twf.FileField(label='Signal: ',
-            help_text='Select signal file (position and score, e.g. bedgraph)',
-            validator=twf.FileValidator(required=True))
+
     features = twf.FileField(label='Custom feature set: ',
         help_text='Select a feature file (e.g. bed)',
         validator=twf.FileValidator())
@@ -43,11 +53,13 @@ class MaplotForm(BaseForm):
         validator=twc.IntValidator(required=True),
         value=prom_down_def,
         help_text='Size of promoter downstream of TSS')
+
     assembly = twf.SingleSelectField(label='Assembly: ',
         options=genrep.GenRep().assemblies_available(),
         validator=twc.Validator(required=True),
         help_text='Reference genome')
-    submit = twf.SubmitButton(id="submit", value="MA-plot")
+    submit = twf.SubmitButton(id="submit", value="Submit")
+
 
 
 meta = {'version': "1.0.0",
@@ -56,7 +68,8 @@ meta = {'version': "1.0.0",
 
 in_parameters = [
         {'id': 'input_type', 'type': 'radio'},
-        {'id': 'signals', 'type': 'track', 'required': True, 'multiple': True},
+        {'id': 'signals1', 'type': 'track', 'required': True, 'multiple': True},
+        {'id': 'signals2', 'type': 'track', 'required': True, 'multiple': True},
         {'id': 'table', 'type': 'txt', 'required': True, 'multiple': True},
         {'id': 'feature_type', 'type': 'int'},
         {'id': 'upstream', 'type': 'int'},
@@ -97,25 +110,43 @@ The input can be of two different types: <br />
             table = kw.get('table')
             assert os.path.exists(str(table)), "File not found: '%s'" % table
             with open(table) as t:
-                line1 = t.readline()
-                nscores = len(line1.split())-1
+                colnames = t.readline()
+                _f = colnames.strip().split()
+                nscores = len(_f)-1
+            groups = len(list(set([x.split('.')[0] for x in _f])))
+            if nscores == 2: # 3 columns, cols 2 and 3 contain the scores
+                sample1 = [2]
+                sample2 = [3]
+            elif len(groups) == 2: # more columns, look if there are two groups of prefixes
+                sample1 = [_f.index(x) for x in _f if x.split('.')==groups[0]]
+                sample2 = [_f.index(x) for x in _f if x.split('.')==groups[1]]
+            else: # not implemented yet, ask the user to choose the columns he wants? Checkboxes...
+                raise ValueError("For the moment, either have only 2 columns of scores, of use names of the form <group_name>.<run_id>")
         else:
+            # Use QuantifyTablePlugin to build a table from score tracks
             from QuantifyTable import QuantifyTablePlugin
-            signals = kw.get('signals',[])
-            nscores = len(signals)
+            # Set QuantifyTablePlugin options
             kw['score_op'] = 'sum'
             kw['format'] = 'txt'
+            signals1 = kw.get('signals1',[])
+            signals2 = kw.get('signals2',[])
+            kw['signals'] = signals1 + signals2
+            signals = kw['signals']
+            nscores = len(signals)
             qtable = QuantifyTablePlugin().quantify(**kw)
             # Remove useless fields and add header based on file names
             qtable = track(qtable, format='txt', fields=['chr','start','end','name']+['score'+str(i) for i in range(nscores)])
             table = self.temporary_path('scores_table.txt')
-            strack = track(table, fields=['name']+['score'+str(i) for i in range(nscores)])
+            _f = ['score'+str(i) for i in range(nscores)]
+            strack = track(table, fields=['name']+_f)
             signal_tracks = [track(s) for s in signals]
             signames = [s.info.get('name',os.path.splitext(os.path.basename(s.path))[0]) for s in signal_tracks]
             strack.write([('Name',signames[0],signames[1])])
             strack.write(qtable.read(fields=strack.fields))
+            sample1 = range(len(signals1))
+            sample2 = range(nscores-len(signals1))
 
-        output_filename = MAplot(table)
+        output_filename = MAplot(table, cols={1:sample1, 2:sample2})
         output = self.temporary_path(fname='maplot.png')
         shutil.move(output_filename,output)
         self.new_file(output, 'MA-plot')
