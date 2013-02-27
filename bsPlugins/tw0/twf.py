@@ -4,6 +4,9 @@ def CheckBox(*args,**kwargs):
 def FileField(*args,**kwargs):
     pass
 
+def RadioButton(*args,**kwargs):
+    pass
+
 def FileValidator(*args,**kwargs):
     pass
 
