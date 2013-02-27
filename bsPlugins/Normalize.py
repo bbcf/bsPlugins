@@ -71,7 +71,7 @@ in_parameters = [
         {'id': 'features', 'type': 'userfile'},
         {'id': 'method', 'type': 'radio'}
 ]
-out_parameters = [{'id': 'differential_expression', 'type': 'file'}]
+out_parameters = [{'id': 'normalized', 'type': 'file'}]
 
 
 class NormalizePlugin(OperationPlugin):
@@ -96,29 +96,25 @@ class NormalizePlugin(OperationPlugin):
         if kw.get('input_type') == 'Table':
             filename = kw.get('table')
             assert os.path.exists(str(filename)), "File not found: '%s'" % filename
-            file = open(filename, "r")
-            title = file.readline()
-            matrix_table = []
+            file = open(filename, 'r')
+            header = file.readline()
             id = []
+            matrix = []
             for line in file:
                 newline = line.split()
                 id.append(newline[0])
-                matrix_table.append(map(int, newline[1:len(title)]))
+                matrix.append(map(int, newline[1:len(header)]))
 #        else:
 #            from QuantifyTable import QuantifyTablePlugin
 #            kw['score_op'] = 'sum'
 #            table = QuantifyTablePlugin().quantify(**kw)
 #            signals = kw.get('signals',[])
 
-        matrix_table = asarray(matrix_table).transpose()
-        norm = common.normalize(matrix_table, 'total')
-        result = []
-        result.append(title.split())
+        norm = common.normalize(asarray(matrix).transpose(), 'total')
+        output = self.temporary_path(fname='output.tab')
+        out = open(output, "w")
+        out.write(header)
         for i in range(len(norm[0])):
-            result.append([id[i], str(norm[0][i]), str(norm[1][i])])
-        #output = self.temporary_path(fname='DE')
-        print "result=", result
-        out = open("output.tab", "w")
-        out.write(str(result))
-        #self.new_file(output, 'normalized')
+            out.write(str(id[i])+"\t"+str(map(lambda x: "%.2g" % x, list(norm.transpose()[i]))).replace("'","").replace("[","").replace("]","").replace(", ","\t")+"\n")
+        self.new_file(output, 'normalized')
         return self.display_time()
