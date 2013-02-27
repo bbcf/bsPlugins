@@ -110,7 +110,7 @@ class NormalizePlugin(OperationPlugin):
 #            table = QuantifyTablePlugin().quantify(**kw)
 #            signals = kw.get('signals',[])
 
-        norm = common.normalize(asarray(matrix).transpose(), 'total')
+        norm = common.normalize(asarray(matrix).transpose(), kw.get('method'))
         output = self.temporary_path(fname='output.tab')
         out = open(output, "w")
         out.write(header)
