@@ -85,7 +85,7 @@ out_parameters = [{'id': 'differential_expression', 'type': 'file'}]
 
 class DESeqPlugin(OperationPlugin):
 
-    description = """Gets the score associated to each feature in each sample and runs DESeq
+    description = """Gets the score associated to each genomic feature in each sample and runs DESeq
 for differential analysis within them. It returns a tab-delimited file with the following fields:<br />
 Name, MeanA, MeanB, fold change, adjusted p-value.<br /><br />
 
@@ -106,7 +106,7 @@ The input can be of two different types: <br /><br />
     info = {
         'title': 'Differential expression analysis',
         'description': description,
-        'path': ['Signal', 'DESeq'],
+        'path': ['Signal', 'DE analysis'],
         'output': DESeqForm,
         'in': in_parameters,
         'out': out_parameters,
