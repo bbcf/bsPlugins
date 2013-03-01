@@ -8,10 +8,10 @@ class CombineForm(BaseForm):
     child = twd.HidingTableLayout()
     class SigMulti(Multi):
         signals = twf.FileField(label='Signals: ',
-                                help_text='Select signal files (e.g. bedgraph)',
+                                help_text='Select files to combine',
                                 validator=twf.FileValidator(required=True))
     format = twf.SingleSelectField(label='Output format: ',
-        options=["txt", "sql"],
+        options=["sql","bed","sga"],
         validator=twc.Validator(required=True),
         help_text='Format of the output file')
     assembly = twf.SingleSelectField(label='Assembly: ',
