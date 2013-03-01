@@ -74,8 +74,8 @@ class IntersectPlugin(OperationPlugin):
 
 class UnionPlugin(OperationPlugin):
     info = {
-        'title': 'Intersection of a set of tracks',
-        'description': 'Returns a new track with only regions covered in every input track.',
+        'title': 'Union of a set of tracks',
+        'description': 'Returns a new track with regions covered in at least one of the input tracks.',
         'path': ['Features', 'Union'],
         'output': CombineForm,
         'in': in_parameters,
@@ -88,3 +88,22 @@ class UnionPlugin(OperationPlugin):
         output = _combine(func,output,**kw)
         self.new_file(output, 'combined')
         return self.display_time()
+
+class ComplementPlugin(OperationPlugin):
+    info = {
+        'title': 'Complement',
+        'description': 'Returns a new track with regions present in the first input track, but not in the others.',
+        'path': ['Features', 'Complement'],
+        'output': CombineForm,
+        'in': in_parameters,
+        'out': out_parameters,
+        'meta': meta,
+        }
+    def __call__(self, **kw):
+        def func(X):
+            return X[0] and not any(X[1:])
+        output = self.temporary_path(fname='combined.')
+        output = _combine(func,output,**kw)
+        self.new_file(output, 'combined')
+        return self.display_time()
+
