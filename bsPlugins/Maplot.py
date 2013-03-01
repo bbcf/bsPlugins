@@ -41,7 +41,6 @@ class MaplotForm(BaseForm):
                  1: ['upstream', 'downstream']},
         help_text='Choose a feature set or upload your own',
         validator=twc.Validator(required=True))
-
     features = twf.FileField(label='Custom feature set: ',
         help_text='Select a feature file (e.g. bed)',
         validator=twf.FileValidator())
@@ -53,7 +52,6 @@ class MaplotForm(BaseForm):
         validator=twc.IntValidator(required=True),
         value=prom_down_def,
         help_text='Size of promoter downstream of TSS')
-
     assembly = twf.SingleSelectField(label='Assembly: ',
         options=genrep.GenRep().assemblies_available(),
         validator=twc.Validator(required=True),

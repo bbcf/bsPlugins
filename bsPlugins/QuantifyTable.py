@@ -9,16 +9,16 @@ ftypes = [(0, 'gene bodies'), (1, 'gene promoters'), (2, 'exons'), (3, 'custom u
 funcs = ['mean', 'sum', 'median', 'min', 'max']
 
 class QuantifyTableForm(BaseForm):
+    child = twd.HidingTableLayout()
 
     class SigMulti(Multi):
-        signals = twf.FileField(label='Signal: ',
-                                help_text='Select signal file (e.g. bedgraph)',
+        signals = twf.FileField(label='Signals: ',
+                                help_text='Select signal files (e.g. bedgraph)',
                                 validator=twf.FileValidator(required=True))
 
     score_op = twf.SingleSelectField(label='Score operation: ',
                                      options=funcs, prompt_text=None,
                                      help_text='Operation performed on scores within each feature')
-    child = twd.HidingTableLayout()
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
                                                options=ftypes, prompt_text=None,
                                                mapping={ftypes[-1][0]: ['features'],
