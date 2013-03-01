@@ -1,6 +1,6 @@
 from bsPlugins import *
 from bbcflib.bFlatMajor.stream import combine
-from bbcflib.btrack import track
+from bbcflib.btrack import track, FeatureStream
 from bbcflib import genrep
 
 
@@ -49,6 +49,8 @@ def _combine(func,output,**kw):
     tout = track(output, chrmeta=chrmeta, info={'datatype':'qualitative'})
     for chrom in chrmeta:
         trackList = [sig.read(chrom) for sig in signals]
+        if kw.get('add_chr_feat',False): 
+            trackList = [FeatureStream([(0,chrmeta[chrom]['length'])],fields=['start','end'])]+trackList
         res = combine(trackList, fn=func)
         tout.write(res, chrom=chrom, clip=True)
     tout.close()
@@ -83,11 +85,13 @@ class UnionPlugin(OperationPlugin):
         'meta': meta,
         }
     def __call__(self, **kw):
-        func = any
         output = self.temporary_path(fname='combined.')
-        output = _combine(func,output,**kw)
+        output = _combine(any,output,**kw)
         self.new_file(output, 'combined')
         return self.display_time()
+
+def subtract_func(X):
+    return X[0] and not any(X[1:])
 
 class SubtractPlugin(OperationPlugin):
     info = {
@@ -100,10 +104,8 @@ class SubtractPlugin(OperationPlugin):
         'meta': meta,
         }
     def __call__(self, **kw):
-        def func(X):
-            return X[0] and not any(X[1:])
         output = self.temporary_path(fname='combined.')
-        output = _combine(func,output,**kw)
+        output = _combine(subtract_func,output,**kw)
         self.new_file(output, 'combined')
         return self.display_time()
 
@@ -118,9 +120,8 @@ class ComplementPlugin(OperationPlugin):
         'meta': meta,
         }
     def __call__(self, **kw):
-        def func(X):
-            return not(any(X))
+        kw['add_chr_feat'] = True
         output = self.temporary_path(fname='combined.')
-        output = _combine(func,output,**kw)
+        output = _combine(subtract_func,output,**kw)
         self.new_file(output, 'combined')
         return self.display_time()
