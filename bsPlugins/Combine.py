@@ -89,11 +89,11 @@ class UnionPlugin(OperationPlugin):
         self.new_file(output, 'combined')
         return self.display_time()
 
-class ComplementPlugin(OperationPlugin):
+class SubtractPlugin(OperationPlugin):
     info = {
-        'title': 'Complement',
+        'title': 'Subtract',
         'description': 'Returns a new track with regions present in the first input track, but not in the others.',
-        'path': ['Features', 'Complement'],
+        'path': ['Features', 'Subtract'],
         'output': CombineForm,
         'in': in_parameters,
         'out': out_parameters,
@@ -107,3 +107,20 @@ class ComplementPlugin(OperationPlugin):
         self.new_file(output, 'combined')
         return self.display_time()
 
+class ComplementPlugin(OperationPlugin):
+    info = {
+        'title': 'Complement',
+        'description': 'Returns a new track with all regions not covered by a set of input tracks.',
+        'path': ['Features', 'Complement'],
+        'output': CombineForm,
+        'in': in_parameters,
+        'out': out_parameters,
+        'meta': meta,
+        }
+    def __call__(self, **kw):
+        def func(X):
+            return not(any(X))
+        output = self.temporary_path(fname='combined.')
+        output = _combine(func,output,**kw)
+        self.new_file(output, 'combined')
+        return self.display_time()
