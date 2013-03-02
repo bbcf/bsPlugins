@@ -11,7 +11,7 @@ class Test_CombinePlugin(TestCase):
         self.union = UnionPlugin()
         self.complement = ComplementPlugin()
         self.subtract = SubtractPlugin()
-        self.kw = {'input_type':'Signal','signals':[path+'KO50.bedGraph', path+'WT50.bedGraph'],
+        self.kw = {'signals':[path+'KO50.bedGraph', path+'WT50.bedGraph'],
                    'assembly':'mm9', 'format':'sql'}
 
     def test_intersect(self):
@@ -30,10 +30,12 @@ class Test_CombinePlugin(TestCase):
 
     def test_complement(self):
         self.complement(**self.kw)
+        #self.complement(**{'signals':[path+'KO50.bedGraph'],'assembly':'mm9', 'format':'sql'})
         with track(self.complement.output_files[0][0]) as t:
             s = t.read()
             content = list(s)
-            self.assertEqual(len(content),28)
+            for x in content: print x
+            self.assertEqual(len(content),37)
 
     def test_subtract(self):
         self.subtract(**self.kw)

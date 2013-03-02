@@ -49,7 +49,7 @@ def _combine(func,output,**kw):
     tout = track(output, chrmeta=chrmeta, info={'datatype':'qualitative'})
     for chrom in chrmeta:
         trackList = [sig.read(chrom) for sig in signals]
-        if kw.get('add_chr_feat',False): 
+        if kw.get('add_chr_feat',False):
             trackList = [FeatureStream([(0,chrmeta[chrom]['length'])],fields=['start','end'])]+trackList
         res = combine(trackList, fn=func)
         tout.write(res, chrom=chrom, clip=True)
@@ -90,9 +90,6 @@ class UnionPlugin(OperationPlugin):
         self.new_file(output, 'combined')
         return self.display_time()
 
-def subtract_func(X):
-    return X[0] and not any(X[1:])
-
 class SubtractPlugin(OperationPlugin):
     info = {
         'title': 'Subtract',
@@ -103,9 +100,12 @@ class SubtractPlugin(OperationPlugin):
         'out': out_parameters,
         'meta': meta,
         }
+    def func(self,X):
+        return X[0] and not any(X[1:])
+
     def __call__(self, **kw):
         output = self.temporary_path(fname='combined.')
-        output = _combine(subtract_func,output,**kw)
+        output = _combine(self.func,output,**kw)
         self.new_file(output, 'combined')
         return self.display_time()
 
@@ -119,9 +119,12 @@ class ComplementPlugin(OperationPlugin):
         'out': out_parameters,
         'meta': meta,
         }
+    def func(self,X):
+        return not any(X)
+
     def __call__(self, **kw):
         kw['add_chr_feat'] = True
         output = self.temporary_path(fname='combined.')
-        output = _combine(subtract_func,output,**kw)
+        output = _combine(self.func,output,**kw)
         self.new_file(output, 'combined')
         return self.display_time()
