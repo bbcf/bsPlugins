@@ -35,9 +35,9 @@ class Test_CombinePlugin(TestCase):
     def test_complement(self):
         self.complement(**self.kw)
         with track(self.complement.output_files[0][0]) as t:
-            s = t.read(fields=self.fields)
+            s = t.read('chr1',fields=self.fields)
             content = list(s)
-            expected = [('chr1',19,21,0.0)]
+            expected = [('chr1',0,8,0.0),('chr1',19,21,0.0),('chr1',39,197195432,0.0)]
             self.assertListEqual(content,expected)
 
     def test_subtract(self):

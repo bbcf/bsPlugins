@@ -44,7 +44,6 @@ def _combine(func,output,**kw):
     format = kw.get('format','sql')
     output += format
     signals = kw.get('signals', [])
-    if not isinstance(signals, list): signals = [signals]
     signals = [track(sig, chrmeta=chrmeta) for sig in signals]
     tout = track(output, chrmeta=chrmeta, info={'datatype':'qualitative'})
     for chrom in chrmeta:
@@ -66,10 +65,12 @@ class IntersectPlugin(OperationPlugin):
         'out': out_parameters,
         'meta': meta,
         }
+    def _func(self,X):
+        return all(X)
+
     def __call__(self, **kw):
-        func = all
         output = self.temporary_path(fname='combined.')
-        output = _combine(func,output,**kw)
+        output = _combine(self._func,output,**kw)
         self.new_file(output, 'combined')
         return self.display_time()
 
@@ -83,9 +84,12 @@ class UnionPlugin(OperationPlugin):
         'out': out_parameters,
         'meta': meta,
         }
+    def _func(self,X):
+        return any(X)
+
     def __call__(self, **kw):
         output = self.temporary_path(fname='combined.')
-        output = _combine(any,output,**kw)
+        output = _combine(self._func,output,**kw)
         self.new_file(output, 'combined')
         return self.display_time()
 
@@ -99,12 +103,12 @@ class SubtractPlugin(OperationPlugin):
         'out': out_parameters,
         'meta': meta,
         }
-    def func(self,X):
+    def _func(self,X):
         return X[0] and not any(X[1:])
 
     def __call__(self, **kw):
         output = self.temporary_path(fname='combined.')
-        output = _combine(self.func,output,**kw)
+        output = _combine(self._func,output,**kw)
         self.new_file(output, 'combined')
         return self.display_time()
 
@@ -118,12 +122,37 @@ class ComplementPlugin(OperationPlugin):
         'out': out_parameters,
         'meta': meta,
         }
-    def func(self,X):
-        return not any(X)
+    def _func(self,X):
+        """Same as for Subtract, since Complement is subtraction from whole chromosome of a set of features.
+           Same as the others with func = 'not any(X)' would forget the extremities of the chromosome."""
+        return X[0] and not any(X[1:])
 
     def __call__(self, **kw):
-        kw['add_chr_feat'] = True
+        # Create a track with the whole chromosome
+        chrmeta = _get_chrmeta(**kw)
+        sig0 = track(kw['signals'][0])
+        fields = sig0.fields
+        format = sig0.format
+        is_chr = 'chr' in fields
+        _f0 = ('chr','start','end') if is_chr else ('start','end')
+        _f1 = [f for f in fields if f not in _f0]
+        whole_chr = []
+        if is_chr:
+            for chr in chrmeta:
+                whole_chr.append( (chr,0,chrmeta[chr]['length'])+('0',)*len(_f1) )
+        else:
+            fields = [f for f in fields if f not in ['start','end']]
+            fields = ['start','end']+fields
+            for chr in chrmeta:
+                whole_chr.append( (0,chrmeta[chr]['length'])+('0',)*len(_f1) )
+        whole_chr = FeatureStream(whole_chr,fields=fields)
+        temp = self.temporary_path()+'.'+format
+        with track(temp,fields=fields) as wc:
+            wc.write(whole_chr)
+
+        kw['signals'] = [temp] + kw['signals']
         output = self.temporary_path(fname='combined.')
-        output = _combine(self.func,output,**kw)
+        output = _combine(self._func,output,**kw)
         self.new_file(output, 'combined')
         return self.display_time()
+
