@@ -49,9 +49,8 @@ def _combine(func,output,**kw):
     tout = track(output, chrmeta=chrmeta, info={'datatype':'qualitative'})
     for chrom in chrmeta:
         trackList = [sig.read(chrom) for sig in signals]
-        if kw.get('add_chr_feat',False):
-            trackList = [FeatureStream([(0,chrmeta[chrom]['length'])],fields=['start','end'])]+trackList
         res = combine(trackList, fn=func)
+        tout.fields = res.fields
         tout.write(res, chrom=chrom, clip=True)
     tout.close()
     return output
