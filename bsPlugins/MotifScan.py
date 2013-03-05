@@ -91,8 +91,8 @@ class MotifScanPlugin(OperationPlugin):
 
         motifs = {}
         if motif_add is not None:
-            mname = os.path.basename(os.path.splitext(x)[0])
-            motifs[mname] = motif_add
+            mname = os.path.basename(os.path.splitext(motif_add)[0])
+            if mname: motifs[mname] = motif_add
         for mot in motifs_list:
             gid, mname = mot.split(' ')
             pwmfile = self.temporary_path()
