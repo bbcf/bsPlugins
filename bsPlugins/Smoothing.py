@@ -6,10 +6,11 @@ from bbcflib import genrep
 size_def = 11
 step_def = 1
 
+
 class SmoothingForm(BaseForm):
-    track = twf.FileField(label='Signal: ',
+    track = twb.BsFileField(label='Signal: ',
         help_text='Select signal file (e.g. bedgraph)',
-        validator=twf.FileValidator(required=True))
+        validator=twb.BsFileFieldValidator(required=True))
     assembly = twf.SingleSelectField(label='Assembly: ',
         options=genrep.GenRep().assemblies_available(),
         help_text='Reference genome')
