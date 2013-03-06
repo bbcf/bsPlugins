@@ -4,6 +4,7 @@ from bsPlugins.Combine import IntersectPlugin,UnionPlugin,ComplementPlugin,Subtr
 import os
 
 path = 'testing_files/'
+# nosetests test_Combine.py --logging-filter=-tw2.core.middleware
 
 class Test_CombinePlugin(TestCase):
     def setUp(self):

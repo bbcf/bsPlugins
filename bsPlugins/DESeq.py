@@ -136,9 +136,6 @@ The input can be of two different types: <br /><br />
         return filename_clean
 
     def __call__(self, **kw):
-        assembly = genrep.Assembly(kw.get('assembly'))
-        chrmeta = assembly.chrmeta or "guess"
-
         if kw.get('input_type') == 'Table':
             filename = kw.get('table')
             assert os.path.exists(str(filename)), "File not found: '%s'" % filename
@@ -151,6 +148,8 @@ The input can be of two different types: <br /><br />
             """ % filename)
         else:
             from QuantifyTable import QuantifyTablePlugin
+            assembly = genrep.Assembly(kw.get('assembly'))
+            chrmeta = assembly.chrmeta or "guess"
             kw['score_op'] = 'sum'
             signals1 = kw.get('signals1',[])
             signals2 = kw.get('signals2',[])
