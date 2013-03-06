@@ -1,8 +1,5 @@
 from bsPlugins import *
-from bbcflib.btrack import track
-from bbcflib import genrep
 import rpy2.robjects as robjects
-import rpy2.robjects.numpy2ri as numpy2ri
 import os, tarfile
 
 mart_map = [("GRCh37.p5",'hg19'), ("NCBIM37",'mm9'), ("EF3","sacCer2"), 
@@ -73,7 +70,7 @@ out = multi_topGo("%s","%s","%s","%s")
             self.new_file(tar_pdf_name, 'TopGO_plots_tar')
             self.new_file(tar_table_name, 'TopGO_table_tar')
         else:
-            self.new_file(pdf,'TopGO_plots')
-            self.new_file(table,'TopGO_table')
+            self.new_file(pdf_list[0],'TopGO_plots')
+            self.new_file(table_list[0],'TopGO_table')
                 
         return self.display_time()
