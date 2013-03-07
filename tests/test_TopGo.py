@@ -1,7 +1,5 @@
 from unittest2 import TestCase, skip
-from bbcflib.btrack import track
 from bsPlugins.TopGo import TopGoPlugin 
-import os
 
 path = 'testing_files/'
 
