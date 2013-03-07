@@ -55,8 +55,8 @@ source("%s/TopGo.R")
 out = multi_topGo("%s","%s","%s","%s")
 """%(script_path,filename,assembly_id,pdf,table))
 
-        pdf_list = list(robjects.r('out')[0])
-        table_list = list(robjects.r('out')[1])
+        pdf_list = [f[0] for f in robjects.r('out')[0]]
+        table_list = [f[0] for f in robjects.r('out')[1]]
         if len(pdf_list) > 1:
             tar_pdf_name = self.temporary_path('TopGO_plots.tgz')
             tar_pdf = tarfile.open(tar_pdf_name, "w:gz")
