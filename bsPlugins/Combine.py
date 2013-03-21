@@ -7,7 +7,7 @@ from bbcflib import genrep
 class CombineForm(BaseForm):
     child = twd.HidingTableLayout()
     class SigMulti(Multi):
-        label='Signals: ',
+        label='Signals: '
         signals = twf.FileField(label=' ',
                                 help_text='Select files to combine',
                                 validator=twf.FileValidator(required=True))

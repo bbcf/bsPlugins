@@ -12,7 +12,7 @@ class QuantifyTableForm(BaseForm):
     child = twd.HidingTableLayout()
 
     class SigMulti(Multi):
-        label='Signals: ',
+        label='Signals: '
         signals = twf.FileField(label=' ',
                                 help_text='Select signal files (e.g. bedgraph)',
                                 validator=twf.FileValidator(required=True))

@@ -34,7 +34,7 @@ class Bam2DensityForm(BaseForm):
     normalization = twf.TextField(label='Normalization: ',
                                   validator=twc.IntValidator(required=False),
                                   help_text='Normalization factor, default is total number of reads')
-    merge_strands = twf.TextField(label='Shift and merge strands',
+    merge_strands = twf.TextField(label='Shift and merge strands: ',
                                   validator=twc.IntValidator(required=False),
                                   help_text='Enter shift value (in bp) if you want to merge strand-specific densities')
     read_extension = twf.TextField(label='Read extension: ',
