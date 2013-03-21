@@ -15,7 +15,7 @@ class NormalizeForm(BaseForm):
         help_text='Select scores table',
         validator=twf.FileValidator(required=True))
     method = twf.RadioButtonList(
-        label='Method',
+        label='Method: ',
         options=['total','deseq','quantile'],
         help_text='Select the normalization method')
     submit = twf.SubmitButton(id="submit", value="Submit")
