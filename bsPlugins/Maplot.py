@@ -119,7 +119,8 @@ The input can be of two different types: <br />
                 sample1 = [_f.index(x) for x in _f if x.split('.')==groups[0]]
                 sample2 = [_f.index(x) for x in _f if x.split('.')==groups[1]]
             else: # not implemented yet, ask the user to choose the columns he wants? Checkboxes...
-                raise ValueError("For the moment, either have only 2 columns of scores, of use names of the form <group_name>.<run_id>")
+                raise ValueError("For the moment, either have only 2 columns of scores, \
+                                 or use names of the form <group_name>.<run_id>")
         else:
             # Use QuantifyTablePlugin to build a table from score tracks
             from QuantifyTable import QuantifyTablePlugin
@@ -128,6 +129,8 @@ The input can be of two different types: <br />
             kw['format'] = 'txt'
             signals1 = kw.get('signals1',[])
             signals2 = kw.get('signals2',[])
+            if not isinstance(signals1,(list.tuple)): signals1 = [signals1]
+            if not isinstance(signals2,(list.tuple)): signals2 = [signals2]
             kw['signals'] = signals1 + signals2
             signals = kw['signals']
             nscores = len(signals)
