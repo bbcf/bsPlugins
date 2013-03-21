@@ -86,11 +86,14 @@ class BedToolsForm(BaseForm):
     for it in file_params['simple']:
         vars()[it] = twf.FileField(label=it + ': ', validator=twf.FileValidator())
     class Mfiles(Multi):
-        files = twf.FileField(label='files: ', validator=twf.FileValidator())
+        label='files: '
+        files = twf.FileField(label='', validator=twf.FileValidator())
     class Mbamfiles(Multi):
-        bamfiles = twf.FileField(label='bamfiles: ', validator=twf.FileValidator())
+        label='bamfiles: '
+        bamfiles = twf.FileField(label=' ', validator=twf.FileValidator())
     class Mbedfiles(Multi):
-        bedfiles = twf.FileField(label='bedfiles: ', validator=twf.FileValidator())
+        label='bedfiles: '
+        bedfiles = twf.FileField(label=' ', validator=twf.FileValidator())
 
     column = twf.TextField(label='column: ',
                            validator=twc.IntValidator(min=1, max=100, required=True),

@@ -29,13 +29,13 @@ class DESeqForm(BaseForm):
         validator=twf.FileValidator(required=True))
 
     class Group1(Multi):
-        label = "Group 1"
-        signals1 = twf.FileField(label='Signals group 1: ',
+        label = 'Signals group 1: '
+        signals1 = twf.FileField(label=' ',
             help_text='Select signal files (position and score, e.g. bedgraph)',
             validator=twf.FileValidator(required=True))
     class Group2(Multi):
-        label = "Group 2"
-        signals2 = twf.FileField(label='Signals group 2: ',
+        label = 'Signals group 2: '
+        signals2 = twf.FileField(label=' ',
             help_text='Select signal files (position and score, e.g. bedgraph)',
             validator=twf.FileValidator(required=True))
 
@@ -89,19 +89,21 @@ class DESeqPlugin(OperationPlugin):
 for differential analysis within them. It returns a tab-delimited file with the following fields:<br />
 Name, MeanA, MeanB, fold change, adjusted p-value.<br /><br />
 
-The input can be of two different types: <br /><br />
-* Two sets of 'signal' files - i.e. bedGraph-type text files - one for each of the two groups to compare -,
+The input can be of two different types: <br />
+<ul>
+<li> Two sets of 'signal' files - i.e. bedGraph-type text files - one for each of the two groups to compare -,
   and a list of genomic features - either from a pre-defined list such as Ensembl genes,
   or a custom bed-like file. For every feature, a score is given for each of the signal samples,
   and DESeq is run on the resulting table. The name of each sample is the one given in the track
   definition line ("track name=... description=... etc."), if specified, otherwise the name of
-  the file (without extension). <br /><br />
-* A tab-delimited table with feature names in the first column, then one column of respective
+  the file (without extension). </li>
+<li> A tab-delimited table with feature names in the first column, then one column of respective
   scores per sample. The first line is a header of the type "id  sample1  sample2 ...".
   If sample names are in the format 'group_name.run_id', all samples with the same group_name
   will be considered as replicates of the same group/condition. Else they are considered as belonging
   to different groups. If there are more than 2 groups, all different pairs of comparisons
-  will be performed and output in separate files.
+  will be performed and output in separate files.</li>
+</ul>
     """
     info = {
         'title': 'Differential expression analysis',

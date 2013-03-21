@@ -23,7 +23,8 @@ class PairsPlotForm(BaseForm):
                                                help_text='Choose a feature set or upload your own',
                                                validator=twc.Validator(required=True))
     class SigMulti(Multi):
-        signals = twf.FileField(label='Signal: ',
+        label='Signal: '
+        signals = twf.FileField(label=' ',
                                 help_text='Select signal file (.g. bedgraph)',
                                 validator=twf.FileValidator(required=True))
 

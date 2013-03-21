@@ -14,7 +14,7 @@ prom_down_def = 100
 class MaplotForm(BaseForm):
     child = twd.HidingTableLayout()
 
-    input_type = twd.HidingRadioButtonList(label='Input type',
+    input_type = twd.HidingRadioButtonList(label='Input type: ',
         options=('Table', 'Signals'),
         mapping={'Table':  ['table'],
                  'Signals': ['Group1','Group2','feature_type','assembly'],},
@@ -25,13 +25,13 @@ class MaplotForm(BaseForm):
         validator=twf.FileValidator(required=True))
 
     class Group1(Multi):
-        label = "Group 1"
-        signals1 = twf.FileField(label='Signals group 1: ',
+        label = "Signals group 1: "
+        signals1 = twf.FileField(label=' ',
             help_text='Select signal files (position and score, e.g. bedgraph)',
             validator=twf.FileValidator(required=True))
     class Group2(Multi):
-        label = "Group 2"
-        signals2 = twf.FileField(label='Signals group 2: ',
+        label = "Signals group 2: "
+        signals2 = twf.FileField(label=' ',
             help_text='Select signal files (position and score, e.g. bedgraph)',
             validator=twf.FileValidator(required=True))
 
@@ -84,13 +84,15 @@ class MaplotPlugin(OperationPlugin):
 across two samples. <br /><br />
 
 The input can be of two different types: <br />
-* Two 'signal' files, i.e. bedGraph-type text files,
+<ul>
+<li> Two 'signal' files, i.e. bedGraph-type text files,
   and a list of genomic features - either from a pre-defined list such as Ensembl genes,
   or a custom bed-like file. The name of each sample is the one given in the track
   definition line ("track name=... description=... etc."), if specified, otherwise the name of
-  the file (without extension). <br />
-* A tab-delimited table with feature names in the first column, then one column of respective
-  scores per sample. The first line is a header of the type "id  sample1  sample2 ...". <br />
+  the file (without extension). </li>
+<li> A tab-delimited table with feature names in the first column, then one column of respective
+  scores per sample. The first line is a header of the type "id  sample1  sample2 ...". </li>
+</ul>
     """
     info = {
         'title': 'MA-plot',
