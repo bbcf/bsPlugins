@@ -155,8 +155,8 @@ The input can be of two different types: <br />
             kw['score_op'] = 'sum'
             signals1 = kw.get('signals1',[])
             signals2 = kw.get('signals2',[])
-            if not isinstance(signals1,(list.tuple)): signals1 = [signals1]
-            if not isinstance(signals2,(list.tuple)): signals2 = [signals2]
+            if not isinstance(signals1,(list,tuple)): signals1 = [signals1]
+            if not isinstance(signals2,(list,tuple)): signals2 = [signals2]
             kw['signals'] = signals1 + signals2
             signals = kw['signals']
             table = QuantifyTablePlugin().quantify(**kw)
