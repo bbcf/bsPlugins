@@ -44,6 +44,7 @@ def _combine(func,output,**kw):
     format = kw.get('format','sql')
     output += format
     signals = kw.get('signals', [])
+    if not isinstance(signals, list): signals = [signals]
     signals = [track(sig, chrmeta=chrmeta) for sig in signals]
     tout = track(output, chrmeta=chrmeta, info={'datatype':'qualitative'})
     for chrom in chrmeta:
