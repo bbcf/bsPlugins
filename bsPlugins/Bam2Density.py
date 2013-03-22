@@ -8,7 +8,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'sample', 'type': 'bam', 'required': True},
+in_parameters = [{'id': 'sample', 'type': 'track', 'required': True},
                  {'id': 'control', 'type': 'bam'},
                  {'id': 'format', 'type': 'text'},
                  {'id': 'normalization', 'type': 'int'},
@@ -28,8 +28,8 @@ class Bam2DensityForm(BaseForm):
     control = twf.FileField(label='Control BAM: ',
                             help_text='Select control bam file to compute enrichment')
     format = twf.SingleSelectField(label='Output format: ',
-                                   options=["bedGraph", "bigWig", "sql"],
-                                   validator=twc.Validator(required=True),
+                                   options=["sql", "bedGraph", "bigWig"],
+                                   prompt_text=None,
                                    help_text='Format of the output file')
     normalization = twf.TextField(label='Normalization: ',
                                   validator=twc.IntValidator(required=False),
