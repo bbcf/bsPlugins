@@ -18,6 +18,7 @@ Contents:
    :maxdepth: 3
    
    content/writing
+   content/test
    content/form
 
 Indices and tables
