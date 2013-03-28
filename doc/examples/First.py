@@ -1,30 +1,52 @@
-from bs.operations.base import OperationPlugin  # import the base class to build your plugin
+###########
+# IMPORTS #
+###########
 import os
 import random
+from bsPlugins import OperationPlugin
 
 
-# some shared information about these exemples
+############
+# METADATA #
+############
+
 meta = {'version': "1.0.1",
         'author': "Yohan Jarosz",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-__install_requires__ = []  # beta
+######################
+# PLUGIN INFORMATION #
+######################
+parameters = {'in': [{'id': 'input', 'type': 'text', 'required': True}, ],
+              'out': [{'id': 'output', 'type': 'file'}, ]}
+
+plugin_information = {
+    'title': 'WriteFile',
+
+    'description': """As an exemple, this plugin writes the input you give in a text file.
+    You can also put <a href='https://github.com/bbcf/bs.operations/blob/master/Examples.py'>links</a> to some documentation or
+    other <br/> HTML tags.""",
+
+    'path': ['Examples', 'Automatics forms', 'Write output to a file'],
+
+    'meta': meta,
+
+    'in': parameters['in'],
+    'out': parameters['out']
+}
+
+########
+# FORM # skipped
+########
+
+##########
+# PLUGIN #
+##########
 
 
 class Simple(OperationPlugin):
 
-    info = {
-        'title': 'WriteFile',                                                                 # The title of your operation
-        'description': """As an exemple, this plugin writes the input you give in a text file.
-                          You can also put <a href='https://github.com/bbcf/bs.operations/blob/master/Examples.py'>
-                          links</a> to some documentation.
-        """,                                                                                  # Describe the operation's goal
-        'path': ['Examples', 'Automatics forms', 'Write output to a file'],                   # Under which category the operation will be set
-                                                                                              # First in the list mean higher category
-        'in': [{'id': 'input', 'type': 'text', 'required': True}],    # All input parameters
-        'out': [{'id': 'output', 'type': 'file'}],                    # All output parameters
-        'meta': meta,                                # Meta information (authors, version, ...)
-    }
+    info = plugin_information
 
     def __call__(self, *args, **kw):
         text = kw.get('input', '')                    # get the parameter back
@@ -34,8 +56,12 @@ class Simple(OperationPlugin):
             f.write(text)
         self.new_file(path, 'output')                 # add a file to the result
 
-        return 1
+        return self.display_time()                    # display the time elapsed
 
+
+###################
+# OTHERS EXAMPLES #
+###################
 
 class ReadFile(OperationPlugin):
 
@@ -75,6 +101,7 @@ class ReadFile(OperationPlugin):
             # add the file to the result
         self.new_file(fout, 'output')
         return self.display_time()
+
 
 class Error(OperationPlugin):
     info = {
