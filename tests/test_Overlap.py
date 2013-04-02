@@ -11,11 +11,10 @@ class Test_OverlapPlugin(TestCase):
 
     def test_overlap(self):
         self.plugin(**{'input_type':'Signal','filter':path+'peaks.bedGraph',
-                       'features':path+'features.bed','feature_type':3,'assembly':'mm9','format':'sql'})
+                       'features':path+'features.bed','feature_type':3,'assembly':'mm9','format':'bed'})
         with track(self.plugin.output_files[0][0]) as t:
             s = t.read()
             content = list(s)
-            print content
             self.assertEqual(len(content),3)
 
     def tearDown(self):

@@ -9,12 +9,12 @@ ftypes = [(0,'gene bodies'), (1,'gene promoters'), (2,'exons'), (3,'custom uploa
 
 class OverlapForm(BaseForm):
     child = twd.HidingTableLayout()
-    feature_type = twd.HidingSingleSelectField(label='Feature type: ',
-                                               options=ftypes, prompt_text=None,
-                                               mapping={ftypes[-1][0]: ['features'],
-                                                        1: ['upstream', 'downstream']},
-                                               help_text='Choose a feature set or upload your own',
-                                               validator=twc.Validator(required=True))
+    feature_type = twd.HidingSingleSelectField(label='Input type: ',
+       options=ftypes, prompt_text=None,
+       mapping={ftypes[-1][0]: ['features'],
+                            1: ['upstream','downstream']},
+       help_text='Choose a feature set or upload your own',
+       validator=twc.Validator(required=True))
     features = twf.FileField(label='Custom file: ',
         help_text='Upload your own file',
         validator=twf.FileValidator(required=True))
@@ -22,7 +22,7 @@ class OverlapForm(BaseForm):
                            help_text='Filter',
                            validator=twf.FileValidator(required=True))
     format = twf.SingleSelectField(label='Output format: ',
-        options=["txt", "sql"],
+        options=["txt","bed","sql","bedGraph","bigWig"],
         validator=twc.Validator(required=True),
         help_text='Format of the output file')
     assembly = twf.SingleSelectField(label='Assembly: ',
@@ -36,7 +36,7 @@ class OverlapForm(BaseForm):
         validator=twc.IntValidator(required=True),
         value=prom_down_def,
         help_text='Size of promoter downstream of TSS')
-    submit = twf.SubmitButton(id="submit", value="Quantify")
+    submit = twf.SubmitButton(id="submit", value="Submit")
 
 
 meta = {'version': "1.0.0",
@@ -56,8 +56,8 @@ out_parameters = [{'id': 'filtered', 'type': 'track'}]
 class OverlapPlugin(OperationPlugin):
     info = {
         'title': 'Overlap',
-        'description': 'Returns only the regions of the first file that overlap \
-                        (or contain) some feature from the second.',
+        'description': "Returns only the regions of the first input file that overlap \
+                        (or contain) some feature from the second ('filter').",
         'path': ['Signal', 'Overlap'],
         'output': OverlapForm,
         'in': in_parameters,
