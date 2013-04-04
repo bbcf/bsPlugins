@@ -7,7 +7,6 @@ from bbcflib.bFlatMajor import common
 from bbcflib.bFlatMajor.common import split_field,apply
 import re
 import math #log2, log10, sqrt, ...
-__requires__ = ["numpy"]
 # import toscawidget2 modules in order to build forms
 import tw2.forms as twf
 class loga2Form(BaseForm):    #form
