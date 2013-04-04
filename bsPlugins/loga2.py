@@ -10,31 +10,32 @@ import math #log2, log10, sqrt, ...
 __requires__ = ["numpy"]
 # import toscawidget2 modules in order to build forms
 import tw2.forms as twf
-class loga2Form(BaseForm): #form
+class loga2Form(BaseForm):    #form
     class SigMulti(Multi):
         label='Signals: '
         track = twf.FileField(label=' ',
         help_text='Select files (e.g. bedgraph)',
         validator=twf.FileValidator(required=True))
-    function = twf.RadioButtonList(label='operation: ',
+    function =  twf.SingleSelectField(label='Operation: ',
         options=["log2","log10","sqrt"],
-        validator=twc.Validator(required=True))
+        validator=twc.Validator(required=True),
+        help_text='Select a method, by default: log2')
     format = twf.SingleSelectField(label='Output format: ',
-        options=["sql","bedgraph","bigwig","wig","gff"],
+        options=["sql","bedgraph","bigwig","wig"],
         validator=twc.Validator(required=False),
-        help_text='Format of the output file')
+        help_text='Output file(s) format, by default: same format as input file(s) format(s)')
     assembly = twf.SingleSelectField(label='Assembly: ',
         options=genrep.GenRep().assemblies_available(),
         help_text='Reference genome')
-    submit = twf.SubmitButton(id="submit", value="Log2")
+    submit = twf.SubmitButton(id="submit", value="Submit")
 meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
-in_parameters = [{'id': 'track', 'type': 'track', 'required': True}, # input parameters
+in_parameters = [{'id': 'track', 'type': 'track', 'required': True},    # input parameters
                 {'id': 'assembly', 'type': 'assembly', 'required': True},
-                {'id': 'function', 'type': 'radio', 'required': True},
+                {'id': 'function', 'type': 'function', 'required': True},
                 {'id': 'format', 'type': 'format'}]
-out_parameters = [{'id': 'track', 'type': 'track'}] # output parameters
+out_parameters = [{'id': 'track', 'type': 'track'}]    # output parameters
 class loga2Plugin(OperationPlugin):
     description = """ Operation on a track."""
     info = {
@@ -47,39 +48,43 @@ class loga2Plugin(OperationPlugin):
         'meta': meta,
         }
     def __call__(self, **kw):
-        def method(x): # the function that is applied to the track score
+        def method(x):    # the function that is applied to the track score
             if kw.get('function')=="log2":
                 return math.log( x,2) ;
-            if kw.get('function')=="log10":
+            elif kw.get('function')=="log10":
                 return math.log10( x) ;
-            if kw.get('function')=="sqrt":
-                return math.sqrt(x)
+            elif kw.get('function')=="sqrt":
+                return math.sqrt(x) ;
+            elif kw.get('function')=="":
+                return math.log( x,2) ;
         assembly_id = kw.get('assembly') #or None
         assembly = genrep.Assembly(assembly_id)
         chrmeta = assembly.chrmeta
-        length=len( kw.get('track') ) # number of tracks
+        length=len( kw.get('track') )    # number of tracks
         for i in range( length  ) :
             tname = kw['track'][i]
             tinput = track(tname, chrmeta=kw.get('assembly'))
-            (filepath, filename) = os.path.split(tname) # ( path, name of one track)
-            (shortname, extension) = os.path.splitext(filename) # (name of one track (without path) , extension)
+            (filepath, filename) = os.path.split(tname)    # ( path, name of one track)
+            (shortname, extension) = os.path.splitext(filename)    # (name of one track (without path) , extension)
             modif= kw.get('function')
+            if modif =="":
+                modif="log2"
             if not isinstance(tinput, (tuple,list)):
                 tinput = [tinput]
             for trackFILE in tinput:
                 if  "score" in trackFILE.fields:
-                    if len(str(kw.get('format')))==0:
+                    if len(kw.get('format'))==0:
                         #create a temporary directory, name a new file in this directory
-                        output1_name = self.temporary_path(str(shortname)+'_'+str(kw.get('assembly'))+'_'+str(modif)+str(extension))
+                        output1_name = self.temporary_path( shortname+'_'+kw.get('assembly')+'_'+modif+str(extension))
                         t1_name = track(output1_name,chrmeta=assembly.chrmeta) #define an output track file in the temporary directory
                         #apply method function to the score field trackFILE
                         #create and write in the new file
-                        t1_name.write(common.apply(trackFILE.read(),'score',method ) ,mode='overwrite')
+                        t1_name.write(common.apply(trackFILE.read(),'score',method ) ,mode='write')
                         t1_name.close() #close the output track file
                         trackFILE.close() #close the input track file
-                    if len(str(kw.get('format')))>0:
-                        output2_name = self.temporary_path(str(shortname)+'_'+str(kw.get('assembly'))+'_'+str(modif)+'.'+ str(kw.get('format') ))
+                    if len(kw.get('format'))>0:
+                        output2_name = self.temporary_path( shortname +'_'+kw.get('assembly')+'_'+ modif +'.'+ kw.get('format') )
                         t2_name = track(output2_name,chrmeta=assembly.chrmeta)
-                        t2_name.write(common.apply(trackFILE.read(),'score',method ) ,mode='overwrite')
+                        t2_name.write(common.apply(trackFILE.read(),'score',method ) ,mode='write')
                         t2_name.close()
                         trackFILE.close()
