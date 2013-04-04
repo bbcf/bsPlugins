@@ -73,7 +73,7 @@ class loga2Plugin(OperationPlugin):
                 tinput = [tinput]
             for trackFILE in tinput:
                 if  "score" in trackFILE.fields:
-                    if len(kw.get('format'))==0:
+                    if kw.get('format')=="":
                         #create a temporary directory, name a new file in this directory
                         output1_name = self.temporary_path( shortname+'_'+kw.get('assembly')+'_'+modif+str(extension))
                         t1_name = track(output1_name,chrmeta=assembly.chrmeta) #define an output track file in the temporary directory
@@ -82,7 +82,7 @@ class loga2Plugin(OperationPlugin):
                         t1_name.write(common.apply(trackFILE.read(),'score',method ) ,mode='write')
                         t1_name.close() #close the output track file
                         trackFILE.close() #close the input track file
-                    if len(kw.get('format'))>0:
+                    if kw.get('format')!="":
                         output2_name = self.temporary_path( shortname +'_'+kw.get('assembly')+'_'+ modif +'.'+ kw.get('format') )
                         t2_name = track(output2_name,chrmeta=assembly.chrmeta)
                         t2_name.write(common.apply(trackFILE.read(),'score',method ) ,mode='write')
