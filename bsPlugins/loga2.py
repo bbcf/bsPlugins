@@ -35,12 +35,14 @@ in_parameters = [{'id': 'track', 'type': 'track', 'required': True},    # input 
                 {'id': 'function', 'type': 'function', 'required': True},
                 {'id': 'format', 'type': 'format'}]
 out_parameters = [{'id': 'track', 'type': 'track'}]    # output parameters
-class loga2Plugin(OperationPlugin):
+
+
+class Loga2Plugin(OperationPlugin):
     description = """ Operation on a track."""
     info = {
         'title': 'log2 or log10 or square root',
         'description': description,
-        'path': ['track', 'Log2', "log10","sqrt"],
+        'path': ['Signal', 'Log2 - Log10 - sqrt'],
         'output': loga2Form,
         'in': in_parameters,
         'out': out_parameters,
