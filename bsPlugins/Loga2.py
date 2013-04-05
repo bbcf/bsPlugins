@@ -34,8 +34,7 @@ in_parameters = [{'id': 'track', 'type': 'track', 'required': True},    # input 
                 {'id': 'assembly', 'type': 'assembly', 'required': True},
                 {'id': 'function', 'type': 'function', 'required': True},
                 {'id': 'format', 'type': 'format'}]
-out_parameters = [{'id': 'track', 'type': 'track'}]    # output parameters
-
+out_parameters = [{'id': 'output', 'type': 'output'}]    # output parameters
 
 class Loga2Plugin(OperationPlugin):
     description = """ Operation on a track."""
