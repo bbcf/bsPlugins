@@ -1,11 +1,11 @@
 from unittest2 import TestCase, skip
-from bsPlugins.loga2 import loga2Plugin
+from bsPlugins.Loga2 import Loga2Plugin
 from bbcflib.btrack import track
 import os
 path = './testing_files/'
-class Test_loga2Plugin(TestCase):
+class Test_Loga2Plugin(TestCase):
     def setUp(self):
-        self.plugin = loga2Plugin()
+        self.plugin = Loga2Plugin()
     def test_with_signals(self):
         self.plugin(**{'track':[path+'CTCF_deconv.sql'],
         'assembly':'mm9', "format":"sql",'function':'sqrt'})
