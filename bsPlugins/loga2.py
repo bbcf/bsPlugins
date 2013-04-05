@@ -41,7 +41,7 @@ class loga2Plugin(OperationPlugin):
         'title': 'log2 or log10 or square root',
         'description': description,
         'path': ['track', 'Log2', "log10","sqrt"],
-        'track': loga2Form,
+        'output': loga2Form,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
