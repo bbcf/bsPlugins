@@ -9,7 +9,7 @@ import re
 import math #log2, log10, sqrt, ...
 # import toscawidget2 modules in order to build forms
 import tw2.forms as twf
-class loga2Form(BaseForm):    #form
+class Loga2Form(BaseForm):    #form
     class SigMulti(Multi):
         label='Signals: '
         track = twf.FileField(label=' ',
