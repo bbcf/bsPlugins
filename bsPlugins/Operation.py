@@ -6,7 +6,7 @@ import math
 import tw2.forms as twf
 
 
-class OperationForm(BaseForm):
+class NumericOperationForm(BaseForm):
     class SigMulti(Multi):
         label='Signals: '
         track = twf.FileField(label=' ',
@@ -29,60 +29,53 @@ class OperationForm(BaseForm):
 meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
-in_parameters = [{'id': 'track', 'type': 'track', 'required': True},    # input parameters
+in_parameters = [{'id': 'track', 'type': 'track', 'required': True},
                 {'id': 'assembly', 'type': 'assembly', 'required': True},
                 {'id': 'function', 'type': 'function', 'required': True},
                 {'id': 'format', 'type': 'format'}]
-out_parameters = [{'id': 'output', 'type': 'file'}]    # output parameters
+out_parameters = [{'id': 'output', 'type': 'file'}]
 
 
-class OperationPlugin(BasePlugin):
+class NumericOperationPlugin(BasePlugin):
     description = """Apply a numeric transformation to the track scores - such as logarithm or square root."""
     info = {
-        'title': 'Operation',
+        'title': 'Numeric Operation',
         'description': description,
-        'path': ['Signal', 'Operation'],
-        'output': OperationForm,
+        'path': ['Signal', 'Numeric Operation'],
+        'output': NumericOperationForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
         }
     def __call__(self, **kw):
-        def method(x):    # the function that is applied to the track score
-            if kw.get('function')=="log2":
-                return math.log( x,2) ;
-            elif kw.get('function')=="log10":
-                return math.log10( x) ;
-            elif kw.get('function')=="sqrt":
+        def method(x):    # the function that is applied to the scores
+            if kw['function']=="log2":
+                return math.log(x,2) ;
+            elif kw['function']=="log10":
+                return math.log10(x) ;
+            elif kw['function']=="sqrt":
                 return math.sqrt(x) ;
             else:
                 return math.log(x) ;
 
-        assembly_id = kw.get('assembly') #or None
-        assembly = genrep.Assembly(assembly_id)
-        length=len( kw.get('track') )    # number of tracks
-        for i in range( length  ) :
+        assembly = genrep.Assembly(kw.get('assembly'))
+        for i in range(len(kw.get('track'))) :
             tname = kw['track'][i]
             tinput = track(tname, chrmeta=kw.get('assembly'))
-            (filepath, filename) = os.path.split(tname)    # ( path, name of one track)
-            (shortname, extension) = os.path.splitext(filename)    # (name of one track (without path) , extension)
-            modif= kw['function']
+            (filepath, filename) = os.path.split(tname)
+            (shortname, extension) = os.path.splitext(filename)
+            modif = kw['function']
             if not isinstance(tinput, (tuple,list)):
                 tinput = [tinput]
-            for trackFILE in tinput:
-                if  "score" in trackFILE.fields:
-                    if kw.get('format')=="":
-                        #create a temporary directory, name a new file in this directory
-                        output1_name = self.temporary_path( shortname+'_'+kw.get('assembly')+'_'+modif+str(extension))
-                        t1_name = track(output1_name,chrmeta=assembly.chrmeta) #define an output track file in the temporary directory
-                        #apply method function to the score field trackFILE
-                        #create and write in the new file
-                        t1_name.write(common.apply(trackFILE.read(),'score',method ) ,mode='write')
-                        t1_name.close()
-                        trackFILE.close()
-                    if kw.get('format')!="":
-                        output2_name = self.temporary_path( shortname +'_'+kw.get('assembly')+'_'+ modif +'.'+ kw.get('format') )
-                        t2_name = track(output2_name,chrmeta=assembly.chrmeta)
-                        t2_name.write(common.apply(trackFILE.read(),'score',method ) ,mode='write')
-                        t2_name.close()
-                        trackFILE.close()
+            for t in tinput:
+                if  "score" in t.fields:
+                    if kw['format']=="":
+                        out_name = shortname+'_'+modif+str(extension)
+                    else:
+                        out_name = shortname+'_'+modif +'.'+kw['format']
+                    output_name = self.temporary_path(out_name)
+                    out_track = track(output_name,chrmeta=assembly.chrmeta)
+                    out_track.write(common.apply(t.read(),'score',method), mode='write')
+                    out_track.close()
+                    t.close()
+        return self.display_time()

@@ -1,13 +1,13 @@
 from unittest2 import TestCase, skip
-from bsPlugins.Operation import OperationPlugin
+from bsPlugins.NumericOperation import NumericOperationPlugin
 from bbcflib.btrack import track
 import os
 
 path = './testing_files/'
 
-class Test_OperationPlugin(TestCase):
+class Test_NumericOperationPlugin(TestCase):
     def setUp(self):
-        self.plugin = OperationPlugin()
+        self.plugin = NumericOperationPlugin()
 
     def test_with_signals(self):
         self.plugin(**{'track':[path+'CTCF_deconv.sql'],
