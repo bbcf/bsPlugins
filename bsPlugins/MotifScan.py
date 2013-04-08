@@ -17,7 +17,7 @@ class MotifScanForm(BaseForm):
     assembly_list = g.assemblies_available()
 
     child = twd.HidingTableLayout()
-    input_type = twd.HidingRadioButtonList(label='Sequence source: ', 
+    input_type = twd.HidingRadioButtonList(label='Sequence source: ',
                                            options=input_types,
                                            mapping=input_map)
     s1 = twf.Spacer()
@@ -50,7 +50,7 @@ in_parameters = [{'id': 'input_type', 'type': 'radio'},
                  {'id': 'threshold', 'type': 'float', 'required': True}]
 out_parameters = [{'id': 'motif_track', 'type': 'track'}]
 
-class MotifScanPlugin(OperationPlugin):
+class MotifScanPlugin(BasePlugin):
     info = {
         'title': 'Motif scanner',
         'description': 'Scan motifs PWM on a set of a sequences',
@@ -70,17 +70,17 @@ class MotifScanPlugin(OperationPlugin):
         motifs_list = kw.get('motifs')
         motif_add = kw.get('customMotif')
         threshold = float(kw.get('threshold') or 0)
- 
+
         if motifs_list is None: motifs_list = []
         if not isinstance(motifs_list, list): motifs_list = [motifs_list]
- 
+
         if background is None and assembly_id is None:
             background = self.temporary_path(fname='background.txt')
             stats = {'A': 0.25,'C': 0.25, 'G': 0.25, 'T': 0.25}
             if fasta_file:
                 with execution(None) as ex:
                     stats = fasta_composition(ex,fasta_file,frequency=True)
-            with open(background,"w") as bgr: 
+            with open(background,"w") as bgr:
                 bgr.write(" ".join(["1"]+[str(stats[n]) for n in ['A','C','G','T']]))
         if assembly_id is not None:
             assembly = genrep.Assembly(assembly_id)
@@ -104,8 +104,8 @@ class MotifScanPlugin(OperationPlugin):
 
         track_output = self.temporary_path(fname='motif_scan', ext="sql")
         with execution(None) as ex:
-            _ = save_motif_profile( ex, motifs, assembly, regions_file, fasta_file, 
-                                    background=background, threshold=threshold, 
+            _ = save_motif_profile( ex, motifs, assembly, regions_file, fasta_file,
+                                    background=background, threshold=threshold,
                                     output = track_output,
                                     description=None, via='local' )
         self.new_file(track_output, 'motif_track')

@@ -2,7 +2,7 @@ from bsPlugins import *
 import rpy2.robjects as robjects
 import os, tarfile
 
-mart_map = [("GRCh37.p5",'hg19'), ("NCBIM37",'mm9'), ("EF3","sacCer2"), 
+mart_map = [("GRCh37.p5",'hg19'), ("NCBIM37",'mm9'), ("EF3","sacCer2"),
             ("BDGP5.25",'dm3'),("Zv9",'zv9')]
 
 default_path = "/mnt/common/epfl/share"
@@ -29,7 +29,7 @@ out_parameters = [{'id': 'TopGO_table_tar', 'type': 'file'},
                   {'id': 'TopGO_plots', 'type': 'pdf'}]
 
 
-class TopGoPlugin(OperationPlugin):
+class TopGoPlugin(BasePlugin):
 
     info = {
         'title': 'TopGo',
@@ -49,7 +49,7 @@ class TopGoPlugin(OperationPlugin):
         script_path = kw.get("script_path",default_path)
         pdf = self.temporary_path(fname='TopGO_plots.pdf')
         table = self.temporary_path(fname='TopGO_tables.txt')
-       
+
         robjects.r("""
 source("%s/TopGo.R")
 out = multi_topGo("%s","%s","%s","%s")
@@ -62,7 +62,7 @@ out = multi_topGo("%s","%s","%s","%s")
             tar_pdf = tarfile.open(tar_pdf_name, "w:gz")
             [tar_pdf.add(f) for f in pdf_list]
             tar_pdf.close()
-            
+
             tar_table_name = self.temporary_path(fname='TopGO_tables.tgz')
             tar_table = tarfile.open(tar_table_name, "w:gz")
             [tar_table.add(f) for f in table_list]
@@ -72,5 +72,5 @@ out = multi_topGo("%s","%s","%s","%s")
         else:
             self.new_file(pdf_list[0],'TopGO_plots')
             self.new_file(table_list[0],'TopGO_table')
-                
+
         return self.display_time()

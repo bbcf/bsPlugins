@@ -78,7 +78,7 @@ in_parameters = [
 out_parameters = [{'id': 'MA-plot', 'type': 'file'}]
 
 
-class MaplotPlugin(OperationPlugin):
+class MaplotPlugin(BasePlugin):
 
     description = """Creates an MA-plot to compare levels of expression of genomic features
 across two samples. <br /><br />

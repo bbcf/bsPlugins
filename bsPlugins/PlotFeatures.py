@@ -51,7 +51,7 @@ in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': True, 'required'
 out_parameters = [{'id': 'plot_features', 'type': 'pdf'}]
 
 
-class PlotFeaturesPlugin(OperationPlugin):
+class PlotFeaturesPlugin(BasePlugin):
 
     info = {
         'title': 'Plot signal',
@@ -68,14 +68,14 @@ class PlotFeaturesPlugin(OperationPlugin):
         features = track(kw.get('features'), chrmeta=chrmeta)
         signals = kw.get('signals', [])
         if not isinstance(signals, list): signals = [signals]
-        snames = [os.path.splitext(os.path.basename(sig))[0] 
+        snames = [os.path.splitext(os.path.basename(sig))[0]
                   for sig in signals]
         signals = [track(sig) for sig in signals]
         labels = None
         data = None
         for chrom in features.chrmeta:
             _l, _d = feature_matrix([s.read(chrom) for s in signals],
-                                    features.read(chrom), segment=True, 
+                                    features.read(chrom), segment=True,
                                     nbins=nbins, upstream=upstr, downstream=downstr)
             if _d.size == 0:
                 continue
@@ -114,12 +114,12 @@ class PlotFeaturesPlugin(OperationPlugin):
             ymax = data.max()
             for reg in range(nplot-1):
                 lineplot(X, [data[reg, :, n] for n in range(data.shape[-1])],
-                         output=pdf, new=new, last=False, mfrow=mfrow, 
+                         output=pdf, new=new, last=False, mfrow=mfrow,
                          main=labels[reg], ylim=(ymin,ymax))
                 new = False
                 mfrow = []
             lineplot(X, [data[nplot-1, :, n] for n in range(data.shape[-1])],
-                     output=pdf, new=new, last=True, main=labels[-1], 
+                     output=pdf, new=new, last=True, main=labels[-1],
                      legend=snames, ylim=(ymin,ymax))
         else:
             raise ValueError("Mode not implemented: %s" % kw['mode'])

@@ -87,7 +87,7 @@ in_parameters = [
 out_parameters = [{'id': 'differential_expression', 'type': 'file'}]
 
 
-class DESeqPlugin(OperationPlugin):
+class DESeqPlugin(BasePlugin):
 
     description = """Gets the score associated to each genomic feature in each sample and runs DESeq
 for differential analysis within them. It returns a tab-delimited file with the following fields:<br />

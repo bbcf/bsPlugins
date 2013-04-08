@@ -57,7 +57,7 @@ def _combine(func,output,**kw):
     return output
 
 
-class IntersectPlugin(OperationPlugin):
+class IntersectPlugin(BasePlugin):
     info = {
         'title': 'Intersection of a set of tracks',
         'description': 'Returns a new track with only regions covered in every input track.',
@@ -76,7 +76,7 @@ class IntersectPlugin(OperationPlugin):
         self.new_file(output, 'combined')
         return self.display_time()
 
-class UnionPlugin(OperationPlugin):
+class UnionPlugin(BasePlugin):
     info = {
         'title': 'Union of a set of tracks',
         'description': 'Returns a new track with regions covered in at least one of the input tracks.',
@@ -95,7 +95,7 @@ class UnionPlugin(OperationPlugin):
         self.new_file(output, 'combined')
         return self.display_time()
 
-class SubtractPlugin(OperationPlugin):
+class SubtractPlugin(BasePlugin):
     info = {
         'title': 'Subtract',
         'description': 'Returns a new track with regions present in the first input track, but not in the others.',
@@ -114,7 +114,7 @@ class SubtractPlugin(OperationPlugin):
         self.new_file(output, 'combined')
         return self.display_time()
 
-class ComplementPlugin(OperationPlugin):
+class ComplementPlugin(BasePlugin):
     info = {
         'title': 'Complement',
         'description': 'Returns a new track with all regions not covered by a set of input tracks.',

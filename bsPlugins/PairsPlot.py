@@ -64,7 +64,7 @@ in_parameters = [{'id': 'input_type', 'type': 'radio'},
 out_parameters = [{'id': 'plot_pairs', 'type': 'pdf'}]
 
 
-class PairsPlotPlugin(OperationPlugin):
+class PairsPlotPlugin(BasePlugin):
 
     info = {
         'title': 'Pairwise plots',

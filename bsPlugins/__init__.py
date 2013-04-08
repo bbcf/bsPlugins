@@ -7,7 +7,7 @@ except ImportError:
     from tw0 import twf, twc, twd, twb
 
 
-from base import OperationPlugin
+from base import BasePlugin
 try:
     from bs.operations.base import BaseForm, Multi, DynForm
 except ImportError:

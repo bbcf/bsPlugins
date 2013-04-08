@@ -43,7 +43,7 @@ class Bam2DensityForm(BaseForm):
     submit = twf.SubmitButton(id="submit", value='bam2density')
 
 
-class Bam2DensityPlugin(OperationPlugin):
+class Bam2DensityPlugin(BasePlugin):
 
     info = {
         'title': 'Bam2density',

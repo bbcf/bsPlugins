@@ -39,7 +39,7 @@ in_parameters = [{'id': 'track', 'type': 'track', 'required': True},
 out_parameters = [{'id': 'smoothed_track', 'type': 'track'}]
 
 
-class SmoothingPlugin(OperationPlugin):
+class SmoothingPlugin(BasePlugin):
 
     info = {
         'title': 'Window smoothing',

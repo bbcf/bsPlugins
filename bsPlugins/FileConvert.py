@@ -39,7 +39,7 @@ in_parameters = [{'id': 'infile', 'type': 'track', 'required': True},
 out_parameters = [{'id': 'converted_file', 'type': 'track'}]
 
 
-class FileConvertPlugin(OperationPlugin):
+class FileConvertPlugin(BasePlugin):
     info = {
         'title': 'Convert file',
         'description': 'Convert a file to a different format',

@@ -33,7 +33,7 @@ in_parameters = [{'id': 'forward', 'type': 'track', 'required': True},
 out_parameters = [{'id': 'density_merged', 'type': 'track'}]
 
 
-class MergeTracksPlugin(OperationPlugin):
+class MergeTracksPlugin(BasePlugin):
 
     info = {
         'title': 'Merge Tracks',

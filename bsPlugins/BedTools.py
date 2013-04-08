@@ -120,7 +120,7 @@ in_parameters = all_file_params + other_params
 out_parameters = [{'id': 'bedtools_result', 'type': 'file'}]
 
 
-class BedToolsPlugin(OperationPlugin):
+class BedToolsPlugin(BasePlugin):
 
     info = {
         'title': 'BedTools',

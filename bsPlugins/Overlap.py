@@ -53,7 +53,7 @@ in_parameters = [{'id': 'filter', 'type': 'track', 'required': True},
 out_parameters = [{'id': 'filtered', 'type': 'track'}]
 
 
-class OverlapPlugin(OperationPlugin):
+class OverlapPlugin(BasePlugin):
     info = {
         'title': 'Overlap',
         'description': "Returns only the regions of the first input file that overlap \

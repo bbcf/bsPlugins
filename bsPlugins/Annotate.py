@@ -42,7 +42,7 @@ class AnnotateForm(BaseForm):
     submit = twf.SubmitButton(id="submit", value="Annotate")
 
 
-class AnnotatePlugin(OperationPlugin):
+class AnnotatePlugin(BasePlugin):
 
     info = {
         'title': 'Annotate',

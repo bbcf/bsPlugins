@@ -11,7 +11,7 @@ random_name = lambda x: ''.join(random.choice(string.ascii_lowercase + string.di
 TMP_DIR = '.'
 
 
-class OperationPlugin(object):
+class BasePlugin(object):
 
     bs_plugin = 'bs-operation'
 

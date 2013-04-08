@@ -61,7 +61,7 @@ in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': True, 'required'
 out_parameters = [{'id': 'features_quantification', 'type': 'track'}]
 
 
-class QuantifyTablePlugin(OperationPlugin):
+class QuantifyTablePlugin(BasePlugin):
     info = {
         'title': 'Signal quantification',
         'description': 'Quantify a signal track on a set of regions',
