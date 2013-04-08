@@ -12,14 +12,20 @@ class OverlapForm(BaseForm):
     feature_type = twd.HidingSingleSelectField(label='Input type: ',
        options=ftypes, prompt_text=None,
        mapping={ftypes[-1][0]: ['features'],
-                            1: ['upstream','downstream']},
+                            1: ['upstream_1','downstream_1']},
        help_text='Choose a feature set or upload your own',
        validator=twc.Validator(required=True))
     features = twf.FileField(label='Custom file: ',
         help_text='Upload your own file',
         validator=twf.FileValidator(required=True))
-    filter = twf.FileField(label='Filter: ',
-                           help_text='Filter',
+    filter_type = twd.HidingSingleSelectField(label='Filter type: ',
+       options=ftypes, prompt_text=None,
+       mapping={ftypes[-1][0]: ['features'],
+                            1: ['upstream_2','downstream_2']},
+       help_text='Choose a filter set or upload your own',
+       validator=twc.Validator(required=True))
+    filter = twf.FileField(label='Custom Filter file: ',
+                           help_text='Upload your own file',
                            validator=twf.FileValidator(required=True))
     format = twf.SingleSelectField(label='Output format: ',
         options=["txt","bed","sql","bedGraph","bigWig"],
@@ -28,11 +34,19 @@ class OverlapForm(BaseForm):
     assembly = twf.SingleSelectField(label='Assembly: ',
         options=genrep.GenRep().assemblies_available(),
         help_text='Reference genome')
-    upstream = twf.TextField(label='Promoter upstream distance: ',
+    upstream_1 = twf.TextField(label='Promoter upstream distance: ',
         validator=twc.IntValidator(required=True),
         value=prom_up_def,
         help_text='Size of promoter upstream of TSS')
-    downstream = twf.TextField(label='Promoter downstream distance: ',
+    downstream_1 = twf.TextField(label='Promoter downstream distance: ',
+        validator=twc.IntValidator(required=True),
+        value=prom_down_def,
+        help_text='Size of promoter downstream of TSS')
+    upstream_2 = twf.TextField(label='Promoter upstream distance: ',
+        validator=twc.IntValidator(required=True),
+        value=prom_up_def,
+        help_text='Size of promoter upstream of TSS')
+    downstream_2 = twf.TextField(label='Promoter downstream distance: ',
         validator=twc.IntValidator(required=True),
         value=prom_down_def,
         help_text='Size of promoter downstream of TSS')
@@ -43,13 +57,16 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'filter', 'type': 'track', 'required': True},
+in_parameters = [{'id': 'filter', 'type': 'userfile', 'required': True},
+                 {'id': 'filter_type', 'type': 'list'},
                  {'id': 'feature_type', 'type': 'list'},
-                 {'id': 'features', 'type': 'userfile'},
+                 {'id': 'features', 'type': 'userfile', 'required': True},
                  {'id': 'format', 'type': 'text'},
                  {'id': 'assembly', 'type': 'assembly'},
-                 {'id': 'upstream', 'type': 'int', 'required': True},
-                 {'id': 'downstream', 'type': 'int', 'required': True}]
+                 {'id': 'upstream_1', 'type': 'int'},
+                 {'id': 'downstream_1', 'type': 'int'},
+                 {'id': 'upstream_2', 'type': 'int'},
+                 {'id': 'downstream_2', 'type': 'int'}]
 out_parameters = [{'id': 'filtered', 'type': 'track'}]
 
 
@@ -82,8 +99,8 @@ class OverlapPlugin(BasePlugin):
         # Set features track
         if feature_type == 0: features = genes
         elif feature_type == 1:
-            prom_pars = {'before_start': int(kw.get('upstream') or prom_up_def),
-                         'after_start': int(kw.get('downstream') or prom_down_def),
+            prom_pars = {'before_start': int(kw.get('upstream_1') or prom_up_def),
+                         'after_start': int(kw.get('downstream_1') or prom_down_def),
                          'on_strand': True}
             features = lambda c: neighborhood(genes(c), **prom_pars)
         elif feature_type == 2: features = exons
@@ -93,6 +110,20 @@ class OverlapPlugin(BasePlugin):
             chrmeta = _t.chrmeta
             features = _t.read
         else: raise ValueError("Take feature_type in %s."%ftypes)
+        # Set filter track
+        if filter_type == 0: filter = genes
+        elif filter_type == 1:
+            prom_pars = {'before_start': int(kw.get('upstream_2') or prom_up_def),
+                         'after_start': int(kw.get('downstream_2') or prom_down_def),
+                         'on_strand': True}
+            filter = lambda c: neighborhood(genes(c), **prom_pars)
+        elif filter_type == 2: filter = exons
+        elif filter_type == 3:
+            assert os.path.exists(str(kw.get('filter'))), "Filter file not found: '%s'"%kw.get("filter")
+            _t = track(kw.get('filter'), chrmeta=chrmeta)
+            chrmeta = _t.chrmeta
+            features = _t.read
+        else: raise ValueError("Take filter_type in %s."%ftypes)
         # Main
         tfilter = track(filter,chrmeta=chrmeta)
         format = kw.get('format',tfilter.format)
