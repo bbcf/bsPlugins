@@ -112,7 +112,7 @@ The input can be of two different types: <br />
     info = {
         'title': 'Differential expression analysis',
         'description': description,
-        'path': ['Signal', 'DE analysis'],
+        'path': ['Analysis', 'DE analysis'],
         'output': DESeqForm,
         'in': in_parameters,
         'out': out_parameters,

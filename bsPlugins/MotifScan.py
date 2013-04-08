@@ -54,7 +54,7 @@ class MotifScanPlugin(BasePlugin):
     info = {
         'title': 'Motif scanner',
         'description': 'Scan motifs PWM on a set of a sequences',
-        'path': ['Signal', 'Motif scanner'],
+        'path': ['Sequence analysis', 'Motif scanner'],
         'output': MotifScanForm,
         'in': in_parameters,
         'out': out_parameters,

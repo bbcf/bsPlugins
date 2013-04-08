@@ -125,7 +125,7 @@ class BedToolsPlugin(BasePlugin):
     info = {
         'title': 'BedTools',
         'description': 'Bedtools collection',
-        'path': ['Features', 'Bedtools'],
+        'path': ['Intervals', 'Bedtools'],
         'output': BedToolsForm,
         'in': in_parameters,
         'out': out_parameters,

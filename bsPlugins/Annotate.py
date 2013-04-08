@@ -47,7 +47,7 @@ class AnnotatePlugin(BasePlugin):
     info = {
         'title': 'Annotate',
         'description': 'Associate features with genome annotations',
-        'path': ['Features', 'Annotate'],
+        'path': ['Analysis', 'Annotate'],
         'output': AnnotateForm,
         'in': in_parameters,
         'out': out_parameters,

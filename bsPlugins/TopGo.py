@@ -34,7 +34,7 @@ class TopGoPlugin(BasePlugin):
     info = {
         'title': 'TopGo',
         'description': 'Makes a GO analysis on a list of Ensembl IDs',
-        'path': ['Features', 'TopGo'],
+        'path': ['Analysis', 'TopGo'],
         'output': TopGoForm,
         'in': in_parameters,
         'out': out_parameters,
