@@ -58,7 +58,7 @@ class OverlapPlugin(BasePlugin):
         'title': 'Overlap',
         'description': "Returns only the regions of the first input file that overlap \
                         (or contain) some feature from the second ('filter').",
-        'path': ['Signal', 'Overlap'],
+        'path': ['Features', 'Overlap'],
         'output': OverlapForm,
         'in': in_parameters,
         'out': out_parameters,
