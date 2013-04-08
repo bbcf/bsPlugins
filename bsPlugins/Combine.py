@@ -61,7 +61,7 @@ class IntersectPlugin(BasePlugin):
     info = {
         'title': 'Intersection of a set of tracks',
         'description': 'Returns a new track with only regions covered in every input track.',
-        'path': ['Features', 'Intersect'],
+        'path': ['Intervals', 'Intersect'],
         'output': CombineForm,
         'in': in_parameters,
         'out': out_parameters,

@@ -97,7 +97,7 @@ The input can be of two different types: <br />
     info = {
         'title': 'MA-plot',
         'description': description,
-        'path': ['Signal', 'MA-plot'],
+        'path': ['Graphics', 'MA-plot'],
         'output': MaplotForm,
         'in': in_parameters,
         'out': out_parameters,

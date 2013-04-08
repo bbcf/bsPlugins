@@ -65,7 +65,7 @@ class QuantifyTablePlugin(BasePlugin):
     info = {
         'title': 'Signal quantification',
         'description': 'Quantify a signal track on a set of regions',
-        'path': ['Signal', 'Quantify features'],
+        'path': ['Analysis', 'Quantify features'],
         'output': QuantifyTableForm,
         'in': in_parameters,
         'out': out_parameters,

@@ -36,7 +36,7 @@ out_parameters = [{'id': 'density_merged', 'type': 'track'}]
 class MergeTracksPlugin(BasePlugin):
 
     info = {
-        'title': 'Merge Tracks',
+        'title': 'Merge strands',
         'description': 'Shift and average scores from forward and reverse strand densities',
         'path': ['Signal', 'Merge strands'],
         'output': MergeTracksForm,

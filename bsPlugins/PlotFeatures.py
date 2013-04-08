@@ -56,7 +56,7 @@ class PlotFeaturesPlugin(BasePlugin):
     info = {
         'title': 'Plot signal',
         'description': 'Plot signal from a selection of regions',
-        'path': ['Plot', 'Plot features'],
+        'path': ['Graphics', 'Plot features'],
         'output': PlotFeaturesForm,
         'in': in_parameters,
         'out': out_parameters,

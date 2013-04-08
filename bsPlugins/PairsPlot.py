@@ -69,7 +69,7 @@ class PairsPlotPlugin(BasePlugin):
     info = {
         'title': 'Pairwise plots',
         'description': 'Plots pairwise comparisons between signal tracks',
-        'path': ['Plot', 'Plot pairs'],
+        'path': ['Graphics', 'Plot pairs'],
         'output': PairsPlotForm,
         'in': in_parameters,
         'out': out_parameters,
