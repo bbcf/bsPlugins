@@ -20,7 +20,7 @@ class OverlapForm(BaseForm):
         validator=twf.FileValidator(required=True))
     filter_type = twd.HidingSingleSelectField(label='Filter type: ',
        options=ftypes, prompt_text=None,
-       mapping={ftypes[-1][0]: ['features'],
+       mapping={ftypes[-1][0]: ['filter'],
                             1: ['upstream_2','downstream_2']},
        help_text='Choose a filter set or upload your own',
        validator=twc.Validator(required=True))
