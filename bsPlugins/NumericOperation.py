@@ -71,9 +71,9 @@ class NumericOperationPlugin(BasePlugin):
                     out_name = shortname+'_'+modif+str(extension)
                 else:
                     out_name = shortname+'_'+modif +'.'+kw['format']
-                    output_name = self.temporary_path(out_name)
-                    out_track = track(output_name,chrmeta=assembly.chrmeta)
-                    out_track.write(common.apply(tinput.read(),'score',method), mode='write')
-                    out_track.close()
+                output_name = self.temporary_path(out_name)
+                out_track = track(output_name,chrmeta=assembly.chrmeta)
+                out_track.write(common.apply(tinput.read(),'score',method), mode='write')
+                out_track.close()
             tinput.close()
         return self.display_time()
