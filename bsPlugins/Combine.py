@@ -69,7 +69,6 @@ class IntersectPlugin(BasePlugin):
         }
     def _func(self,X):
         return all(X)
-
     def __call__(self, **kw):
         output = self.temporary_path(fname='combined.')
         output = _combine(self._func,output,**kw)
@@ -80,7 +79,7 @@ class UnionPlugin(BasePlugin):
     info = {
         'title': 'Union of a set of tracks',
         'description': 'Returns a new track with regions covered in at least one of the input tracks.',
-        'path': ['Features', 'Union'],
+        'path': ['Intervals', 'Union'],
         'output': CombineForm,
         'in': in_parameters,
         'out': out_parameters,
@@ -88,7 +87,6 @@ class UnionPlugin(BasePlugin):
         }
     def _func(self,X):
         return any(X)
-
     def __call__(self, **kw):
         output = self.temporary_path(fname='combined.')
         output = _combine(self._func,output,**kw)
@@ -99,7 +97,7 @@ class SubtractPlugin(BasePlugin):
     info = {
         'title': 'Subtract',
         'description': 'Returns a new track with regions present in the first input track, but not in the others.',
-        'path': ['Features', 'Subtract'],
+        'path': ['Intervals', 'Subtract'],
         'output': CombineForm,
         'in': in_parameters,
         'out': out_parameters,
@@ -107,7 +105,6 @@ class SubtractPlugin(BasePlugin):
         }
     def _func(self,X):
         return X[0] and not any(X[1:])
-
     def __call__(self, **kw):
         output = self.temporary_path(fname='combined.')
         output = _combine(self._func,output,**kw)
@@ -118,7 +115,7 @@ class ComplementPlugin(BasePlugin):
     info = {
         'title': 'Complement',
         'description': 'Returns a new track with all regions not covered by a set of input tracks.',
-        'path': ['Features', 'Complement'],
+        'path': ['Intervals', 'Complement'],
         'output': CombineForm,
         'in': in_parameters,
         'out': out_parameters,
@@ -128,7 +125,6 @@ class ComplementPlugin(BasePlugin):
         """Same as for Subtract, since Complement is subtraction from whole chromosome of a set of features.
            Same as the others with func = 'not any(X)' would forget the extremities of the chromosome."""
         return X[0] and not any(X[1:])
-
     def __call__(self, **kw):
         # Create a track with the whole chromosome
         chrmeta = _get_chrmeta(**kw)
