@@ -1,7 +1,6 @@
 from bsPlugins import *
 from bbcflib.btrack import track,FeatureStream
 from bbcflib import genrep
-from operator import itemgetter
 import os
 
 
