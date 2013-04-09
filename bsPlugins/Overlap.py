@@ -3,10 +3,6 @@ from bbcflib.bFlatMajor.stream import overlap
 from bbcflib.btrack import track
 from bbcflib import genrep
 
-prom_up_def = 1000
-prom_down_def = 100
-ftypes = [(0,'gene bodies'), (1,'gene promoters'), (2,'exons'), (3,'custom upload')]
-
 class OverlapForm(BaseForm):
     child = twd.HidingTableLayout()
     features = twf.BsFileField(label='Features file: ',
@@ -54,10 +50,6 @@ class OverlapPlugin(BasePlugin):
         if assembly_id:
             assembly = genrep.Assembly(assembly_id)
             chrmeta = assembly.chrmeta
-            genes = assembly.gene_track
-            exons = assembly.exon_track
-        elif not(feature_type == 3):
-            raise ValueError("Please specify an assembly")
         # Set features track
         assert os.path.exists(str(kw.get('features'))), "Features file not found: '%s'"%kw.get("features")
         features = track(kw.get('features'), chrmeta=chrmeta or None )
