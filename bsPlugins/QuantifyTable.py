@@ -25,7 +25,7 @@ class QuantifyTableForm(BaseForm):
                                                mapping={ftypes[-1][0]: ['features'],
                                                         1: ['upstream', 'downstream']},
                                                help_text='Choose a feature set or upload your own',
-        validator=twc.Validator(required=True))
+                                               validator=twc.Validator(required=True))
     features = twf.FileField(label='Custom feature set: ',
         help_text='Select a feature file (e.g. bed)',
         validator=twf.FileValidator(required=True))

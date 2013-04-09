@@ -8,7 +8,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'sample', 'type': 'track', 'required': True},
+in_parameters = [{'id': 'sample', 'type': 'bam', 'required': True},
                  {'id': 'control', 'type': 'bam'},
                  {'id': 'format', 'type': 'text'},
                  {'id': 'normalization', 'type': 'int'},
