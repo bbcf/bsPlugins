@@ -1,6 +1,5 @@
 from bsPlugins import *
 from bein import execution
-from bbcflib import genrep
 from bbcflib.btrack import track, convert
 from bbcflib.mapseq import bam_to_density
 
@@ -12,7 +11,6 @@ meta = {'version': "1.0.0",
 in_parameters = [{'id': 'sample', 'type': 'track', 'required': True},
                  {'id': 'control', 'type': 'bam'},
                  {'id': 'format', 'type': 'text'},
-                 {'id': 'assembly', 'type': 'assembly'},
                  {'id': 'normalization', 'type': 'int'},
                  {'id': 'merge_strands', 'type': 'int'},
                  {'id': 'read_extension', 'type': 'int'}]
@@ -29,10 +27,6 @@ class Bam2DensityForm(BaseForm):
                            validator=twf.FileValidator(required=True))
     control = twf.FileField(label='Control BAM: ',
                             help_text='Select control bam file to compute enrichment')
-    assembly = twf.SingleSelectField(label='Assembly: ',
-                                    options=genrep.GenRep().assemblies_available(),
-                                    validator=twc.Validator(required=True),
-                                    help_text='Reference genome')
     format = twf.SingleSelectField(label='Output format: ',
                                    options=["sql", "bedGraph", "bigWig"],
                                    prompt_text=None,
@@ -62,7 +56,6 @@ class Bam2DensityPlugin(BasePlugin):
         }
 
     def __call__(self, **kw):
-        assembly = genrep.Assembly(kw['assembly'])
         b2wargs = []
         control = None
         sample = kw.get("sample")
@@ -74,7 +67,7 @@ class Bam2DensityPlugin(BasePlugin):
             control = os.path.abspath(control)
         sample = os.path.abspath(sample)
         nreads = int(kw.get('normalization') or -1)
-        bamfile = track(sample, format='bam', chrmeta=assembly)
+        bamfile = track(sample, format='bam')
         if nreads < 0:
             if control is None:
                 nreads = len(set((t[4] for t in bamfile.read())))
