@@ -22,11 +22,11 @@ __requires__ = ["pysam"]
 
 
 class Bam2DensityForm(BaseForm):
-    sample = twf.FileField(label='Test BAM: ',
-                           help_text='Select main bam file',
-                           validator=twf.FileValidator(required=True))
-    control = twf.FileField(label='Control BAM: ',
-                            help_text='Select control bam file to compute enrichment')
+    sample = twb.BsFileField(label='Test BAM: ',
+                             help_text='Select main bam file',
+                             validator=twb.BsFileFieldValidator(required=True))
+    control = twb.BsFileField(label='Control BAM: ',
+                              help_text='Select control bam file to compute enrichment')
     format = twf.SingleSelectField(label='Output format: ',
                                    options=["sql", "bedGraph", "bigWig"],
                                    prompt_text=None,

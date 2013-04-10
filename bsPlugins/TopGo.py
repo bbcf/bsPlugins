@@ -8,9 +8,9 @@ mart_map = [("GRCh37.p5",'hg19'), ("NCBIM37",'mm9'), ("EF3","sacCer2"),
 default_path = "/mnt/common/epfl/share"
 
 class TopGoForm(BaseForm):
-    gene_list = twf.FileField(label='Genes: ',
+    gene_list = twb.BsFileField(label='Genes: ',
                               help_text='Provide a list of ensmbl IDs',
-                              validator=twf.FileValidator(required=True))
+                              validator=twb.BsFileFieldValidator(required=True))
     assembly = twf.SingleSelectField(label='Assembly: ',
                                      options=mart_map,
                                      help_text='Reference genome')

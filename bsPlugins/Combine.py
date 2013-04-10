@@ -6,11 +6,12 @@ from bbcflib import genrep
 
 class CombineForm(BaseForm):
     child = twd.HidingTableLayout()
-    class SigMulti(Multi):
-        label='Signals: '
-        signals = twf.FileField(label=' ',
-                                help_text='Select files to combine',
-                                validator=twf.FileValidator(required=True))
+
+    class SigMulti(twb.BsMultiple):
+        label = 'Signals: '
+        signals = twb.BsFileField(label=' ',
+                                  help_text='Select files to combine',
+                                  validator=twb.BsFileFieldValidator(required=True))
     format = twf.SingleSelectField(label='Output format: ',
         options=["sql","bed","sga"],
         validator=twc.Validator(required=True),
@@ -25,10 +26,11 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': True, 'required': True},
+in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': 'SigMulti', 'required': True},
                  {'id': 'format', 'type': 'text'},
                  {'id': 'assembly', 'type': 'assembly'},
-                ]
+                 ]
+
 out_parameters = [{'id': 'combined', 'type': 'track'}]
 
 
@@ -45,9 +47,11 @@ def _combine(func,output,**kw):
     format = kw.get('format','sql')
     output += format
     signals = kw.get('signals', [])
-    if not isinstance(signals, list): signals = [signals]
+    signals = kw['SigMulti']['signals']
+    if not isinstance(signals, list):
+        signals = [signals]
     signals = [track(sig, chrmeta=chrmeta) for sig in signals]
-    tout = track(output, chrmeta=chrmeta, info={'datatype':'qualitative'})
+    tout = track(output, chrmeta=chrmeta, info={'datatype': 'qualitative'})
     for chrom in chrmeta:
         trackList = [sig.read(chrom) for sig in signals]
         res = combine(trackList, fn=func)

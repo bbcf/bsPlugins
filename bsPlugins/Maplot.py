@@ -20,9 +20,9 @@ class MaplotForm(BaseForm):
                  'Signals': ['Group1','Group2','feature_type','assembly'],},
         help_text='Select input type (Formatted table, or signal tracks)')
 
-    table = twf.FileField(label='Table: ',
+    table = twb.BsFileField(label='Table: ',
         help_text='Select scores table',
-        validator=twf.FileValidator(required=True))
+        validator=twb.BsFileFieldValidator(required=True))
 
     class Group1(Multi):
         label = "Signals group 1: "
@@ -41,9 +41,9 @@ class MaplotForm(BaseForm):
                  1: ['upstream', 'downstream']},
         help_text='Choose a feature set or upload your own',
         validator=twc.Validator(required=True))
-    features = twf.FileField(label='Custom feature set: ',
+    features = twb.BsFileField(label='Custom feature set: ',
         help_text='Select a feature file (e.g. bed)',
-        validator=twf.FileValidator())
+        validator=twb.BsFileFieldValidator())
     upstream = twf.TextField(label='Promoter upstream distance: ',
         validator=twc.IntValidator(required=True),
         value=prom_up_def,

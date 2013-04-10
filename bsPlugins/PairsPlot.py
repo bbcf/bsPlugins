@@ -24,13 +24,13 @@ class PairsPlotForm(BaseForm):
                                                validator=twc.Validator(required=True))
     class SigMulti(Multi):
         label='Signal: '
-        signals = twf.FileField(label=' ',
+        signals = twb.BsFileField(label=' ',
                                 help_text='Select signal file (.g. bedgraph)',
-                                validator=twf.FileValidator(required=True))
+                                validator=twb.BsFileFieldValidator(required=True))
 
-    features = twf.FileField(label='Custom feature set: ',
+    features = twb.BsFileField(label='Custom feature set: ',
                              help_text='Select a feature file (e.g. bed)',
-                             validator=twf.FileValidator())
+                             validator=twb.BsFileFieldValidator())
     upstream = twf.TextField(label='Promoter upstream distance: ',
                              validator=twc.IntValidator(required=True),
                              value=prom_up_def,

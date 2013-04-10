@@ -23,20 +23,20 @@ class DESeqForm(BaseForm):
                  'Signals': ['Group1','Group2','feature_type','assembly'],},
         help_text='Select input type (Formatted table, or signal tracks)')
 
-    table = twf.FileField(label='Table: ',
+    table = twb.BsFileField(label='Table: ',
         help_text='Select scores table',
-        validator=twf.FileValidator(required=True))
+        validator=twb.BsFileFieldValidator(required=True))
 
     class Group1(Multi):
         label = 'Signals group 1: '
-        signals1 = twf.FileField(label=' ',
+        signals1 = twb.BsFileField(label=' ',
             help_text='Select signal files (position and score, e.g. bedgraph)',
-            validator=twf.FileValidator(required=True))
+            validator=twb.BsFileFieldValidator(required=True))
     class Group2(Multi):
         label = 'Signals group 2: '
-        signals2 = twf.FileField(label=' ',
+        signals2 = twb.BsFileField(label=' ',
             help_text='Select signal files (position and score, e.g. bedgraph)',
-            validator=twf.FileValidator(required=True))
+            validator=twb.BsFileFieldValidator(required=True))
 
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
         options=ftypes, prompt_text=None,
@@ -49,9 +49,9 @@ class DESeqForm(BaseForm):
         signals = twb.BsFileField(label='Signal: ',
             help_text='Select signal file (position and score, e.g. bedgraph)',
             validator=twb.BsFileFieldValidator(required=True))
-    features = twf.FileField(label='Custom feature set: ',
+    features = twb.BsFileField(label='Custom feature set: ',
         help_text='Select a feature file (e.g. bed)',
-        validator=twf.FileValidator())
+        validator=twb.BsFileFieldValidator(required=True))
     upstream = twf.TextField(label='Promoter upstream distance: ',
         validator=twc.IntValidator(required=True),
         value=prom_up_def,

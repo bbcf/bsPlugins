@@ -13,9 +13,9 @@ class QuantifyTableForm(BaseForm):
 
     class SigMulti(Multi):
         label='Signals: '
-        signals = twf.FileField(label=' ',
+        signals = twb.BsFileField(label=' ',
                                 help_text='Select signal files (e.g. bedgraph)',
-                                validator=twf.FileValidator(required=True))
+                                validator=twb.BsFileFieldValidator(required=True))
 
     score_op = twf.SingleSelectField(label='Score operation: ',
                                      options=funcs, prompt_text=None,
@@ -26,9 +26,9 @@ class QuantifyTableForm(BaseForm):
                                                         1: ['upstream', 'downstream']},
                                                help_text='Choose a feature set or upload your own',
                                                validator=twc.Validator(required=True))
-    features = twf.FileField(label='Custom feature set: ',
+    features = twb.BsFileField(label='Custom feature set: ',
         help_text='Select a feature file (e.g. bed)',
-        validator=twf.FileValidator(required=True))
+        validator=twb.BsFileFieldValidator(required=True))
     format = twf.SingleSelectField(label='Output format: ',
         options=["txt", "sql"],
         validator=twc.Validator(required=True),

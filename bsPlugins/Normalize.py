@@ -10,10 +10,10 @@ __requires__ = ["numpy"]
 class NormalizeForm(BaseForm):
 
     child = twd.HidingTableLayout()
-    table = twf.FileField(
+    table = twb.BsFileField(
         label='Table: ',
         help_text='Select scores table',
-        validator=twf.FileValidator(required=True))
+        validator=twb.BsFileFieldValidator(required=True))
     method = twf.RadioButtonList(
         label='Method: ',
         options=['total','deseq','quantile'],

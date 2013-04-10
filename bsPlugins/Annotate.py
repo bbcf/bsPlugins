@@ -21,9 +21,9 @@ out_parameters = [{'id': 'table', 'type': 'file'}]
 
 
 class AnnotateForm(BaseForm):
-    track = twf.FileField(label='Features: ',
-                          help_text='Select features file (e.g. bed)',
-                          validator=twf.FileValidator(required=True))
+    track = twb.BsFileField(label='Features: ',
+                            help_text='Select features file (e.g. bed)',
+                            validator=twb.BsFileFieldValidator(required=True))
     assembly = twf.SingleSelectField(label='Assembly: ',
                                      options=genrep.GenRep().assemblies_available(),
                                      help_text='Reference genome')

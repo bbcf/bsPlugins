@@ -17,13 +17,13 @@ class PlotFeaturesForm(BaseForm):
 
     class SigMulti(Multi):
         label='Signal: '
-        signals = twf.FileField(label=' ',
+        signals = twb.BsFileField(label=' ',
                                 help_text='Select signal file (e.g. bedgraph)',
-                                validator=twf.FileValidator(required=True))
+                                validator=twb.BsFileFieldValidator(required=True))
 
-    features = twf.FileField(label='Features: ',
+    features = twb.BsFileField(label='Features: ',
                              help_text='Select a feature file (e.g. bed)',
-                             validator=twf.FileValidator())
+                             validator=twb.BsFileFieldValidator(required=True))
 
     mode = twf.SingleSelectField(label='Plot type: ',
                                  options=plot_types,

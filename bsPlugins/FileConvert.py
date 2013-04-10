@@ -9,8 +9,8 @@ format_list = ['bedgraph', 'wig', 'bed', 'sql', 'gff', 'sga', 'bigwig']
 class FileConvertForm(BaseForm):
     hover_help = True
     show_errors = True
-    infile = twf.FileField(label='File: ', help_text='Select file.',
-        validator=twf.FileValidator(required=True))
+    infile = twb.BsFileField(label='File: ', help_text='Select file.',
+        validator=twb.BsFileFieldValidator(required=True))
     child = twd.HidingTableLayout()
     to = twd.HidingSingleSelectField(label='Output format: ',
         options=format_list,  prompt_text=None,
