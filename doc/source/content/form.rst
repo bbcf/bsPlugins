@@ -12,7 +12,7 @@ FileField
 *********
 
 When your plugin needs file(s) as input, you will use FileField.
-Pay attention that **you must use class::tw2.bs.BsFileField**.
+Pay attention that **you must** use the class :class:`~tw2.bs.BsFileField`.
 They provide for each users the ability to, when a file is asked as input either provide a file form 
 their own computer or provide an URL which link to the file. Which is really useful when files are too big.
 If we get back on our example :download:`file <../../examples/Second.py>` and replace the *TextField* by a *FileField*::
@@ -33,7 +33,8 @@ set **multiple true** in the parameter description::
      parameters = {'in': [{'id': 'input', 'type': 'file', 'multiple': True}, ],
               ... }
 
-And then you must use class::twb.BsMultiple. It will look like this::
+And then you must use the class :class:`~twb.BsMultiple`.
+It will look like this::
     
     class MySimpleForm(BaseForm):
 
@@ -71,8 +72,8 @@ You can refer to the `toscawidget documentation on validation <http://tw2core.re
 BsFileField Validation
 ======================
 
-As class::twb.BsFileField are a bit specials, they have a special validator: class:: twb.BsFileFieldValidator. You 
-must use like that::
+As :class:`~twb.BsFielField` are a bit specials, they have a special validator, the class :class:`~twb.BsFielFieldValidator`.
+You must use like that::
 
     from bsPlugins import twb
     class MySimpleForm(BaseForm):
