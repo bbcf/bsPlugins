@@ -6,7 +6,6 @@ import rpy2.robjects.numpy2ri as numpy2ri
 import numpy
 import os,shutil
 import itertools
-import tw2.bs as twb
 
 ftypes = [(0, 'genes bodies'), (1, 'gene promoters'), (2, 'exons'), (3, 'custom upload')]
 prom_up_def = 1000
