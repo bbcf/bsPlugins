@@ -1,4 +1,4 @@
-def BsMultiple(*args,**kwargs):
+class BsMultiple(object):
     pass
 
 def BsFileField(*args,**kwargs):
