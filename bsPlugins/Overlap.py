@@ -5,12 +5,12 @@ from bbcflib import genrep
 
 class OverlapForm(BaseForm):
     child = twd.HidingTableLayout()
-    features = twf.BsFileField(label='Features file: ',
+    features = twb.BsFileField(label='Features file: ',
         help_text='Upload your own file',
-        validator=twf.BsFileFieldValidator(required=True))
-    filter = twf.BsFileField(label='Filter file: ',
+        validator=twb.BsFileFieldValidator(required=True))
+    filter = twb.BsFileField(label='Filter file: ',
         help_text='Upload your own file',
-        validator=twf.BsFileFieldValidator(required=True))
+        validator=twb.BsFileFieldValidator(required=True))
     format = twf.SingleSelectField(label='Output format: ',
         options=["txt","bed","sql","bedGraph","bigWig"],
         validator=twc.Validator(required=True),
