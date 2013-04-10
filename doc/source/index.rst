@@ -7,10 +7,20 @@
 BsPlugins
 =========
 
-BioScripts is a python library aiming at regrouping & running bioinformatics scripts through a common and simple interface. It can be used at the command line or using a web service. Bioinformatics scripts are displayed and used as a traditional *`form'* way. 
+BioScripts is a python library providing bioinformatics scripts through a simple and consistent interface. 
+It can be used on the command line or via a web service. 
+Each script consists of a *`plugin`* running the algorithm and an html *`form'* managing its inputs.
 
-Table of contents
-=================
+User manual
+===========
+
+.. toctree::
+   :maxdepth: 2
+
+   content/bsPlugins
+
+Developper documentation
+========================
 
 .. toctree::
    :maxdepth: 3
@@ -19,6 +29,7 @@ Table of contents
    content/test
    content/form
 
+   
 Indices and tables
 ==================
 
