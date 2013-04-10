@@ -28,7 +28,7 @@ meta = {'version': "1.0.0",
 in_parameters = [{'id': 'filter', 'type': 'userfile', 'required': True},
                  {'id': 'features', 'type': 'userfile', 'required': True},
                  {'id': 'format', 'type': 'text'},
-                 {'id': 'assembly', 'type': 'assembly'},
+                 {'id': 'assembly', 'type': 'assembly'}]
 out_parameters = [{'id': 'filtered', 'type': 'track'}]
 
 
