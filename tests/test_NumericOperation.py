@@ -10,7 +10,7 @@ class Test_NumericOperationPlugin(TestCase):
         self.plugin = NumericOperationPlugin()
 
     def test_with_signals(self):
-        self.plugin(**{'track':[path+'CTCF_deconv.sql'],
+        self.plugin(**{'track':[path+'test3.bedGraph'],
         'assembly':'mm9', "format":"sql",'function':'sqrt'})
         #self.plugin(**{'track':[path+'test1.bedGraph',path+'CTCF_deconv.sql', path+'test2.bedGraph',path+"CTCF_rev.bw", path+'WT50.bedGraph', path+'KO50.bedGraph'],
         #'assembly':'mm9', "format":"",'function':'log2'})
