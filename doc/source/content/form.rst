@@ -13,9 +13,8 @@ FileField
 
 When your plugin needs file(s) as input, you will use FileField.
 Pay attention that **you must** use the class :class:`~tw2.bs.BsFileField`.
-They provide for each users the ability to, when a file is asked as input either provide a file form 
-their own computer or provide an URL which link to the file. Which is really useful when files are too big.
-If we get back on our example :download:`file <../../examples/Second.py>` and replace the *TextField* by a *FileField*::
+They provide for each file input the ability to give the file from the computer (as a *traditionnal* file input) or give an URL which link to the file. Which is really useful when files are too big.
+If we get back on this example :download:`Second <../../examples/Second.py>` and replace the *TextField* by a *FileField*, we get::
 
 
     from bsPlugins import twb
@@ -28,7 +27,7 @@ Multiple fields
 ***************
 
 Sometimes you need to input a parameter multiple times. For instance a list of files and parameters. In order to do that, you must
-set **multiple true** in the parameter description::
+set **multiple to true** in the parameter description::
     
      parameters = {'in': [{'id': 'input', 'type': 'file', 'multiple': True}, ],
               ... }
