@@ -53,7 +53,7 @@ class OverlapPlugin(BasePlugin):
         # Set features track
         assert os.path.exists(str(kw.get('features'))), "Features file not found: '%s'"%kw.get("features")
         features = track(kw.get('features'), chrmeta=chrmeta or None )
-        chrmeta = _t.chrmeta
+        chrmeta = features.chrmeta
         # Set filter track
         assert os.path.exists(str(kw.get('filter'))), "Filter file not found: '%s'"%kw.get("filter")
         filter = track(kw.get('filter'), chrmeta=chrmeta or None)
