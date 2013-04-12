@@ -44,9 +44,9 @@ class NumericOperationPlugin(BasePlugin):
     def __call__(self, **kw):
         def filtrate_track(t):    # the function that is applied to the scores
             if kw['function']=="sqrt":
-                return common.score_threshold(tinput ,threshold= 0 , lower=False, strict=False, fields='score'  ) ; # score > 0
+                return common.score_threshold(tinput ,threshold= 0 , lower=False, strict=False, fields='score'  ) ; # score >= 0
             else:
-                return common.score_threshold(tinput ,threshold= 0 , lower=False, strict=True, fields='score'  ) ; # score >= 0
+                return common.score_threshold(tinput ,threshold= 0 , lower=False, strict=True, fields='score'  ) ; # score > 0
         def method(x):    # the function that is applied to the scores
             if kw['function']=="log2":
                 return math.log(x,2) ;
