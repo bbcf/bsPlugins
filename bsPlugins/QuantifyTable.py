@@ -11,7 +11,7 @@ funcs = ['mean', 'sum', 'median', 'min', 'max']
 class QuantifyTableForm(BaseForm):
     child = twd.HidingTableLayout()
 
-    class SigMulti(Multi):
+    class SigMulti(twb.BsMultiple):
         label='Signals: '
         signals = twb.BsFileField(label=' ',
                                 help_text='Select signal files (e.g. bedgraph)',

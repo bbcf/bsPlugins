@@ -15,7 +15,7 @@ max_pages = 200
 
 class PlotFeaturesForm(BaseForm):
 
-    class SigMulti(Multi):
+    class SigMulti(twb.BsMultiple):
         label='Signal: '
         signals = twb.BsFileField(label=' ',
                                 help_text='Select signal file (e.g. bedgraph)',

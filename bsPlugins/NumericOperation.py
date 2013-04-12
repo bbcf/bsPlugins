@@ -5,7 +5,7 @@ from bbcflib.bFlatMajor import common
 import math
 import tw2.forms as twf
 class NumericOperationForm(BaseForm):
-    class SigMulti(Multi):
+    class SigMulti(twb.BsMultiple):
         label='Signals: '
         track = twf.FileField(label=' ',
         help_text='Select files (e.g. bedgraph)',
