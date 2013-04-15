@@ -10,7 +10,7 @@ class Test_VennDiagramPlugin(TestCase):
 
     def test_venn_diagram(self):
         self.plugin(**{'files':[path+'test1.bedGraph',path+'test2.bedGraph'],'assembly':'mm9'})
-        raise
+        #raise
 
     def tearDown(self):
         for f in os.listdir('.'):
