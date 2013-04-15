@@ -12,7 +12,7 @@ class NumericOperationForm(BaseForm):
         validator=twf.FileValidator(required=True))
     function =  twf.SingleSelectField(label='Operation: ',
         options=["log2","log10","sqrt"],
-        validator=twc.Validator(required=True),
+        validator=twc.Validator(required=False),
         help_text='Select a function, by default: log2')
     format = twf.SingleSelectField(label='Output format: ',
         options=["sql","bedgraph","bigwig","wig"],
@@ -27,7 +27,7 @@ meta = {'version': "1.0.0",
         'contact': "webmaster-bbcf@epfl.ch"}
 in_parameters = [{'id': 'track', 'type': 'track', 'required': True},
                 {'id': 'assembly', 'type': 'assembly', 'required': True},
-                {'id': 'function', 'type': 'function', 'required': True},
+                {'id': 'function', 'type': 'function'},
                 {'id': 'format', 'type': 'format'}]
 out_parameters = [{'id': 'output', 'type': 'file'}]
 class NumericOperationPlugin(BasePlugin):
