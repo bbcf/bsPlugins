@@ -13,7 +13,7 @@ FileField
 
 When your plugin needs file(s) as input, you will use FileField.
 Pay attention that **you must** use the class :class:`~tw2.bs.BsFileField`.
-They provide for each users the ability to, when a file is asked as input either provide a file form 
+They provide for each users the ability to, when a file is asked as input either provide a file form
 their own computer or provide an URL which link to the file. Which is really useful when files are too big.
 If we get back on our example :download:`file <../../examples/Second.py>` and replace the *TextField* by a *FileField*::
 
@@ -29,17 +29,17 @@ Multiple fields
 
 Sometimes you need to input a parameter multiple times. For instance a list of files and parameters. In order to do that, you must
 set **multiple true** in the parameter description::
-    
+
      parameters = {'in': [{'id': 'input', 'type': 'file', 'multiple': True}, ],
               ... }
 
 And then you must use the class :class:`~twb.BsMultiple`.
 It will look like this::
-    
+
     class MySimpleForm(BaseForm):
 
         param_one = twf.TextField(label="An unique parameter : ")
-    
+
         class my_inputs(twb.BsMultiple):
             my_files = twb.BsFileField(label='my files', validator=twb.BsFileFieldValidator(required=True))
             my_parameters = twf.TextField(label='my param', validator=twc.Validator(required=True))
@@ -52,7 +52,7 @@ The in the **__call__** function of the plugin, you can retrieve each parameters
         my_list_of_files = kw['my_inputs']['my_files']
         my_list_of_parameters = kw['my_inputs']['my_parameters']
 
-        # Here I'm sure that 'my_list_of_files' & 'my_list_of_parameters' will contains 
+        # Here I'm sure that 'my_list_of_files' & 'my_list_of_parameters' will contains
         # the same amount of parameters and files as I have specified a validator
         # on each of them.
 

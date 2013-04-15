@@ -8,16 +8,16 @@ Test a plugin
 Test the form
 *************
 
-Navigate to `bsPLugins/tests <https://github.com/bbcf/bsPlugins/tree/master/tests>`_ and in the terminal type (replace *<PluginName>* by the name of your plugin):: 
+Navigate to `bsPLugins/tests <https://github.com/bbcf/bsPlugins/tree/master/tests>`_ and in the terminal type (replace *<PluginName>* by the name of your plugin)::
 
- python test_form.py 
+ python test_form.py
 
 It should output::
 
  Test plugin <PluginName>
  serving on http://127.0.0.1:8080
 
-Then open your browser at the latter address. It should display the form as it will be for Bioscript users. After you enter your data, click on the submit button: it will print a JSON (a string representing a dictionary) which is the data as it will be passed to the plugin part (remember the __call__() method ?). 
+Then open your browser at the latter address. It should display the form as it will be for Bioscript users. After you enter your data, click on the submit button: it will print a JSON (a string representing a dictionary) which is the data as it will be passed to the plugin part (remember the __call__() method ?).
 
 If there are any errors, take time to debug them with the precious help of the marvellous ToscaWidgets documentation.
 
@@ -65,4 +65,9 @@ If it does not know **nosetests** ou **unittest2**, install it first::
 
  pip install nose unittest2
 
+To disable ToscaWidgets debug warnings, you may prefer to call::
+
+ nosetests --logging-filter=-tw2 test_Smoothing.py
+
 And make your own !!
+
