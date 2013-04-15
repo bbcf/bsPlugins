@@ -24,12 +24,12 @@ class MaplotForm(BaseForm):
         help_text='Select scores table',
         validator=twb.BsFileFieldValidator(required=True))
 
-    class Group1(Multi):
+    class Group1(twb.BsMultiple):
         label = "Signals group 1: "
         signals1 = twf.FileField(label=' ',
             help_text='Select signal files (position and score, e.g. bedgraph)',
             validator=twf.FileValidator(required=True))
-    class Group2(Multi):
+    class Group2(twb.BsMultiple):
         label = "Signals group 2: "
         signals2 = twf.FileField(label=' ',
             help_text='Select signal files (position and score, e.g. bedgraph)',

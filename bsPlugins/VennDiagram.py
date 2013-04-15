@@ -13,9 +13,9 @@ class VennDiagramForm(BaseForm):
     child = twd.HidingTableLayout()
     class SigMulti(Multi):
         label = "Files: "
-        files = twf.FileField(label=' ',
+        files = twb.BsFileField(label=' ',
             help_text='Select your track files',
-            validator=twf.FileValidator(required=True))
+            validator=twb.BsFileFieldValidator(required=True))
     assembly = twf.SingleSelectField(label='Assembly: ',
         options=genrep.GenRep().assemblies_available(),
         validator=twc.Validator(required=True),

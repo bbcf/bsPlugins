@@ -22,7 +22,7 @@ class PairsPlotForm(BaseForm):
                                                         1: ['upstream', 'downstream']},
                                                help_text='Choose a feature set or upload your own',
                                                validator=twc.Validator(required=True))
-    class SigMulti(Multi):
+    class SigMulti(twb.BsMultiple):
         label='Signal: '
         signals = twb.BsFileField(label=' ',
                                 help_text='Select signal file (.g. bedgraph)',
