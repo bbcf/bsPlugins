@@ -9,7 +9,8 @@ class Test_VennDiagramPlugin(TestCase):
         self.plugin = VennDiagramPlugin()
 
     def test_venn_diagram(self):
-        self.plugin(**{'files':[path+'test1.bedGraph',path+'test2.bedGraph'],'assembly':'mm9'})
+        self.plugin(**{'files':[path+'test1.bedGraph',path+'test2.bedGraph'],
+                       'assembly':'mm9', 'format':'png'})
         #raise
 
     def tearDown(self):
