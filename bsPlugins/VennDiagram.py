@@ -29,6 +29,7 @@ class VennDiagramForm(BaseForm):
 meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
+
 in_parameters = [
         {'id':'SigMulti', 'type':'track', 'required':True, 'multiple':'files'},
         {'id':'format', 'type':'list'},

@@ -6,7 +6,6 @@ from bbcflib import genrep
 
 class CombineForm(BaseForm):
     child = twd.HidingTableLayout()
-
     class SigMulti(twb.BsMultiple):
         label = 'Signals: '
         signals = twb.BsFileField(label=' ',
@@ -26,11 +25,10 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': 'SigMulti', 'required': True},
+in_parameters = [{'id': 'SigMulti', 'type': 'track', 'multiple':'signals', 'required': True},
                  {'id': 'format', 'type': 'text'},
                  {'id': 'assembly', 'type': 'assembly'},
-                 ]
-
+                ]
 out_parameters = [{'id': 'combined', 'type': 'track'}]
 
 

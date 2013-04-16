@@ -14,13 +14,11 @@ max_pages = 200
 
 
 class PlotFeaturesForm(BaseForm):
-
     class SigMulti(twb.BsMultiple):
         label='Signal: '
         signals = twb.BsFileField(label=' ',
                                 help_text='Select signal file (e.g. bedgraph)',
                                 validator=twb.BsFileFieldValidator(required=True))
-
     features = twb.BsFileField(label='Features: ',
                              help_text='Select a feature file (e.g. bed)',
                              validator=twb.BsFileFieldValidator(required=True))
@@ -39,11 +37,12 @@ class PlotFeaturesForm(BaseForm):
                                help_text='Size of downstream flank in bp')
     submit = twf.SubmitButton(id="submit", value="Plot")
 
+
 meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': True, 'required': True},
+in_parameters = [{'id': 'SigMulti', 'type': 'track', 'multiple':'signals', 'required': True},
                  {'id': 'features', 'type': 'userfile'},
                  {'id': 'mode', 'type': 'list', 'required': True},
                  {'id': 'upstream', 'type': 'int'},

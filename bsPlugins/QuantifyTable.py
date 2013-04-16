@@ -10,7 +10,6 @@ funcs = ['mean', 'sum', 'median', 'min', 'max']
 
 class QuantifyTableForm(BaseForm):
     child = twd.HidingTableLayout()
-
     class SigMulti(twb.BsMultiple):
         label='Signals: '
         signals = twb.BsFileField(label=' ',
@@ -51,7 +50,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': True, 'required': True},
+in_parameters = [{'id': 'SigMulti', 'type': 'track', 'multiple':'signals', 'required': True},
                  {'id': 'feature_type', 'type': 'list'},
                  {'id': 'features', 'type': 'userfile'},
                  {'id': 'format', 'type': 'text'},

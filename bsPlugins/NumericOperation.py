@@ -1,15 +1,15 @@
 from bsPlugins import *
 from bbcflib import genrep
 from bbcflib.btrack import track
-from bbcflib.bFlatMajor import common
+from bbcflib.bFlatMajor.common import score_threshold
 import math
 import tw2.forms as twf
 class NumericOperationForm(BaseForm):
     class SigMulti(twb.BsMultiple):
         label='Signals: '
         track = twb.BsFileField(label=' ',
-        help_text='Select files (e.g. bedgraph)',
-        validator=twb.BsFileFieldValidator(required=True))
+            help_text='Select files (e.g. bedgraph)',
+            validator=twb.BsFileFieldValidator(required=True))
     function =  twf.SingleSelectField(label='Operation: ',
         options=["log2","log10","sqrt"],
         validator=twc.Validator(required=False),
@@ -22,14 +22,19 @@ class NumericOperationForm(BaseForm):
         options=genrep.GenRep().assemblies_available(),
         help_text='Reference genome')
     submit = twf.SubmitButton(id="submit", value="Submit")
+
+
 meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
-in_parameters = [{'id': 'track', 'type': 'track', 'required': True, 'multiple': 'SigMulti'},
+
+in_parameters = [{'id': 'SigMulti', 'type': 'track', 'required': True, 'multiple':'track'},
                 {'id': 'assembly', 'type': 'assembly', 'required': True},
                 {'id': 'function', 'type': 'function'},
                 {'id': 'format', 'type': 'format'}]
 out_parameters = [{'id': 'output', 'type': 'file'}]
+
+
 class NumericOperationPlugin(BasePlugin):
     description = """Apply a numeric transformation to the track scores - such as logarithm or square root."""
     info = {
@@ -44,9 +49,9 @@ class NumericOperationPlugin(BasePlugin):
     def __call__(self, **kw):
         def filtrate_track(t):    # the function that is applied to the scores
             if kw['function']=="sqrt":
-                return common.score_threshold(t ,threshold= 0 , lower=False, strict=False, fields='score'  ) ; # score >= 0
+                return score_threshold(t, threshold=0, lower=False, strict=False, fields='score') # score >= 0
             else:
-                return common.score_threshold(t ,threshold= 0 , lower=False, strict=True, fields='score'  ) ; # score > 0
+                return score_threshold(t, threshold=0, lower=False, strict=True, fields='score') # score > 0
         def method(x):    # the function that is applied to the scores
             if kw['function']=="log2":
                 return math.log(x,2) ;
