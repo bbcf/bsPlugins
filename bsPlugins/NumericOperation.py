@@ -7,9 +7,9 @@ import tw2.forms as twf
 class NumericOperationForm(BaseForm):
     class SigMulti(twb.BsMultiple):
         label='Signals: '
-        track = twf.BsFileField(label=' ',
+        track = twb.BsFileField(label=' ',
         help_text='Select files (e.g. bedgraph)',
-        validator=twf.BsFileFieldValidator(required=True))
+        validator=twb.BsFileFieldValidator(required=True))
     function =  twf.SingleSelectField(label='Operation: ',
         options=["log2","log10","sqrt"],
         validator=twc.Validator(required=False),
