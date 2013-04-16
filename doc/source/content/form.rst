@@ -25,12 +25,12 @@ If we get back to this example :download:`Second <../../examples/Second.py>` and
 Multiple fields
 ***************
 
-Sometimes you need a parameter that accepts an arbitrary number of values. For instance, a list of files. In order to do that, you must set **multiple** to **true** in the parameter description::
+Sometimes you need a parameter that accepts an arbitrary number of values. For instance, a list of files. In order to do that, you must set **multiple** to **the multiple class name** in the parameter description::
 
-     parameters = {'in': [{'id': 'input', 'type': 'file', 'multiple': True}, ],
+     parameters = {'in': [{'id': 'input', 'type': 'file', 'multiple': 'my_inputs'}, ],
               ... }
 
-And then you must use the class :class:`~twb.BsMultiple`.
+And then you inherit your *my_inputs* class from :class:`~twb.BsMultiple`.
 It will look like this::
 
     class MySimpleForm(BaseForm):
