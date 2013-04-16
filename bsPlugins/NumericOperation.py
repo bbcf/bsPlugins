@@ -25,7 +25,7 @@ class NumericOperationForm(BaseForm):
 meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
-in_parameters = [{'id': 'track', 'type': 'track', 'required': True},
+in_parameters = [{'id': 'track', 'type': 'track', 'required': True, 'multiple': 'SigMulti'},
                 {'id': 'assembly', 'type': 'assembly', 'required': True},
                 {'id': 'function', 'type': 'function'},
                 {'id': 'format', 'type': 'format'}]
