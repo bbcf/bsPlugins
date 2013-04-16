@@ -16,11 +16,12 @@ class VennDiagramForm(BaseForm):
             help_text='Select your track files',
             validator=twb.BsFileFieldValidator(required=True))
     format = twf.SingleSelectField(label='Format: ',
+        prompt_text=None,
         options=['pdf','png','jpeg'],
-        help_text='Output file format')
+        help_text='Output figure format')
     assembly = twf.SingleSelectField(label='Assembly: ',
+        prompt_text=None,
         options=genrep.GenRep().assemblies_available(),
-        validator=twc.Validator(required=True),
         help_text='Reference genome')
     submit = twf.SubmitButton(id="submit", value="Submit")
 
@@ -28,18 +29,18 @@ class VennDiagramForm(BaseForm):
 meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
-
 in_parameters = [
-        {'id':'files', 'type':'track', 'required':True, 'multiple':True},
+        {'id':'SigMulti', 'type':'track', 'required':True, 'multiple':'files'},
         {'id':'format', 'type':'list'},
         {'id':'assembly', 'type':'assembly'},
 ]
-out_parameters = [{'id':'venn_diagram', 'type':'file'}]
+out_parameters = [{'id':'venn_diagram', 'type':'file'},
+                  {'id':'venn_summary', 'type':'file'}]
 
 
 class VennDiagramPlugin(BasePlugin):
-    description = """
-
+    description = """Creates a Venn diagram of the proportions of
+    total coverage/total tag count due to each of the given tracks.
     """
     info = {
         'title': 'Venn Diagram',
@@ -82,9 +83,17 @@ class VennDiagramPlugin(BasePlugin):
                 for c in cb: sets[c] += length
         for c,v in sets.iteritems():
             sets[c] = round(v/coverage * 100) # VennDiagram works with int only
+        # Graph
         venn_options = {} # tune it here
         output = self.temporary_path(fname='venn_diagram.'+kw['format'])
         legend = [os.path.basename(f) for f in filenames]
         venn(sets,legend=legend,options=venn_options,output=output,format=kw['format'])
         self.new_file(output, 'venn_diagram')
+        # Text summary
+        output = self.temporary_path(fname='venn_summary.txt')
+        with open(output,'wb') as summary:
+            summary.write("%s\t%s\n" % ("Group","% of total coverage"))
+            for c,v in sets.iteritems():
+                summary.write("%s\t%s%%\n" % (c,v))
+        self.new_file(output, 'venn_summary')
         return self.display_time()
