@@ -47,7 +47,7 @@ class NumericOperationPlugin(BasePlugin):
         'meta': meta,
         }
     def __call__(self, **kw):
-        def filtrate_track(t):    # the function that is applied to the scores
+        def filter_track(t):    # the function that is applied to the scores
             if kw['function']=="sqrt":
                 return score_threshold(t, threshold=0, lower=False, strict=False, fields='score') # score >= 0
             else:
@@ -64,11 +64,11 @@ class NumericOperationPlugin(BasePlugin):
         assembly = genrep.Assembly(kw.get('assembly'))
         l_track = kw.get('track', [])
         if not isinstance(l_track, list): l_track = [l_track]
+        modif = kw['function'] # Name of the function in the name of the output file
         for tname in l_track :
             tinput = track(tname, chrmeta=kw.get('assembly'))
             (filepath, filename) = os.path.split(tname)
             (shortname, extension) = os.path.splitext(filename)
-            modif = kw['function'] # Name of the function in the name of the output file
             if kw['function'] =="":   # Select a function, by default: log2
                 modif = "log2"
             if  "score" in tinput.fields:
@@ -78,7 +78,7 @@ class NumericOperationPlugin(BasePlugin):
                     out_name = shortname+'_'+modif +'.'+kw['format']
                 output_name = self.temporary_path(out_name)
                 out_track = track(output_name,chrmeta=assembly.chrmeta)
-                out_track.write(common.apply(filtrate_track(tinput),'score',method), mode='write')
+                out_track.write(common.apply(filter_track(tinput),'score',method), mode='write')
                 out_track.close()
             tinput.close()
         return self.display_time()
