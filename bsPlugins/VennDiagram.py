@@ -84,6 +84,7 @@ class VennDiagramPlugin(BasePlugin):
             sets[c] = round(v/coverage * 100) # VennDiagram works with int only
         venn_options = {} # tune it here
         output = self.temporary_path(fname='venn_diagram.'+kw['format'])
-        venn(sets,options=venn_options,output=output,format=kw['format'])
+        legend = [os.path.basename(f) for f in filenames]
+        venn(sets,legend=legend,options=venn_options,output=output,format=kw['format'])
         self.new_file(output, 'venn_diagram')
         return self.display_time()

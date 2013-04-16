@@ -14,9 +14,10 @@ class Test_VennDiagramPlugin(TestCase):
         #raise
 
     def tearDown(self):
-        for f in os.listdir('.'):
-            if f.startswith('tmp'):
-                os.system("rm -rf %s" % f)
+        if 1:
+            for f in os.listdir('.'):
+                if f.startswith('tmp'):
+                    os.system("rm -rf %s" % f)
 
 
 """
