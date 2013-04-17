@@ -48,7 +48,10 @@ class BasePlugin(object):
         return self.end_time - self.start_time
 
     def display_time(self):
-        return 'Time elapsed %0.3fs.' % self.time()
+        t = self.time()
+        if t < 0:
+            t = 0.0
+        return 'Time elapsed %0.3fs.' % t
 
     def unique_id(self):
         '''
