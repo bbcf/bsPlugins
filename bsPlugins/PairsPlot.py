@@ -52,7 +52,7 @@ meta = {'version': "1.0.0",
         'contact': "webmaster-bbcf@epfl.ch"}
 
 in_parameters = [{'id': 'input_type', 'type': 'radio'},
-                 {'id': 'SigMulti', 'type': 'track', 'required': True, 'multiple':'signals'},
+                 {'id': 'signals', 'type': 'track', 'required': True, 'multiple':'SigMulti'},
                  {'id': 'feature_type', 'type': 'list'},
                  {'id': 'features', 'type': 'userfile'},
                  {'id': 'upstream', 'type': 'int', 'required': True},

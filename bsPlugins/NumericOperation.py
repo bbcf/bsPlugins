@@ -31,7 +31,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'SigMulti', 'type': 'track', 'required': True, 'multiple':'track'},
+in_parameters = [{'id': 'track', 'type': 'track', 'required': True, 'multiple':'SigMulti'},
                 {'id': 'assembly', 'type': 'assembly', 'required': True},
                 {'id': 'function', 'type': 'function'},
                 {'id': 'format', 'type': 'format'}]
