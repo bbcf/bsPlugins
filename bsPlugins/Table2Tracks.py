@@ -75,6 +75,7 @@ class Table2TracksPlugin(BasePlugin):
             out_track.close()
             outfiles.append(out_name)
 
+	print outfiles
         output=shortname+"_out.tar"
         if len(outfiles) > 1:
             tar_name = self.temporary_path(fname=shortname+"_out.tgz")
