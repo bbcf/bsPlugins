@@ -14,7 +14,7 @@ class NumericOperationForm(BaseForm):
         prompt_text=None,
         options=["log2","log10","sqrt"],
         validator=twc.Validator(required=False),
-        help_text='Select a function, by default: log2')
+        help_text='Select a function')
     format = twf.SingleSelectField(label='Output format: ',
         prompt_text=None,
         options=["sql","bedgraph","bigwig","wig"],
