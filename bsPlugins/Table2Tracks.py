@@ -72,7 +72,8 @@ class Table2TracksPlugin(BasePlugin):
             s = t.read(fields=['chr','start','end',_f])
             s.fields[3] = "score"
             out_track.write(s, mode='write')
-        out_track.close()
+            out_track.close()
+            self.new_file(output, 'output')
 
     return self.display_time()
 

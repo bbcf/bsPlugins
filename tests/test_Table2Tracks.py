@@ -10,6 +10,7 @@ class Test_Table2TracksPlugin(TestCase):
 
     def test_A(self):
         self.plugin(**{'tableFile':path+'Dup_vs_Ctrl_resSelectedFrags_fromSmoothed_KCTD13_part.txt', 'id_columns':'6,7,9,10', 'assembly':'hg19', 'format':'bedGraph'})
+        print(self.plugin.output_files)
         self.assertEqual(len(self.plugin.output_files[0]),4)
 
     def tearDown(self):
