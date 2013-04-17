@@ -1,3 +1,4 @@
+from bsPlugins import *
 from bbcflib.btrack import track
 from bbcflib import genrep
 import os
@@ -46,34 +47,32 @@ class Table2TracksPlugin(BasePlugin):
         }
     def __call__(self, **kw):
         assembly = genrep.Assembly(kw.get('assembly'))
-	chrmeta = assembly.chrmeta or "guess"
+    	chrmeta = assembly.chrmeta or "guess"
 
         with open(kw['tableFile'],"rb") as f:
-        h=f.readline().strip().replace('#','').split('\t')
+            h=f.readline().strip().replace('#','').split('\t')
 
         colnames=[]
         for i in kw['id_columns'].split(','):
             indice = int(i)-1
-        if indice <= len(h) and indice > 2: #columns 0,1,2 are for chr,start,end
-            colnames.append(h[indice])
+            if indice <= len(h) and indice > 2: #columns 0,1,2 are for chr,start,end
+                colnames.append(h[indice])
 
         t=track(kw['tableFile'],chrmeta=chrmeta, fields=h)
         (filepath, filename) = os.path.split(kw['tableFile'])
         (shortname, extension) = os.path.splitext(filename)
 
         for _f in colnames:
-        if kw['format']=="":
-        out_name = shortname+'_'+_f+'.bedGraph'
-        else:
-        out_name = shortname+'_'+_f+'.'+kw['format']
-        output_name = self.temporary_path(out_name)
-        print output_name
-        print _f
-        out_track = track(output_name,chrmeta=chrmeta)
-        s = t.read(fields=['chr','start','end',_f])
-        s.fields[3] = "score"
-        out_track.write(s, mode='write')
-	out_track.close()
+            if kw['format']=="":
+                out_name = shortname+'_'+_f+'.bedGraph'
+            else:
+                out_name = shortname+'_'+_f+'.'+kw['format']
+            output_name = self.temporary_path(out_name)
+            out_track = track(output_name,chrmeta=chrmeta)
+            s = t.read(fields=['chr','start','end',_f])
+            s.fields[3] = "score"
+            out_track.write(s, mode='write')
+	    out_track.close()
 
 	return self.display_time()
 
