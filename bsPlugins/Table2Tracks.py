@@ -47,7 +47,7 @@ class Table2TracksPlugin(BasePlugin):
         }
     def __call__(self, **kw):
         assembly = genrep.Assembly(kw.get('assembly'))
-    	chrmeta = assembly.chrmeta or "guess"
+        chrmeta = assembly.chrmeta or "guess"
 
         with open(kw['tableFile'],"rb") as f:
             h=f.readline().strip().replace('#','').split('\t')
@@ -72,7 +72,7 @@ class Table2TracksPlugin(BasePlugin):
             s = t.read(fields=['chr','start','end',_f])
             s.fields[3] = "score"
             out_track.write(s, mode='write')
-	    out_track.close()
+        out_track.close()
 
-	return self.display_time()
+    return self.display_time()
 
