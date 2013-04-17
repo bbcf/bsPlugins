@@ -82,9 +82,10 @@ class Table2TracksPlugin(BasePlugin):
             tar = tarfile.open(tar_name, "w:gz")
             [tar.add(f) for f in outfiles]
             tar.close()
-            self.new_file(output, 'output_tar')
+            self.new_file(tar_name, 'output_tar')
         else:
-            self.new_file(outfiles[0], 'output')
+            output_name = self.temporary_path(outfiles[0]) 
+            self.new_file(output_name, 'output')
 
         return self.display_time()
 
