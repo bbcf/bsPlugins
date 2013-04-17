@@ -62,6 +62,7 @@ class VennDiagramPlugin(BasePlugin):
         combn = [combinations(track_names,k) for k in range(1,len(tracks)+1)]
         combn = ['|'.join(sorted(y)) for x in combn for y in x]
         sets = dict(zip(combn,[0]*len(combn)))
+        subsets = dict(zip(combn,[0]*len(combn)))
         def _f(i): # hack
             return lambda x:track_names[i]
         coverage = 0.0
@@ -81,9 +82,11 @@ class VennDiagramPlugin(BasePlugin):
                 sub = sorted(x[name_idx].split('|'))
                 cb = [combinations(sub,k) for k in range(1,len(sub)+1)]
                 cb = ['|'.join(sorted(y)) for x in cb for y in x]
-                for c in cb: sets[c] += length
+                for c in cb: sets[c] += length # 'cumulative', for the plot
+                subsets['|'.join(sub)] += length    # 'separate', for the stats
         for c,v in sets.iteritems():
             sets[c] = round(v/coverage * 100) # VennDiagram works with int only
+            subsets[c] = subsets[c]/coverage * 100
         # Graph
         venn_options = {} # tune it here
         output = self.temporary_path(fname='venn_diagram.'+kw['format'])
@@ -93,8 +96,8 @@ class VennDiagramPlugin(BasePlugin):
         # Text summary
         output = self.temporary_path(fname='venn_summary.txt')
         with open(output,'wb') as summary:
-            summary.write("%s\t%s\n" % ("Group","% of total coverage"))
-            for c,v in sets.iteritems():
-                summary.write("%s\t%s%%\n" % (c,v))
+            summary.write("%s\t%s\t%s\n" % ("Group","Coverage", "Cumulative coverage"))
+            for c in sets:
+                summary.write("%s\t%.2f%%\t%d%%\n" % (c,subsets[c],sets[c]))
         self.new_file(output, 'venn_summary')
         return self.display_time()
