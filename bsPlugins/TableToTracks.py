@@ -13,7 +13,7 @@ class Table2TracksForm(BaseForm):
     format = twf.SingleSelectField(label='Output format: ',
         options=["sql","bedgraph","bigwig","wig"],
         validator=twc.Validator(required=False),
-        help_text='Output file(s) format, by default: same format as input file(s) format(s)')
+        help_text='Output file(s) format (default: bedGraph)')
     assembly = twf.SingleSelectField(label='Assembly: ',
         options=genrep.GenRep().assemblies_available(),
         help_text='Reference genome')
