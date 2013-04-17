@@ -1,7 +1,7 @@
 from bsPlugins import *
 from bbcflib.btrack import track
 from bbcflib import genrep
-import os
+import os, tarfile
 
 class Table2TracksForm(BaseForm):
     table = twb.BsFileField(label='Table: ',
@@ -31,7 +31,8 @@ in_parameters = [{'id': 'table', 'type': 'txt', 'required': True},
                 {'id': 'format', 'type': 'format'}
 ]
 
-out_parameters = [{'id': 'output', 'type': 'file'}]
+out_parameters = [{'id': 'output_tar', 'type': 'file'},
+                {'id': 'output', 'type':'file'}]
 
 
 class Table2TracksPlugin(BasePlugin):
@@ -62,18 +63,27 @@ class Table2TracksPlugin(BasePlugin):
         (filepath, filename) = os.path.split(kw['tableFile'])
         (shortname, extension) = os.path.splitext(filename)
 
+        outfiles=[]
         for _f in colnames:
-            if kw['format']=="":
-                out_name = shortname+'_'+_f+'.bedGraph'
-            else:
-                out_name = shortname+'_'+_f+'.'+kw['format']
+            out_format = kw['format'] or "bedGraph"
+            out_name = shortname+'_'+_f+'.'+kw['format']
             output_name = self.temporary_path(out_name)
             out_track = track(output_name,chrmeta=chrmeta)
             s = t.read(fields=['chr','start','end',_f])
             s.fields[3] = "score"
             out_track.write(s, mode='write')
             out_track.close()
-            self.new_file(output, 'output')
+            outfiles.append(out_name)
 
-    return self.display_time()
+        output=shortname+"_out.tar"
+        if len(outfiles) > 1:
+            tar_name = self.temporary_path(fname=shortname+"_out.tgz")
+            tar = tarfile.open(tar_name, "w:gz")
+            [tar.add(f) for f in outfiles]
+            tar.close()
+            self.new_file(output, 'output_tar')
+        else:
+            self.new_file(outfiles[0], 'output')
+
+        return self.display_time()
 
