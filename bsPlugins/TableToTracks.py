@@ -32,11 +32,6 @@ in_parameters = [{'id': 'table', 'type': 'txt', 'required': True},
 
 out_parameters = [{'id': 'output', 'type': 'file'}]
 
-#kw= {'tableFile':"Dup_vs_Ctrl_resSelectedFrags_fromSmoothed_KCTD13_chr16.txt",
-#	'colnames':['baseMeanA_Ctrl','baseMeanB_Dup','log2FoldChange_Dup_vs_Ctrl','pval'],
-#	'assembly':"hg19",
-#	'format':"bedGraph"
-#}
 
 class Table2TracksPlugin(BasePlugin):
     description = """generate signal tracks from a tab-delimited table"""
