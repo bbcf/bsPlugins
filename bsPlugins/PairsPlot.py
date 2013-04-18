@@ -14,7 +14,6 @@ plot_types = [(0, 'correlations'), (1, 'density plots')]
 cormax = 500
 
 class PairsPlotForm(BaseForm):
-
     child = twd.HidingTableLayout()
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
                                                options=ftypes, prompt_text=None,
@@ -27,7 +26,6 @@ class PairsPlotForm(BaseForm):
         signals = twb.BsFileField(label=' ',
                                 help_text='Select signal file (.g. bedgraph)',
                                 validator=twb.BsFileFieldValidator(required=True))
-
     features = twb.BsFileField(label='Custom feature set: ',
                              help_text='Select a feature file (e.g. bed)',
                              validator=twb.BsFileFieldValidator())
@@ -54,7 +52,7 @@ meta = {'version': "1.0.0",
         'contact': "webmaster-bbcf@epfl.ch"}
 
 in_parameters = [{'id': 'input_type', 'type': 'radio'},
-                 {'id': 'signals', 'type': 'track', 'required': True, 'multiple': True},
+                 {'id': 'signals', 'type': 'track', 'required': True, 'multiple':'SigMulti'},
                  {'id': 'feature_type', 'type': 'list'},
                  {'id': 'features', 'type': 'userfile'},
                  {'id': 'upstream', 'type': 'int', 'required': True},

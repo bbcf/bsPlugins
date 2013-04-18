@@ -16,11 +16,12 @@ class VennDiagramForm(BaseForm):
             help_text='Select your track files',
             validator=twb.BsFileFieldValidator(required=True))
     format = twf.SingleSelectField(label='Format: ',
+        prompt_text=None,
         options=['pdf','png','jpeg'],
-        help_text='Output file format')
+        help_text='Output figure format')
     assembly = twf.SingleSelectField(label='Assembly: ',
+        prompt_text=None,
         options=genrep.GenRep().assemblies_available(),
-        validator=twc.Validator(required=True),
         help_text='Reference genome')
     submit = twf.SubmitButton(id="submit", value="Submit")
 
@@ -30,16 +31,17 @@ meta = {'version': "1.0.0",
         'contact': "webmaster-bbcf@epfl.ch"}
 
 in_parameters = [
-        {'id':'files', 'type':'track', 'required':True, 'multiple':True},
+        {'id':'files', 'type':'track', 'required':True, 'multiple':'SigMulti'},
         {'id':'format', 'type':'list'},
         {'id':'assembly', 'type':'assembly'},
 ]
-out_parameters = [{'id':'venn_diagram', 'type':'file'}]
+out_parameters = [{'id':'venn_diagram', 'type':'file'},
+                  {'id':'venn_summary', 'type':'file'}]
 
 
 class VennDiagramPlugin(BasePlugin):
-    description = """
-
+    description = """Creates a Venn diagram of the proportions of
+    total coverage/total tag count due to each of the given tracks.
     """
     info = {
         'title': 'Venn Diagram',
@@ -60,6 +62,7 @@ class VennDiagramPlugin(BasePlugin):
         combn = [combinations(track_names,k) for k in range(1,len(tracks)+1)]
         combn = ['|'.join(sorted(y)) for x in combn for y in x]
         sets = dict(zip(combn,[0]*len(combn)))
+        subsets = dict(zip(combn,[0]*len(combn)))
         def _f(i): # hack
             return lambda x:track_names[i]
         coverage = 0.0
@@ -79,11 +82,22 @@ class VennDiagramPlugin(BasePlugin):
                 sub = sorted(x[name_idx].split('|'))
                 cb = [combinations(sub,k) for k in range(1,len(sub)+1)]
                 cb = ['|'.join(sorted(y)) for x in cb for y in x]
-                for c in cb: sets[c] += length
+                for c in cb: sets[c] += length # 'cumulative', for the plot
+                subsets['|'.join(sub)] += length    # 'separate', for the stats
         for c,v in sets.iteritems():
             sets[c] = round(v/coverage * 100) # VennDiagram works with int only
+            subsets[c] = subsets[c]/coverage * 100
+        # Graph
         venn_options = {} # tune it here
         output = self.temporary_path(fname='venn_diagram.'+kw['format'])
-        venn(sets,options=venn_options,output=output,format=kw['format'])
+        legend = [os.path.basename(f) for f in filenames]
+        venn(sets,legend=legend,options=venn_options,output=output,format=kw['format'])
         self.new_file(output, 'venn_diagram')
+        # Text summary
+        output = self.temporary_path(fname='venn_summary.txt')
+        with open(output,'wb') as summary:
+            summary.write("%s\t%s\t%s\n" % ("Group","Coverage", "Cumulative coverage"))
+            for c in sets:
+                summary.write("%s\t%.2f%%\t%d%%\n" % (c,subsets[c],sets[c]))
+        self.new_file(output, 'venn_summary')
         return self.display_time()

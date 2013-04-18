@@ -66,8 +66,8 @@ meta = {'version': "1.0.0",
 
 in_parameters = [
         {'id': 'input_type', 'type': 'radio'},
-        {'id': 'signals1', 'type': 'track', 'required': True, 'multiple': True},
-        {'id': 'signals2', 'type': 'track', 'required': True, 'multiple': True},
+        {'id': 'signals1', 'type': 'track', 'required': True, 'multiple':'Group1'},
+        {'id': 'signals2', 'type': 'track', 'required': True, 'multiple':'Group2'},
         {'id': 'table', 'type': 'txt', 'required': True, 'multiple': True},
         {'id': 'feature_type', 'type': 'int'},
         {'id': 'upstream', 'type': 'int'},

@@ -26,7 +26,6 @@ class DESeqForm(BaseForm):
     table = twb.BsFileField(label='Table: ',
         help_text='Select scores table',
         validator=twb.BsFileFieldValidator(required=True))
-
     class Group1(twb.BsMultiple):
         label = 'Signals group 1: '
         signals1 = twb.BsFileField(label=' ',
@@ -37,14 +36,12 @@ class DESeqForm(BaseForm):
         signals2 = twb.BsFileField(label=' ',
             help_text='Select signal files (position and score, e.g. bedgraph)',
             validator=twb.BsFileFieldValidator(required=True))
-
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
         options=ftypes, prompt_text=None,
         mapping={ftypes[-1][0]: ['features'],
                  1: ['upstream', 'downstream']},
         help_text='Choose a feature set or upload your own',
         validator=twc.Validator(required=True))
-
     class SigMulti(twb.BsMultiple):
         signals = twb.BsFileField(label='Signal: ',
             help_text='Select signal file (position and score, e.g. bedgraph)',
@@ -74,8 +71,8 @@ meta = {'version': "1.0.0",
 
 in_parameters = [
         {'id': 'input_type', 'type': 'radio'},
-        {'id': 'signals1', 'type': 'track', 'required': True, 'multiple': True},
-        {'id': 'signals2', 'type': 'track', 'required': True, 'multiple': True},
+        {'id': 'signals1', 'type': 'track', 'required': True, 'multiple': 'Group1'},
+        {'id': 'signals2', 'type': 'track', 'required': True, 'multiple': 'Group2'},
         {'id': 'table', 'type': 'txt', 'required': True, 'multiple': True},
         {'id': 'feature_type', 'type': 'int'},
         {'id': 'upstream', 'type': 'int'},
