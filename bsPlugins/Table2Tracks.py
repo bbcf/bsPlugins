@@ -73,9 +73,9 @@ class Table2TracksPlugin(BasePlugin):
             s.fields[3] = "score"
             out_track.write(s, mode='write')
             out_track.close()
-            outfiles.append(out_name)
+            outfiles.append(output_name)
 
-	print outfiles
+        print outfiles
         output=shortname+"_out.tar"
         if len(outfiles) > 1:
             tar_name = self.temporary_path(fname=shortname+"_out.tgz")
@@ -84,8 +84,7 @@ class Table2TracksPlugin(BasePlugin):
             tar.close()
             self.new_file(tar_name, 'output_tar')
         else:
-            output_name = self.temporary_path(outfiles[0]) 
-            self.new_file(output_name, 'output')
+            self.new_file(outfiles[0], 'output')
 
         return self.display_time()
 

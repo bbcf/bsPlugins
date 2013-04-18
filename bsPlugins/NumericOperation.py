@@ -32,7 +32,7 @@ meta = {'version': "1.0.0",
         'contact': "webmaster-bbcf@epfl.ch"}
 
 in_parameters = [{'id': 'track', 'type': 'track', 'required': True, 'multiple':'SigMulti'},
-                {'id': 'assembly', 'type': 'assembly', 'required': True},
+                {'id': 'assembly', 'type': 'assembly'},
                 {'id': 'function', 'type': 'function'},
                 {'id': 'format', 'type': 'format'}]
 out_parameters = [{'id': 'output', 'type': 'file'}]
