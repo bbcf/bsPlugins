@@ -55,10 +55,8 @@ all_params = dict((y, '') for x in tools_map.values() for y in x).keys()
 file_params = {"simple": [x for x in all_params if x[-4:] == "file"],
                "multiple": [x for x in all_params if x[-5:] == "files"]}
 
-all_file_params = [{'id': x[1:], 'type': 'file', 'multiple': True}
-                   for x in all_params if x[-5:] == 'files']+\
-                   [{'id': x, 'type': 'file', 'multiple': False}
-                    for x in all_params if x[-4:] == 'file']
+all_file_params = [{'id': x[1:], 'type': 'file', 'multiple': x} for x in all_params if x[-5:] == 'files']+\
+                  [{'id': x, 'type': 'file', 'multiple': False} for x in all_params if x[-4:] == 'file']
 
 other_params = [
     {'id': 'tool', 'type': 'list'},
