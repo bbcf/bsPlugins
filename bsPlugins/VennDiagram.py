@@ -15,9 +15,13 @@ class VennDiagramForm(BaseForm):
         files = twb.BsFileField(label=' ',
             help_text='Select your track files',
             validator=twb.BsFileFieldValidator(required=True))
+    type = twf.SingleSelectField(label='Type: ',
+        prompt_text=None,
+        options=['coverage %','tag count'],
+        help_text='Output figure format')
     format = twf.SingleSelectField(label='Format: ',
         prompt_text=None,
-        options=['pdf','png','jpeg'],
+        options=['png','pdf'],
         help_text='Output figure format')
     assembly = twf.SingleSelectField(label='Assembly: ',
         prompt_text=None,
@@ -32,6 +36,7 @@ meta = {'version': "1.0.0",
 
 in_parameters = [
         {'id':'files', 'type':'track', 'required':True, 'multiple':'SigMulti'},
+        {'id':'type', 'type':'list'},
         {'id':'format', 'type':'list'},
         {'id':'assembly', 'type':'assembly'},
 ]
@@ -58,46 +63,66 @@ class VennDiagramPlugin(BasePlugin):
         if not isinstance(filenames,(list,tuple)): filenames = [filenames]
         for f in filenames: assert os.path.exists(f), "File not found: %s ." % filename
         tracks = [track(f) for f in filenames]
-        track_names = [chr(i+65) for i in range(len(tracks))] # file name?, or 'A','B','C',...
+        track_names = [chr(i+65) for i in range(len(tracks))] # 'A','B','C',...
         combn = [combinations(track_names,k) for k in range(1,len(tracks)+1)]
         combn = ['|'.join(sorted(y)) for x in combn for y in x]
-        sets = dict(zip(combn,[0]*len(combn)))
-        subsets = dict(zip(combn,[0]*len(combn)))
+        cnt = dict(zip(combn,[0]*len(combn)))
+        cumcnt = dict(zip(combn,[0]*len(combn)))
+        cov = dict(zip(combn,[0]*len(combn)))
+        cumcov = dict(zip(combn,[0]*len(combn)))
         def _f(i): # hack
             return lambda x:track_names[i]
-        coverage = 0.0
+        total_cov = 0.0
         for chrom in assembly.chrmeta:
             streams = [t.read(chrom) for t in tracks]
             streams = [duplicate(s,'chr','track_name') for s in streams]
             streams = [apply(s,'track_name',_f(i)) for i,s in enumerate(streams)]
             s = concatenate(streams, aggregate={'track_name':lambda x:'|'.join(x)})
-            s = cobble(s)
+            s = cobble(s,scored=True)
             name_idx = s.fields.index('track_name')
             start_idx = s.fields.index('start')
             end_idx = s.fields.index('end')
+            if 'score' in s.fields:
+                score_idx = s.fields.index('score')
+                _score = lambda x: x[score_idx]
+            else:
+                if kw['type']=='tag count': raise ValueError("'score' field not found.")
+                _score = lambda x: 0
             for x in s:
+                score = _score(x)
                 length = x[end_idx]-x[start_idx]
-                coverage += length
-                # Add 1 to each sub-category piece x belongs to
+                total_cov += length
                 sub = sorted(x[name_idx].split('|'))
                 cb = [combinations(sub,k) for k in range(1,len(sub)+1)]
-                cb = ['|'.join(sorted(y)) for x in cb for y in x]
-                for c in cb: sets[c] += length # 'cumulative', for the plot
-                subsets['|'.join(sub)] += length    # 'separate', for the stats
-        for c,v in sets.iteritems():
-            sets[c] = round(v/coverage * 100) # VennDiagram works with int only
-            subsets[c] = subsets[c]/coverage * 100
-        # Graph
+                cb = ['|'.join(sorted(y)) for c in cb for y in c]
+                for c in cb:
+                    cumcnt[c] += score   # 'cumulative', for the plot
+                    cumcov[c] += length
+                cnt['|'.join(sub)] += score  # 'separate', for the stats
+                cov['|'.join(sub)] += length
         venn_options = {} # tune it here
         output = self.temporary_path(fname='venn_diagram.'+kw['format'])
         legend = [os.path.basename(f) for f in filenames]
-        venn(sets,legend=legend,options=venn_options,output=output,format=kw['format'])
+        if kw['type']=='tag count':
+            for c in cnt:
+                cumcnt[c] = round(cumcnt[c])
+                cnt[c] = cnt[c]
+            venn(cumcnt,legend=legend,options=venn_options,output=output,format=kw['format'])
+        elif kw['type']=='coverage %':
+            for c in cnt:
+                cumcnt[c] = round(cumcov[c]/total_cov * 100)
+                cov[c] = cov[c]/total_cov * 100
+            venn(cumcov,legend=legend,options=venn_options,output=output,format=kw['format'])
         self.new_file(output, 'venn_diagram')
         # Text summary
         output = self.temporary_path(fname='venn_summary.txt')
         with open(output,'wb') as summary:
             summary.write("%s\t%s\t%s\n" % ("Group","Coverage", "Cumulative coverage"))
-            for c in sets:
-                summary.write("%s\t%.2f%%\t%d%%\n" % (c,subsets[c],sets[c]))
-        self.new_file(output, 'venn_summary')
-        return self.display_time()
+            if kw['type']=='tag count':
+                for c in sorted(cumcnt.keys(), key=lambda x:(len(x),x)):
+                    summary.write("%s\t%.2f\t%d\n" % (c,cnt[c],cumcnt[c]))
+            elif kw['type']=='coverage %':
+                for c in sorted(cumcnt.keys(), key=lambda x:(len(x),x)):
+                    summary.write("%s\t%.2f %%\t%d %%\n" % (c,cov[c],cumcov[c]))
+            self.new_file(output, 'venn_summary')
+            return self.display_time()
