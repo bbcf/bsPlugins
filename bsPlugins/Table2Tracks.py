@@ -8,7 +8,7 @@ class Table2TracksForm(BaseForm):
         help_text='Select table',
         validator=twb.BsFileFieldValidator(required=True))
     id_columns = twf.TextField(label='columns id: ',
-        validator=twc.IntValidator(required=True),
+        validator=twc.Validator(required=True),
         value='',
         help_text='comma separated list of columns id for which signal tracks will be generated (e.g. 3,5)')
     format = twf.SingleSelectField(label='Output format: ',
