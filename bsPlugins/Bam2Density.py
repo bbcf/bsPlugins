@@ -78,18 +78,17 @@ class Bam2DensityPlugin(BasePlugin):
         output = self.temporary_path(fname='density_')
         format = kw.get("format", "sql")
         with execution(None) as ex:
-            files = bam_to_density(ex, sample, output,
-                                   nreads=nreads, merge=merge_strands,
-                                   read_extension=read_extension,
-                                   sql=True, args=b2wargs)
+            files = bam_to_density( ex, sample, output,
+                                    nreads=nreads, merge=merge_strands,
+                                    read_extension=read_extension,
+                                    sql=True, args=b2wargs )
         if merge_strands >= 0:
             suffixes = ["merged"]
         else:
             suffixes = ["fwd", "rev"]
         for n, x in enumerate(files):
-            tsql = track(x, format='sql', fields=['start', 'end', 'score'],
-                         chrmeta=bamfile.chrmeta,
-                         info={'datatype': 'quantitative'})
+            tsql = track( x, format='sql', fields=['start', 'end', 'score'],
+                          chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'} )
             tsql.save()
             if format == "sql":
                 outname = x

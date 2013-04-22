@@ -42,10 +42,6 @@ class DESeqForm(BaseForm):
                  1: ['upstream', 'downstream']},
         help_text='Choose a feature set or upload your own',
         validator=twc.Validator(required=True))
-    class SigMulti(twb.BsMultiple):
-        signals = twb.BsFileField(label='Signal: ',
-            help_text='Select signal file (position and score, e.g. bedgraph)',
-            validator=twb.BsFileFieldValidator(required=True))
     features = twb.BsFileField(label='Custom feature set: ',
         help_text='Select a feature file (e.g. bed)',
         validator=twb.BsFileFieldValidator(required=True))
