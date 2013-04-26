@@ -42,7 +42,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'signals', 'type': 'track', 'multiple':'SigMulti', 'required': True, 'multiple': 'SigMulti'},
+in_parameters = [{'id': 'signals', 'type': 'track', 'multiple':'SigMulti', 'required': True},
                  {'id': 'features', 'type': 'userfile'},
                  {'id': 'mode', 'type': 'list', 'required': True},
                  {'id': 'upstream', 'type': 'int'},
