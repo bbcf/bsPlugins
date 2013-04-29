@@ -15,6 +15,10 @@ class VennDiagramForm(BaseForm):
         files = twb.BsFileField(label=' ',
             help_text='Select your track files',
             validator=twb.BsFileFieldValidator(required=True))
+    names = twf.TextArea(label='Sample names: ',
+        prompt_text='<Group1>\n<\Group2>\n...',
+        help_text="Sample names (facultative; one per line)",
+        )
     type = twf.SingleSelectField(label='Type: ',
         prompt_text=None,
         options=['coverage %','tag count'],
@@ -64,7 +68,7 @@ class VennDiagramPlugin(BasePlugin):
         filenames = kw['SigMulti']['files']
         self.debug(filenames)
         if not isinstance(filenames,(list,tuple)): filenames = [filenames]
-        for f in filenames: assert os.path.exists(f), "File not found: %s ." % filename
+        for f in filenames: assert os.path.exists(f), "File not found: %s ." % f
         tracks = [track(f) for f in filenames]
         track_names = [chr(i+65) for i in range(len(tracks))] # 'A','B','C',...
         combn = [combinations(track_names,k) for k in range(1,len(tracks)+1)]

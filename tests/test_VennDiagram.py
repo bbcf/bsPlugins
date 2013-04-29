@@ -9,22 +9,22 @@ class Test_VennDiagramPlugin(TestCase):
     def setUp(self):
         self.plugin = VennDiagramPlugin()
 
-    @skip('')
+    #@skip('')
     def test_venn_diagram_2way(self):
-        self.plugin(**{'files':[path+'test1.bedGraph',path+'test2.bedGraph'],
+        self.plugin(**{'SigMulti':{'files':[path+'test1.bedGraph',path+'test2.bedGraph']},
                        'assembly':'mm9', 'format':'png', 'type':'coverage %'})
     @skip('')
     def test_venn_diagram_3way(self):
-        self.plugin(**{'files':[path+'venn/test1.bedGraph',path+'venn/test2.bedGraph',
-                                path+'venn/test3.bedGraph'],
+        self.plugin(**{'SigMulti':{'files':[path+'venn/test1.bedGraph',
+                                            path+'venn/test2.bedGraph',path+'venn/test3.bedGraph']},
                        'assembly':'mm9', 'format':'png', 'type':'coverage %'})
     @skip('')
     def test_venn_diagram_4way(self):
-        self.plugin(**{'files':[path+'venn/test1.bedGraph',path+'venn/test2.bedGraph',
-                                path+'venn/test3.bedGraph',path+'venn/test4.bedGraph'],
+        self.plugin(**{'SigMulti':{'files':[path+'venn/test1.bedGraph',path+'venn/test2.bedGraph',
+                                            path+'venn/test3.bedGraph',path+'venn/test4.bedGraph']},
                        'assembly':'mm9', 'format':'png', 'type':'tag count'})
 
-    #@skip('Set par() options so that it looks like it should')
+    @skip('Set par() options so that it looks like it should in pdf format')
     def test_allkinds(self):
         format = 'png'
         from bbcflib.bFlatMajor.figure import venn
@@ -40,6 +40,7 @@ class Test_VennDiagramPlugin(TestCase):
         venn(D31,output='temp/d3.1.'+format,legend=['file1','file2','file3'],format=format)
         venn(D32,output='temp/d3.2.'+format,legend=['file1','file2','file3'],format=format)
         venn(D4,output='temp/d4.'+format,legend=['file1','file2','file3','file4'],format=format)
+        raise
 
     def tearDown(self):
         if 1:
