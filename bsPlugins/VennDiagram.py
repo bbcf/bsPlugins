@@ -16,9 +16,8 @@ class VennDiagramForm(BaseForm):
             help_text='Select your track files',
             validator=twb.BsFileFieldValidator(required=True))
     names = twf.TextArea(label='Sample names: ',
-        prompt_text='<Group1>\n<\Group2>\n...',
-        help_text="Sample names (facultative; one per line)",
-        )
+        placeholder="(One name per line)",
+        help_text="Sample names (facultative)" )
     type = twf.SingleSelectField(label='Type: ',
         prompt_text=None,
         options=['coverage %','tag count'],
