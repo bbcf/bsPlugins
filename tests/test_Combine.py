@@ -13,8 +13,8 @@ class Test_CombinePlugin(TestCase):
         self.complement = ComplementPlugin()
         self.subtract = SubtractPlugin()
         self.fields = ['chr','start','end','score']
-        self.kw = {'signals':[path+'test1.bedGraph', path+'test2.bedGraph'],
-                   'assembly':'mm9', 'format':'sql'}
+        self.kw = {'SigMulti':{'signals':[path+'test1.bedGraph', path+'test2.bedGraph']},
+                   'assembly':'mm9', 'format':'bedGraph'}
 
     def test_intersect(self):
         self.intersect(**self.kw)

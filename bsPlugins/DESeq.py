@@ -150,8 +150,8 @@ The input can be of two different types: <br />
             assembly = genrep.Assembly(kw.get('assembly'))
             chrmeta = assembly.chrmeta or "guess"
             kw['score_op'] = 'sum'
-            signals1 = kw.get('signals1',[])
-            signals2 = kw.get('signals2',[])
+            signals1 = kw['Group1']['signals1']
+            signals2 = kw['Group2']['signals2']
             if not isinstance(signals1,(list,tuple)): signals1 = [signals1]
             if not isinstance(signals2,(list,tuple)): signals2 = [signals2]
             kw['signals'] = signals1 + signals2
@@ -163,10 +163,8 @@ The input can be of two different types: <br />
                 assert os.path.exists(str(sig)), "Signal file not found: '%s'." % sig
                 _t = track(sig, chrmeta=chrmeta)
                 if 'normalization' in _t.info:
-                    print 'normalized'
                     _nf = float(_t.info['normalization'])
                 elif 'nreads' in _t.info:
-                    print 'nreads'
                     _nf = float(_t.info['nreads']) * 1e-7 / float(_t.info.get('read_extension', 1))
                 else:
                     _nf = 1

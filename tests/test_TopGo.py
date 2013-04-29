@@ -1,5 +1,5 @@
 from unittest2 import TestCase, skip
-from bsPlugins.TopGo import TopGoPlugin 
+from bsPlugins.TopGo import TopGoPlugin
 
 path = 'testing_files/'
 
@@ -9,9 +9,9 @@ class Test_TopGoPlugin(TestCase):
 
     def test_TopGo_Single(self):
         self.plugin(gene_list=path+'ensemblids',assembly="NCBIM37")
-	self.assertEqual([x[1] for x in self.plugin.output_files], ['pdf','txt'])
+        self.assertEqual([x[1] for x in self.plugin.output_files], ['pdf','txt'])
 
     def test_TopGo_Multiple(self):
         self.plugin(gene_list=path+'list_3clusters.txt', assembly="GRCh37.p5")
-	self.assertEqual([x[1] for x in self.plugin.output_files], ['file','file'])
+        self.assertEqual([x[1] for x in self.plugin.output_files], ['file','file'])
 

@@ -50,7 +50,7 @@ class Test_VennDiagramPlugin(TestCase):
 
 
 """
-# nosetests --logging-filter=-tw2 test_VennDiagram.py
+# nosetests --logging-filter=-tw2 test_VennDiagram.pynosetests --logging-filter=-tw2 test_VennDiagram.py
 
 A
 ('chr1', 10, 15, 5.0)

@@ -17,10 +17,12 @@ class QuantifyTableForm(BaseForm):
                                 validator=twb.BsFileFieldValidator(required=True))
 
     score_op = twf.SingleSelectField(label='Score operation: ',
-                                     options=funcs, prompt_text=None,
+                                     options=funcs,
+                                     prompt_text=None,
                                      help_text='Operation performed on scores within each feature')
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
-                                               options=ftypes, prompt_text=None,
+                                               options=ftypes,
+                                               prompt_text=None,
                                                mapping={ftypes[-1][0]: ['features'],
                                                         1: ['upstream', 'downstream']},
                                                help_text='Choose a feature set or upload your own',
@@ -29,10 +31,12 @@ class QuantifyTableForm(BaseForm):
         help_text='Select a feature file (e.g. bed)',
         validator=twb.BsFileFieldValidator(required=True))
     format = twf.SingleSelectField(label='Output format: ',
+        prompt_text=None,
         options=["txt", "sql"],
         validator=twc.Validator(required=True),
         help_text='Format of the output file')
     assembly = twf.SingleSelectField(label='Assembly: ',
+        prompt_text=None,
         options=genrep.GenRep().assemblies_available(),
         help_text='Reference genome')
     upstream = twf.TextField(label='Promoter upstream distance: ',
@@ -74,7 +78,7 @@ class QuantifyTablePlugin(BasePlugin):
         feature_type = int(kw.get('feature_type', 0))
         func = str(kw.get('score_op', 'mean'))
         assembly_id = kw.get('assembly')
-        format = kw.get('format','sql')
+        format = kw['format']
         chrmeta = "guess"
         if assembly_id:
             assembly = genrep.Assembly(assembly_id)
@@ -83,7 +87,7 @@ class QuantifyTablePlugin(BasePlugin):
             exons = assembly.exon_track
         elif not(feature_type == 3):
             raise ValueError("Please specify an assembly")
-        signals = kw.get('signals', [])
+        signals = kw['SigMulti']['signals']
         if not isinstance(signals, list): signals = [signals]
         signals = [track(sig, chrmeta=chrmeta) for sig in signals]
         if feature_type == 0:
@@ -97,7 +101,7 @@ class QuantifyTablePlugin(BasePlugin):
                 features = exons
         elif feature_type == 3:
             assert os.path.exists(str(kw.get('features'))), "Features file not found: '%s'" % kw.get("features")
-            _t = track(kw.get('features'), chrmeta=chrmeta)
+            _t = track(kw['features'], chrmeta=chrmeta)
             chrmeta = _t.chrmeta
             features = _t.read
         else:

@@ -9,8 +9,10 @@ class Test_DESeqPlugin(TestCase):
         self.plugin = DESeqPlugin()
 
     def test_with_signals(self):
-        self.plugin(**{'input_type':'Signal','signals1':[path+'KO50.bedGraph'],'signals2':[path+'WT50.bedGraph'],
-                               'features':path+'features.bed', 'feature_type':3, 'assembly':'mm9'})
+        self.plugin(**{'input_type':'Signal',
+                       'Group1':{'signals1':[path+'KO50.bedGraph']},
+                       'Group2':{'signals2':[path+'WT50.bedGraph']},
+                       'features':path+'features.bed', 'feature_type':3, 'assembly':'mm9'})
         with open(self.plugin.output_files[0][0],'rb') as f:
             content = f.readlines()
             self.assertEqual(len(content),9)

@@ -66,7 +66,6 @@ class VennDiagramPlugin(BasePlugin):
         self.debug(**kw)
         assembly = genrep.Assembly(kw['assembly'])
         filenames = kw['SigMulti']['files']
-        self.debug(filenames)
         if not isinstance(filenames,(list,tuple)): filenames = [filenames]
         for f in filenames: assert os.path.exists(f), "File not found: %s ." % f
         tracks = [track(f) for f in filenames]

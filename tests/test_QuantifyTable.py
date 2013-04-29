@@ -10,7 +10,7 @@ class Test_QuantifyTablePlugin(TestCase):
         self.plugin = QuantifyTablePlugin()
 
     def test_quantify_table_sql(self):
-        self.plugin(**{'input_type':'Signal','signals':[path+'KO50.bedGraph', path+'WT50.bedGraph'],
+        self.plugin(**{'input_type':'Signal', 'SigMulti':{'signals':[path+'KO50.bedGraph', path+'WT50.bedGraph']},
                        'features':path+'features.bed', 'feature_type':3, 'assembly':'mm9', 'format':'sql'})
         with track(self.plugin.output_files[0][0]) as t:
             s = t.read()
@@ -19,7 +19,7 @@ class Test_QuantifyTablePlugin(TestCase):
             self.assertEqual(len(content),9)
 
     def test_quantify_table_text(self):
-        self.plugin(**{'input_type':'Signal','signals':[path+'KO50.bedGraph', path+'WT50.bedGraph'],
+        self.plugin(**{'input_type':'Signal', 'SigMulti':{'signals':[path+'KO50.bedGraph', path+'WT50.bedGraph']},
                        'features':path+'features.bed', 'feature_type':3, 'assembly':'mm9', 'format':'txt'})
         with track(self.plugin.output_files[0][0], fields=["chr","start","end","name","score0","score1"]) as t:
             s = t.read()
