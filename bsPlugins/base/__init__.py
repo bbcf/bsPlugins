@@ -36,6 +36,12 @@ class BasePlugin(object):
         self.start_time = 0
         self.end_time = 0
 
+        self.is_debug = False
+
+    def debug(self, *args, **kw):
+        if self.is_debug:
+            print "%s : %s - %s" % (type(self).__name__, args, kw)
+
     def _start_timer(self):
         self.start_time = time.time()
 
