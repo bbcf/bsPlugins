@@ -131,3 +131,4 @@ class VennDiagramPlugin(BasePlugin):
                     summary.write("%s\t%.2f %%\t%d %%\n" % (c,cov[c],cumcov[c]))
             self.new_file(output, 'venn_summary')
             return self.display_time()
+
