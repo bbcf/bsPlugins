@@ -39,7 +39,7 @@ meta = {'version': "1.0.0",
 
 in_parameters = [
         {'id':'files', 'type':'track', 'required':True, 'multiple':'SigMulti'},
-        {'id':'names', 'type':'str'},
+        {'id':'names', 'type':'text'},
         {'id':'type', 'type':'list'},
         {'id':'format', 'type':'list'},
         {'id':'assembly', 'type':'assembly'},
@@ -69,7 +69,7 @@ class VennDiagramPlugin(BasePlugin):
         if not isinstance(filenames,(list,tuple)): filenames = [filenames]
         for f in filenames: assert os.path.exists(f), "File not found: %s ." % f
         tracks = [track(f) for f in filenames]
-        group_names = kw['names'].split()
+        group_names = [n.strip() for n in kw['names'].split('\n')]
         track_names = group_names if len(group_names) == len(tracks) \
                       else [chr(i+65) for i in range(len(tracks))] # 'A','B','C',...
         combn = [combinations(track_names,k) for k in range(1,len(tracks)+1)]
