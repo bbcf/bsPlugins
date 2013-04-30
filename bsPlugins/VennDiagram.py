@@ -135,6 +135,6 @@ class VennDiagramPlugin(BasePlugin):
             elif kw['type']=='coverage %':
                 for c in sorted(cumcnt.keys(), key=lambda x:(len(x),x)):
                     summary.write("%s\t%.2f %%\t%d %%\n" % (c,cov[c],cumcov[c]))
-            self.new_file(output, 'venn_summary')
-            return self.display_time()
+        self.new_file(output, 'venn_summary')
+        return self.display_time()
 
