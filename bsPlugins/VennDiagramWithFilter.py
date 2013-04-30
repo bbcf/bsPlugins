@@ -31,8 +31,8 @@ meta = {'version': "1.0.0",
         'contact': "webmaster-bbcf@epfl.ch"}
 
 in_parameters = [{'id': 'table', 'type': 'txt', 'required': True},
-                {'id': 'id_columns', 'type': 'txt', 'required': True},
-                {'id': 'filters', 'type': 'txt', 'required': True},
+                {'id': 'id_columns', 'type': 'text', 'required': True},
+                {'id': 'filters', 'type': 'text', 'required': True},
                 {'id': 'format', 'type': 'format'}
 ]
 
