@@ -6,14 +6,6 @@ import os
 
 class List2TrackForm(BaseForm):
     child = twd.HidingTableLayout()
-    ids_list = twf.FileField(
-        label='IDs list: ',
-        help_text='Select the file with the list of IDs',)
-    format = twf.SingleSelectField(label='Output format: ',
-        options=["sql","bed"],
-        prompt_text=None,
-        help_text='Format of the output file',
-        required=True, )
     assembly = twf.SingleSelectField(label='Assembly: ',
         options=genrep.GenRep().assemblies_available(),
         help_text='Reference genome',
@@ -22,6 +14,14 @@ class List2TrackForm(BaseForm):
         options=['genes','exons','transcripts'],
         help_text='Choose the kind of genomic features yo want to annotate',
         validator=twc.Validator(required=True), )
+    ids_list = twf.FileField(
+        label='IDs list: ',
+        help_text='Select the file with the list of IDs',)
+    format = twf.SingleSelectField(label='Output format: ',
+        options=["sql","bed"],
+        prompt_text=None,
+        help_text='Format of the output file',
+        required=True, )
     submit = twf.SubmitButton(id="submit", value="Submit")
 
 
@@ -35,7 +35,7 @@ out_parameters = [{'id': 'fulltrack', 'type': 'file'}]
 
 
 class List2TrackPlugin(BasePlugin):
-    description = """Transforms a list of Ensembl IDs into a fully annotated track file."""
+    description = """Create a fully annotated track file from a features type or a subset of Ensembl IDs."""
     info = {
         'title': 'List2Track',
         'description': description,
@@ -52,6 +52,7 @@ class List2TrackPlugin(BasePlugin):
         return (x[6],x[3],x[4],x[1]+'|'+x[2],0.0,x[5])
     def trans_annot(self,id,x):
         return (x[6],x[2],x[3],x[0]+'|'+x[1],0.0,x[4])
+
     def __call__(self, **kw):
         assembly = genrep.Assembly(kw.get('assembly'))
         format = kw['format']

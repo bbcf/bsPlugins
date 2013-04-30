@@ -59,7 +59,7 @@ class DESeqForm(BaseForm):
         options=genrep.GenRep().assemblies_available(),
         validator=twc.Validator(required=True),
         help_text='Reference genome')
-    submit = twf.SubmitButton(id="submit", value="Quantify")
+    submit = twf.SubmitButton(id="submit", value="Submit")
 
 
 meta = {'version': "1.0.0",
