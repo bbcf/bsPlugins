@@ -65,7 +65,7 @@ class Table2TracksPlugin(BasePlugin):
 
         outfiles=[]
         for _f in colnames:
-            out_format = kw.get('format','bedGraph')
+            out_format = kw['format'] or "bedGraph"
             out_name = shortname+'_'+_f+'.'+kw['format']
             output_name = self.temporary_path(out_name)
             out_track = track(output_name,chrmeta=chrmeta)
