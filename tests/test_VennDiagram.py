@@ -2,7 +2,7 @@ from unittest2 import TestCase, skip
 from bsPlugins.VennDiagram import VennDiagramPlugin
 import os
 
-path = 'testing_files/'
+path = 'testing_files/venn/'
 
 
 class Test_VennDiagramPlugin(TestCase):
@@ -11,20 +11,20 @@ class Test_VennDiagramPlugin(TestCase):
 
     #@skip('')
     def test_venn_diagram_2way(self):
-        self.plugin(**{'SigMulti':{'files':[path+'test1.bedGraph',path+'test2.bedGraph']},
+        self.plugin(**{'SigMulti':{'files':[path+'../test1.bedGraph',path+'../test2.bedGraph']},
                        'assembly':'mm9', 'format':'png', 'type':'coverage %'})
-    @skip('')
+    #@skip('')
     def test_venn_diagram_3way(self):
-        self.plugin(**{'SigMulti':{'files':[path+'venn/test1.bedGraph',
-                                            path+'venn/test2.bedGraph',path+'venn/test3.bedGraph']},
+        self.plugin(**{'SigMulti':{'files':[path+'test1.bedGraph',
+                                            path+'test2.bedGraph',path+'test3.bedGraph']},
                        'assembly':'mm9', 'format':'png', 'type':'coverage %'})
-    @skip('')
+    #@skip('')
     def test_venn_diagram_4way(self):
-        self.plugin(**{'SigMulti':{'files':[path+'venn/test1.bedGraph',path+'venn/test2.bedGraph',
-                                            path+'venn/test3.bedGraph',path+'venn/test4.bedGraph']},
+        self.plugin(**{'SigMulti':{'files':[path+'test1.bedGraph',path+'test2.bedGraph',
+                                            path+'test3.bedGraph',path+'test4.bedGraph']},
                        'assembly':'mm9', 'format':'png', 'type':'tag count'})
 
-    @skip('Set par() options so that it looks like it should in pdf format')
+    #@skip('Set par() options so that it looks like it should in pdf format')
     def test_allkinds(self):
         format = 'png'
         from bbcflib.bFlatMajor.figure import venn
@@ -35,12 +35,11 @@ class Test_VennDiagramPlugin(TestCase):
         D4 = {'A':230, 'B':230, 'C':230, 'D':230,
               'A|B':80, 'A|C':80, 'A|D':80, 'B|C':80, 'B|D':80, 'C|D':80,
               'A|B|C':30, 'A|B|D':30, 'A|C|D':30, 'B|C|D':30, 'A|B|C|D':10}
-        venn(D1,output='temp/d1.'+format,legend=['file1.bed'],format=format)
-        venn(D2,output='temp/d2.'+format,legend=['file1','file2'],format=format)
-        venn(D31,output='temp/d3.1.'+format,legend=['file1','file2','file3'],format=format)
-        venn(D32,output='temp/d3.2.'+format,legend=['file1','file2','file3'],format=format)
-        venn(D4,output='temp/d4.'+format,legend=['file1','file2','file3','file4'],format=format)
-        raise
+        venn(D1,output=path+'temp/d1.'+format,legend=['file1.bed'],format=format)
+        venn(D2,output=path+'temp/d2.'+format,legend=['file1','file2'],format=format)
+        venn(D31,output=path+'temp/d3.1.'+format,legend=['file1','file2','file3'],format=format)
+        venn(D32,output=path+'temp/d3.2.'+format,legend=['file1','file2','file3'],format=format)
+        venn(D4,output=path+'temp/d4.'+format,legend=['file1','file2','file3','file4'],format=format)
 
     def tearDown(self):
         if 1:
