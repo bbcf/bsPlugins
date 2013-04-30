@@ -33,7 +33,7 @@ class Test_VennDiagramPlugin(TestCase):
         D2 = {'Albert':126, 'Barthur':247, 'Albert|Barthur':50}
         D31 = {'Ar':521, 'Bi':14, 'Co':290, 'Ar|Bi':11, 'Ar|Co':100, 'Bi|Co':4, 'Ar|Bi|Co':1}
         D32 = {'A':521, 'B':300, 'C':290, 'A|B':11, 'A|C':100, 'B|C':44, 'A|B|C':5}
-        D4 = {'A':230, 'B':230, 'C':230, 'D':230,
+        D4 = {'A':210, 'B':220, 'C':230, 'D':240,
               'A|B':80, 'A|C':80, 'A|D':80, 'B|C':80, 'B|D':80, 'C|D':80,
               'A|B|C':30, 'A|B|D':30, 'A|C|D':30, 'B|C|D':30, 'A|B|C|D':10}
         venn(D1,output=path+'d1.'+format,legend=['file1.bed'],format=format)
