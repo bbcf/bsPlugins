@@ -8,8 +8,7 @@ class List2TrackForm(BaseForm):
     child = twd.HidingTableLayout()
     ids_list = twf.FileField(
         label='IDs list: ',
-        help_text='Select the file with the list of IDs',
-        validator=twf.FileValidator(required=True))
+        help_text='Select the file with the list of IDs',)
     format = twf.SingleSelectField(label='Output format: ',
         options=["sql","bed"],
         prompt_text=None,
@@ -56,10 +55,6 @@ class List2TrackPlugin(BasePlugin):
     def __call__(self, **kw):
         assembly = genrep.Assembly(kw.get('assembly'))
         format = kw['format']
-        ids_list = kw.get('ids_list')
-        assert os.path.exists(str(ids_list)), "File not found: '%s'" % ids_list
-        output = self.temporary_path(fname='output.'+format)
-        out = track(output,chrmeta=assembly)
         if kw['feature_type'] == 'genes':
             map = assembly.get_gene_mapping()
             get_info = self.genes_annot
@@ -77,8 +72,15 @@ class List2TrackPlugin(BasePlugin):
                         yield get_info(id,map.get(id))
                     else:
                         yield ('NA','0','0',id,0.0,'0')
+        ids_list = kw.get('ids_list')
         fields = ['chr','start','end','name','score','strand']
-        fulltrack = FeatureStream(_annotate(ids_list),fields=fields)
+        if ids_list:
+            assert os.path.exists(str(ids_list)), "File not found: '%s'" % ids_list
+            fulltrack = FeatureStream(_annotate(ids_list),fields=fields)
+        else:
+            fulltrack = FeatureStream((get_info(g,map[g]) for g in map),fields=fields)
+        output = self.temporary_path(fname='output.'+format)
+        out = track(output,chrmeta=assembly)
         out.write(fulltrack)
         self.new_file(output, 'fulltrack')
         return self.display_time()
