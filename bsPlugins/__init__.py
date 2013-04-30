@@ -1,6 +1,5 @@
 import warnings
 
-print "MA VERSION"
 
 try:
     from tw2 import core as twc
