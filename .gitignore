@@ -6,3 +6,5 @@
 #*#
 *.log.*
 /doc/build
+/tests/testing_files/venn/*.png
+.DS_Store

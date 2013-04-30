@@ -9,10 +9,10 @@ class StatisticsForm(BaseForm):
     sample = twb.BsFileField(label='Input file: ',
         help_text='Select the file to examine',
         validator=twb.BsFileFieldValidator(required=True))
-    assembly = twf.SingleSelectField(label='Assembly: ',
-        prompt_text=None,
-        options=genrep.GenRep().assemblies_available(),
-        help_text='Reference genome')
+    #assembly = twf.SingleSelectField(label='Assembly: ',
+    #    prompt_text=None,
+    #    options=genrep.GenRep().assemblies_available(),
+    #    help_text='Reference genome')
     submit = twf.SubmitButton(id="submit", value="Submit")
 
 
@@ -22,7 +22,7 @@ meta = {'version': "1.0.0",
 
 in_parameters = [
         {'id':'sample', 'type':'track', 'required':True},
-        {'id':'assembly', 'type':'assembly'},
+        #{'id':'assembly', 'type':'assembly'},
 ]
 out_parameters = [{'id':'stats', 'type':'file'},
                   {'id':'density_plot', 'type':'file'}]
