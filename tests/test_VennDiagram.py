@@ -9,16 +9,17 @@ class Test_VennDiagramPlugin(TestCase):
     def setUp(self):
         self.plugin = VennDiagramPlugin()
 
-    #@skip('')
+    @skip('')
     def test_venn_diagram_2way(self):
         self.plugin(**{'SigMulti':{'files':[path+'../test1.bedGraph',path+'../test2.bedGraph']},
                        'assembly':'mm9', 'format':'png', 'type':'coverage %'})
-    #@skip('')
+    @skip('')
     def test_venn_diagram_3way(self):
         self.plugin(**{'SigMulti':{'files':[path+'test1.bedGraph',
                                             path+'test2.bedGraph',path+'test3.bedGraph']},
-                       'assembly':'mm9', 'format':'png', 'type':'coverage %'})
-    #@skip('')
+                       'assembly':'mm9', 'format':'png', 'type':'coverage %',
+                       'names':"Group1 Group2 Group3"})
+    @skip('')
     def test_venn_diagram_4way(self):
         self.plugin(**{'SigMulti':{'files':[path+'test1.bedGraph',path+'test2.bedGraph',
                                             path+'test3.bedGraph',path+'test4.bedGraph']},
@@ -29,15 +30,15 @@ class Test_VennDiagramPlugin(TestCase):
         format = 'png'
         from bbcflib.bFlatMajor.figure import venn
         D1 = {'A':126}
-        D2 = {'A':126, 'B':247, 'A|B':50}
-        D31 = {'A':521, 'B':14, 'C':290, 'A|B':11, 'A|C':100, 'B|C':4, 'A|B|C':1}
+        D2 = {'Albert':126, 'Barthur':247, 'Albert|Barthur':50}
+        D31 = {'Ar':521, 'Bi':14, 'Co':290, 'Ar|Bi':11, 'Ar|Co':100, 'Bi|Co':4, 'Ar|Bi|Co':1}
         D32 = {'A':521, 'B':300, 'C':290, 'A|B':11, 'A|C':100, 'B|C':44, 'A|B|C':5}
         D4 = {'A':230, 'B':230, 'C':230, 'D':230,
               'A|B':80, 'A|C':80, 'A|D':80, 'B|C':80, 'B|D':80, 'C|D':80,
               'A|B|C':30, 'A|B|D':30, 'A|C|D':30, 'B|C|D':30, 'A|B|C|D':10}
         venn(D1,output=path+'d1.'+format,legend=['file1.bed'],format=format)
-        venn(D2,output=path+'d2.'+format,legend=['file1','file2'],format=format)
-        venn(D31,output=path+'d3.1.'+format,legend=['file1','file2','file3'],format=format)
+        venn(D2,output=path+'d2.'+format,legend=None,format=format)
+        venn(D31,output=path+'d3.1.'+format,legend=None,format=format)
         venn(D32,output=path+'d3.2.'+format,legend=['file1','file2','file3'],format=format)
         venn(D4,output=path+'d4.'+format,legend=['file1','file2','file3','file4'],format=format)
 

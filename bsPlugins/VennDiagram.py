@@ -39,6 +39,7 @@ meta = {'version': "1.0.0",
 
 in_parameters = [
         {'id':'files', 'type':'track', 'required':True, 'multiple':'SigMulti'},
+        {'id':'names', 'type':'str'},
         {'id':'type', 'type':'list'},
         {'id':'format', 'type':'list'},
         {'id':'assembly', 'type':'assembly'},
@@ -68,7 +69,9 @@ class VennDiagramPlugin(BasePlugin):
         if not isinstance(filenames,(list,tuple)): filenames = [filenames]
         for f in filenames: assert os.path.exists(f), "File not found: %s ." % f
         tracks = [track(f) for f in filenames]
-        track_names = [chr(i+65) for i in range(len(tracks))] # 'A','B','C',...
+        group_names = kw['names'].split()
+        track_names = group_names if len(group_names) == len(tracks) \
+                      else [chr(i+65) for i in range(len(tracks))] # 'A','B','C',...
         combn = [combinations(track_names,k) for k in range(1,len(tracks)+1)]
         combn = ['|'.join(sorted(y)) for x in combn for y in x]
         cnt = dict(zip(combn,[0]*len(combn)))
@@ -107,7 +110,8 @@ class VennDiagramPlugin(BasePlugin):
                 cov['|'.join(sub)] += length
         venn_options = {} # tune it here
         output = self.temporary_path(fname='venn_diagram.'+kw['format'])
-        legend = [os.path.basename(f) for f in filenames]
+        legend = None if len(group_names)==len(tracks) \
+                 else [os.path.basename(f) for i,f in enumerate(filenames)]
         if kw['type']=='tag count':
             for c in cnt:
                 cumcnt[c] = round(cumcnt[c])
