@@ -53,6 +53,21 @@ So to get the first (and often unique) output file path just do::
 
  plugin.output_files[0][0]
 
+===========
+PRINT DEBUG
+===========
+
+When a plugin is running on the web interface, if an operation fails, you cannot really see the print statements you've set, but you have a method to do that::
+    
+ self.debug(<some debug statement>)
+
+You will see the output in the 'full traceback' section. This is available on the <dev> server.
+
+
+..note::
+ 
+ self.debug() will also print the <debug statement> to the standard out if you set self.is_debug = True.
+
 ============
 Unit testing
 ============
