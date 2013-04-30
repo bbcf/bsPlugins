@@ -112,12 +112,14 @@ class VennDiagramPlugin(BasePlugin):
             for c in cnt:
                 cumcnt[c] = round(cumcnt[c])
                 cnt[c] = cnt[c]
-            venn(cumcnt,legend=legend,options=venn_options,output=output,format=kw['format'])
+            if len(tracks) <= 4:
+                venn(cumcnt,legend=legend,options=venn_options,output=output,format=kw['format'])
         elif kw['type']=='coverage %':
             for c in cnt:
                 cumcnt[c] = round(cumcov[c]/total_cov * 100)
                 cov[c] = cov[c]/total_cov * 100
-            venn(cumcov,legend=legend,options=venn_options,output=output,format=kw['format'])
+            if len(tracks) <= 4:
+                venn(cumcov,legend=legend,options=venn_options,output=output,format=kw['format'])
         self.new_file(output, 'venn_diagram')
         # Text summary
         output = self.temporary_path(fname='venn_summary.txt')
