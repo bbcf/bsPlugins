@@ -108,6 +108,12 @@ class VennDiagramPlugin(BasePlugin):
                     cumcov[c] += length
                 cnt['|'.join(sub)] += score  # 'separate', for the stats
                 cov['|'.join(sub)] += length
+        if total_cov == 0:
+            output = self.temporary_path(fname='venn_summary.txt')
+            with open(output,'wb') as summary:
+                summary.write("Empty content (no coverage). Check the chromosome names/assembly.")
+            self.new_file(output, 'venn_summary')
+            return
         venn_options = {} # tune it here
         output = self.temporary_path(fname='venn_diagram.'+kw['format'])
         legend = None if len(group_names)==len(tracks) \
