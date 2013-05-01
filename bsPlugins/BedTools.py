@@ -1,7 +1,7 @@
-from bbcflib.bFlatMajor.bedtools import *
 from bsPlugins import *
 import re
 from bein import execution
+from bbcflib.bFlatMajor.bedtools import *
 
 all_tools = ["annotateBed", "bamToBed", "bamToFastq", "bed12ToBed6",
              "bedpeToBam", "bedToBam", "bedToIgv", "closestBed",
@@ -57,7 +57,7 @@ file_params = {"simple": [x for x in all_params if x[-4:] == "file"],
                "multiple": [x for x in all_params if x[-5:] == "files"]}
 
 all_file_params = [{'id': x[1:], 'type': 'file', 'multiple': x} for x in all_params if x[-5:] == 'files']+\
-                  [{'id': x, 'type': 'file', 'multiple': False} for x in all_params if x[-4:] == 'file']
+                  [{'id': x, 'type': 'file'} for x in all_params if x[-4:] == 'file']
 
 other_params = [
     {'id': 'tool', 'type': 'list'},
@@ -83,7 +83,7 @@ class BedToolsForm(BaseForm):
                                        value=0,
                                        help_text='Select BedTool')
     for it in file_params['simple']:
-        vars()[it] = twb.BsFileField(label=it + ': ', validator=twb.BsFileFieldValidator())
+        vars()[it] = twb.BsFileField(label=it+': ', validator=twb.BsFileFieldValidator())
 
     class Mfiles(twb.BsMultiple):
         label = 'files: '
@@ -148,7 +148,7 @@ class BedToolsPlugin(BasePlugin):
         if kw.get('labels'):
             kw['labels'] = kw['labels'].split(",")
         with execution(None) as ex:
-            output = eval(all_tools[kw.pop('tool')])(ex, **kw)
+            output = eval(all_tools[int(kw.pop('tool'))])(ex, **kw)
         self.new_file(output, 'bedtools_result')
         return self.display_time()
 
