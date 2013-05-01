@@ -22,8 +22,6 @@ class Test_FilteringPlugin(TestCase):
         'minimum_score':"0",'maximum_score':"10",
         'minimum_length':'9','maximum_length':'500000',
         'chromosome_name':["chr1","chrX"]})
-#        self.plugin(**{'track':[path+'CTCF_deconv.sql', path+"CTCF_rev.bw"],
-#        'assembly':'mm9')
 #    def tearDown(self):
 #        for f in os.listdir('.'):
 #            if f.startswith('tmp'):
