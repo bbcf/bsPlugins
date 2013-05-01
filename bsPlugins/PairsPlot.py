@@ -85,7 +85,7 @@ class PairsPlotPlugin(BasePlugin):
             exons = assembly.exon_track
         elif not(feature_type == 2):
             raise ValueError("Please specify an assembly")
-        signals = kw.get('signals', [])
+        signals = kw.get('SigMulti',{}).get('signals', [])
         if not isinstance(signals, list): signals = [signals]
         snames = [os.path.splitext(os.path.basename(sig))[0] for sig in signals]
         signals = [track(sig, chrmeta=chrmeta) for sig in signals]

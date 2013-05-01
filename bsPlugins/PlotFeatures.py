@@ -65,7 +65,7 @@ class PlotFeaturesPlugin(BasePlugin):
     def __call__(self, **kw):
         chrmeta = "guess"
         features = track(kw.get('features'), chrmeta=chrmeta)
-        signals = kw.get('signals', [])
+        signals = kw.get('SigMulti',{}).get('signals', [])
         if not isinstance(signals, list): signals = [signals]
         snames = [os.path.splitext(os.path.basename(sig))[0]
                   for sig in signals]

@@ -147,6 +147,9 @@ class BedToolsPlugin(BasePlugin):
                     kw[key] = str(x)
         if kw.get('labels'):
             kw['labels'] = kw['labels'].split(",")
+        for x in all_params:
+            if x[-5:] == "files":
+                kw[x[1:]] = kw.pop(x)[x[1:]]
         with execution(None) as ex:
             output = eval(all_tools[int(kw.pop('tool'))])(ex, **kw)
         self.new_file(output, 'bedtools_result')
