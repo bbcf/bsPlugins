@@ -33,7 +33,7 @@ class StatisticsPlugin(BasePlugin):
     such as a distribution of scores and feature lengths.
     """
     info = {
-        'title': 'Venn Diagram',
+        'title': 'Statistics',
         'description': description,
         'path': ['Files', 'Statistics'],
         'output': StatisticsForm,
