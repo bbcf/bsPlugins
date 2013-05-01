@@ -4,7 +4,7 @@ from bbcflib.bFlatMajor.figure import heatmap, lineplot
 from bbcflib.btrack import track
 from numpy import vstack, concatenate, array
 
-nbins = 50
+_nbins = 50
 upstr = (.1,5)
 downstr = (.1,5)
 prom_up_def = 1000
@@ -83,6 +83,7 @@ class PlotFeaturesPlugin(BasePlugin):
             elif _down > 0: downstr = (_down,1)
             else: downstr = (0,0)
         if kw.get("nbins") is not None: nbins = max(1,int(kw["nbins"]))
+        else: nbins = _nbins
         for chrom in features.chrmeta:
             _l, _d = feature_matrix([s.read(chrom) for s in signals],
                                     features.read(chrom), segment=True,

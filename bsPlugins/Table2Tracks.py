@@ -59,8 +59,8 @@ class Table2TracksPlugin(BasePlugin):
             if indice <= len(h) and indice > 2: #columns 0,1,2 are for chr,start,end
                 colnames.append(h[indice])
 
-        t=track(kw['tableFile'],chrmeta=chrmeta, fields=h)
-        (filepath, filename) = os.path.split(kw['tableFile'])
+        t=track(kw['table'],chrmeta=chrmeta, fields=h)
+        (filepath, filename) = os.path.split(kw['table'])
         (shortname, extension) = os.path.splitext(filename)
 
         outfiles=[]
