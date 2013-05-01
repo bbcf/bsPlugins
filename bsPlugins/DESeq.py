@@ -18,11 +18,10 @@ class DESeqForm(BaseForm):
     child = twd.HidingTableLayout()
 
     input_type = twd.HidingRadioButtonList(label='Input type: ',
-        options=((1,'Table'), (0,'Signals')), validator=twc.IntValidator,
-        mapping={1:  ['table'],
-                 0: ['Group1','Group2','feature_type','assembly'],},
-        prompt_text=None,
-        help_text='Select input type (Formatted table, or signal tracks)')
+                                           options=['Table', 'Signals'], 
+                                           mapping={'Table': ['table'],
+                                                    'Signals': ['Group1','Group2','feature_type','assembly'],},
+                                           help_text='Select input type (Formatted table, or signal tracks)')
 
     table = twb.BsFileField(label='Table: ',
         help_text='Select scores table',

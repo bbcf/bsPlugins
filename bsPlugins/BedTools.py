@@ -136,7 +136,7 @@ class BedToolsPlugin(BasePlugin):
 
     def __call__(self, **kw):
         kw['outfile'] = self.temporary_path()
-        reo = re.search(r'([\w\s\-,.=]+)', kw.pop('useropts') or '')
+        reo = re.search(r'([\w\s\-,.=]+)', kw.pop('useropts') if 'useropts' in kw else '')
         if reo:
             key = None
             for x in reo.groups()[0].split():
@@ -148,7 +148,7 @@ class BedToolsPlugin(BasePlugin):
         if kw.get('labels'):
             kw['labels'] = kw['labels'].split(",")
         for x in all_params:
-            if x[-5:] == "files":
+            if x[-5:] == "files" and x in kw:
                 kw[x[1:]] = kw.pop(x)[x[1:]]
         with execution(None) as ex:
             output = eval(all_tools[int(kw.pop('tool'))])(ex, **kw)
