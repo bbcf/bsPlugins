@@ -50,7 +50,7 @@ class Table2TracksPlugin(BasePlugin):
         assembly = genrep.Assembly(kw.get('assembly'))
         chrmeta = assembly.chrmeta or "guess"
 
-        with open(kw['tableFile'],"rb") as f:
+        with open(kw['table'],"rb") as f:
             h=f.readline().strip().replace('#','').split('\t')
 
         colnames=[]
