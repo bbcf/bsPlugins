@@ -135,7 +135,8 @@ class BedToolsPlugin(BasePlugin):
         }
 
     def __call__(self, **kw):
-        kw['outfile'] = self.temporary_path()
+        selected_tool = all_tools[int(kw.pop('tool'))]
+        kw['outfile'] = self.temporary_path(fname=selected_tool+'.txt')
         reo = re.search(r'([\w\s\-,.=]+)', kw.pop('useropts') if 'useropts' in kw else '')
         if reo:
             key = None
@@ -150,8 +151,11 @@ class BedToolsPlugin(BasePlugin):
         for x in all_params:
             if x[-5:] == "files" and x in kw:
                 kw[x[1:]] = kw.pop(x)[x[1:]]
+        for k in kw.keys():
+            if not kw[k]:
+                kw.pop(k)
         with execution(None) as ex:
-            output = eval(all_tools[int(kw.pop('tool'))])(ex, **kw)
+            output = eval(selected_tool)(ex, **kw)
         self.new_file(output, 'bedtools_result')
         return self.display_time()
 
