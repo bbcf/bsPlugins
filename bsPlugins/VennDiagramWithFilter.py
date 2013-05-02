@@ -75,8 +75,7 @@ class VennDiagramWithFilterPlugin(BasePlugin):
 
         D={}
         for x in out[0].split(','): D[x.split(':')[0]]=int(x.split(':')[1])
-        path=script_path
-        output = self.temporary_path(fname=path+'/venn_diagram.'+kw['format'])
+        output = self.temporary_path(fname='/venn_diagram.'+kw['format'])
         print(D)
         venn(D,output=output,legend=colnames,format=kw['format'])
         self.new_file(output, 'venn_diagram')
