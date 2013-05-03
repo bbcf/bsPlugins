@@ -35,7 +35,7 @@ in_parameters = [{'id': 'track', 'type': 'track', 'required': True, 'multiple':'
                 {'id': 'assembly', 'type': 'assembly'},
                 {'id': 'function', 'type': 'function'},
                 {'id': 'format', 'type': 'format'}]
-out_parameters = [{'id': 'output', 'type': 'file'}]
+out_parameters = [{'id': 'converted_track', 'type': 'track'}]
 
 
 class NumericOperationPlugin(BasePlugin):
@@ -79,4 +79,5 @@ class NumericOperationPlugin(BasePlugin):
                 out_track.write(apply(filter_track(tinput),'score',method), mode='write')
                 out_track.close()
             tinput.close()
+        self.new_file(out_track, 'converted_track')
         return self.display_time()

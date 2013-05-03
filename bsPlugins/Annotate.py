@@ -26,6 +26,7 @@ class AnnotateForm(BaseForm):
                             validator=twb.BsFileFieldValidator(required=True))
     assembly = twf.SingleSelectField(label='Assembly: ',
                                      options=genrep.GenRep().assemblies_available(),
+                                     prompt_text=None,
                                      help_text='Reference genome')
     promoter = twf.TextField(label='Promoter size: ',
                              validator=twc.IntValidator(required=True),

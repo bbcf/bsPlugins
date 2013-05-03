@@ -74,7 +74,7 @@ in_parameters = [
         {'id': 'upstream', 'type': 'int'},
         {'id': 'downstream', 'type': 'int'},
         {'id': 'assembly', 'type': 'assembly'},
-        {'id': 'features', 'type': 'userfile'},
+        {'id': 'features', 'type': 'track'},
 ]
 out_parameters = [{'id': 'MA-plot', 'type': 'file'}]
 

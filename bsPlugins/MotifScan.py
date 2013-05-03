@@ -46,7 +46,7 @@ in_parameters = [{'id': 'input_type', 'type': 'radio'},
                  {'id': 'fastafile', 'type': 'userfile'},
                  {'id': 'background', 'type': 'txt'},
                  {'id': 'assembly', 'type': 'assembly'},
-                 {'id': 'regions', 'type': 'userfile'},
+                 {'id': 'regions', 'type': 'track'},
                  {'id': 'motifs', 'type': 'list'},
                  {'id': 'customMotif', 'type': 'txt'},
                  {'id': 'threshold', 'type': 'float', 'required': True}]

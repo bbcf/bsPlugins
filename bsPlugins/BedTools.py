@@ -56,8 +56,8 @@ all_params = dict((y, '') for x in tools_map.values() for y in x).keys()
 file_params = {"simple": [x for x in all_params if x[-4:] == "file"],
                "multiple": [x for x in all_params if x[-5:] == "files"]}
 
-all_file_params = [{'id': x[1:], 'type': 'file', 'multiple': x} for x in all_params if x[-5:] == 'files']+\
-                  [{'id': x, 'type': 'file'} for x in all_params if x[-4:] == 'file']
+all_file_params = [{'id': x[1:], 'type': 'track', 'multiple': x} for x in all_params if x[-5:] == 'files']+\
+                  [{'id': x, 'type': 'track'} for x in all_params if x[-4:] == 'file']
 
 other_params = [
     {'id': 'tool', 'type': 'list'},
@@ -119,7 +119,7 @@ meta = {'version': "1.0.0",
 
 in_parameters = all_file_params + other_params
 
-out_parameters = [{'id': 'bedtools_result', 'type': 'file'}]
+out_parameters = [{'id': 'bedtools_result', 'type': 'track'}]
 
 
 class BedToolsPlugin(BasePlugin):

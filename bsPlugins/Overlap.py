@@ -26,7 +26,7 @@ meta = {'version': "1.0.0",
         'contact': "webmaster-bbcf@epfl.ch"}
 
 in_parameters = [{'id': 'filter', 'type': 'userfile', 'required': True},
-                 {'id': 'features', 'type': 'userfile', 'required': True},
+                 {'id': 'features', 'type': 'track', 'required': True},
                  {'id': 'format', 'type': 'text'},
                  {'id': 'assembly', 'type': 'assembly'}]
 out_parameters = [{'id': 'filtered', 'type': 'track'}]
@@ -52,7 +52,7 @@ class OverlapPlugin(BasePlugin):
             chrmeta = assembly.chrmeta
         # Set features track
         assert os.path.exists(str(kw.get('features'))), "Features file not found: '%s'"%kw.get("features")
-        features = track(kw.get('features'), chrmeta=chrmeta or None )
+        features = track(kw['features'], chrmeta=chrmeta or None )
         chrmeta = features.chrmeta
         # Set filter track
         assert os.path.exists(str(kw.get('filter'))), "Filter file not found: '%s'"%kw.get("filter")

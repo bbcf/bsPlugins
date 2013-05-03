@@ -32,7 +32,7 @@ in_parameters = [{'id': 'table', 'type': 'txt', 'required': True},
 ]
 
 out_parameters = [{'id': 'output_tar', 'type': 'file'},
-                {'id': 'output', 'type':'file'}]
+                {'id': 'output', 'type':'track'}]
 
 
 class Table2TracksPlugin(BasePlugin):

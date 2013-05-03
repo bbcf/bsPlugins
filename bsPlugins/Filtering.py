@@ -8,7 +8,6 @@ from bbcflib.btrack import FeatureStream
 from bbcflib.bFlatMajor.common import split_field,apply,score_threshold
 import re
 import sys
-from genomes import Assembly
 # import toscawidget2 modules in order to build forms
 import tw2.forms as twf
 dicoAssemblyChr={ }
@@ -97,7 +96,7 @@ in_parameters = [{'id': 'track', 'type': 'track', 'required': True, 'multiple':'
                 {'id': 'minimum_length', 'type': 'minimum_length'},
                 {'id': 'maximum_length', 'type': 'maximum_length'},
                 {'id': 'chromosome_name', 'type': 'chromosome_name', 'multiple': True}]
-out_parameters = [{'id': 'output', 'type': 'file'}]
+out_parameters = [{'id': 'output', 'type': 'track'}]
 class FilteringPlugin(BasePlugin):
     description = """ Filter a track."""
     info = {

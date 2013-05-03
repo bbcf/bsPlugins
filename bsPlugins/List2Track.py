@@ -32,7 +32,7 @@ meta = {'version': "1.0.0",
 in_parameters = [
         {'id': 'ids_list', 'type': 'txt', 'required': True, 'multiple': True},
         {'id': 'format', 'type': ''}]
-out_parameters = [{'id': 'fulltrack', 'type': 'file'}]
+out_parameters = [{'id': 'fulltrack', 'type': 'track'}]
 
 
 class List2TrackPlugin(BasePlugin):
