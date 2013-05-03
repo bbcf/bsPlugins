@@ -65,9 +65,7 @@ class Table2TracksPlugin(BasePlugin):
 
         outfiles=[]
         for _f in colnames:
-            out_format = kw['format'] or "bedGraph"
-            out_name = shortname+'_'+_f+'.'+kw['format']
-            output_name = self.temporary_path(out_name)
+            output_name = self.temporary_path(fname=shortname+'_'+_f,ext=kw.get('format',"bedGraph"))
             out_track = track(output_name,chrmeta=chrmeta)
             s = t.read(fields=['chr','start','end',_f])
             s.fields[3] = "score"
@@ -75,12 +73,11 @@ class Table2TracksPlugin(BasePlugin):
             out_track.close()
             outfiles.append(output_name)
 
-        print outfiles
-        output=shortname+"_out.tar"
+#        print outfiles
         if len(outfiles) > 1:
             tar_name = self.temporary_path(fname=shortname+"_out.tgz")
             tar = tarfile.open(tar_name, "w:gz")
-            [tar.add(f) for f in outfiles]
+            [tar.add(f,arcname=os.path.basename(f)) for f in outfiles]
             tar.close()
             self.new_file(tar_name, 'output_tar')
         else:

@@ -152,7 +152,7 @@ class BedToolsPlugin(BasePlugin):
             if x[-5:] == "files" and x in kw:
                 kw[x[1:]] = kw.pop(x)[x[1:]]
         for k in kw.keys():
-            if not kw[k]:
+            if kw[k] in [None,'']:
                 kw.pop(k)
         with execution(None) as ex:
             output = eval(selected_tool)(ex, **kw)

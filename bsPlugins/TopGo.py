@@ -65,7 +65,7 @@ out = multi_topGo("%s","%s","%s","%s")
 
             tar_table_name = self.temporary_path(fname='TopGO_tables.tgz')
             tar_table = tarfile.open(tar_table_name, "w:gz")
-            [tar_table.add(f) for f in table_list]
+            [tar_table.add(f,arcname=os.path.basename(f)) for f in table_list]
             tar_table.close()
             self.new_file(tar_pdf_name, 'TopGO_plots_tar')
             self.new_file(tar_table_name, 'TopGO_table_tar')
