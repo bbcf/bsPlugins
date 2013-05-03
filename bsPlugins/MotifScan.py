@@ -24,6 +24,7 @@ class MotifScanForm(BaseForm):
     s1 = twf.Spacer()
     fastafile = twb.BsFileField(label='Fasta file: ', help_text='Sequences to scan')
     assembly = twf.SingleSelectField(label='Assembly: ', options=assembly_list,
+                                     prompt_text=None,
                                      help_text='Assembly to fetch sequences from')
     regions = twb.BsFileField(label='Regions: ', help_text='Genomic regions to scan (e.g. bed)')
     s2 = twf.Spacer()
