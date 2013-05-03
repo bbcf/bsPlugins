@@ -21,13 +21,13 @@ class MotifScanForm(BaseForm):
                                            options=input_types,
                                            value=0,
                                            mapping=input_map)
-    s1 = twf.Spacer()
+
     fastafile = twb.BsFileField(label='Fasta file: ', help_text='Sequences to scan')
     assembly = twf.SingleSelectField(label='Assembly: ', options=assembly_list,
                                      prompt_text=None,
                                      help_text='Assembly to fetch sequences from')
     regions = twb.BsFileField(label='Regions: ', help_text='Genomic regions to scan (e.g. bed)')
-    s2 = twf.Spacer()
+
     background = twb.BsFileField(label='Background: ',
                                help_text='File of background frequencies (default: genome-wide frequencies)')
     motifs = twf.MultipleSelectField(label='Motifs: ', options=motif_list,

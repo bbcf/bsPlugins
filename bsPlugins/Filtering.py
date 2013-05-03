@@ -102,7 +102,7 @@ class FilteringPlugin(BasePlugin):
     info = {
         'title': 'Apply a filter on a given track',
         'description': ' Apply a filter on a given track (by score, by name, by length, ...) ',
-        'path': ['track', 'filter'],
+        'path': ['Files', 'Filtering'],
         'output': FilteringForm,
         'in': in_parameters,
         'out': out_parameters,
