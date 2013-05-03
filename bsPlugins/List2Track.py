@@ -12,6 +12,7 @@ class List2TrackForm(BaseForm):
         validator=twc.Validator(required=True), )
     feature_type = twf.SingleSelectField(label='Feature type: ',
         options=['genes','exons','transcripts'],
+        prompt_text=None,
         help_text='Choose the kind of genomic features yo want to annotate',
         validator=twc.Validator(required=True), )
     ids_list = twf.FileField(

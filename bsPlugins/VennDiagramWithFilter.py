@@ -21,6 +21,7 @@ class VennDiagramWithFilterForm(BaseForm):
         help_text='comma separated list of simple filters which will be applied to each corresponding column id before doing the Venn diagram (e.g. >2,<0.05)')
     format = twf.SingleSelectField(label='Output format: ',
         options=["png","pdf"],
+        prompt_text=None,
         validator=twc.Validator(required=False),
         help_text='Output figure format')
     submit = twf.SubmitButton(id="submit", value="Submit")
