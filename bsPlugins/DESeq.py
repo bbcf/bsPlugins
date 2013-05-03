@@ -21,6 +21,7 @@ class DESeqForm(BaseForm):
                                            options=['Table', 'Signals'], 
                                            mapping={'Table': ['table'],
                                                     'Signals': ['Group1','Group2','feature_type','assembly'],},
+                                           value='Table',
                                            help_text='Select input type (Formatted table, or signal tracks)')
 
     table = twb.BsFileField(label='Table: ',

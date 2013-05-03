@@ -19,6 +19,7 @@ class MotifScanForm(BaseForm):
     child = twd.HidingTableLayout()
     input_type = twd.HidingRadioButtonList(label='Sequence source: ',
                                            options=input_types,
+                                           value=0,
                                            mapping=input_map)
     s1 = twf.Spacer()
     fastafile = twb.BsFileField(label='Fasta file: ', help_text='Sequences to scan')
