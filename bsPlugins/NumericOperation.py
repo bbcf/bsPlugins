@@ -63,7 +63,7 @@ class NumericOperationPlugin(BasePlugin):
             elif kw['function']=="sqrt":
                 return math.sqrt(x) ;
         assembly = genrep.Assembly(kw.get('assembly'))
-        l_track = kw.get('track', [])
+        l_track = kw.get('SigMulti', {}).get('track',[])
         if not isinstance(l_track, list): l_track = [l_track]
         for tname in l_track :
             tinput = track(tname, chrmeta=kw.get('assembly'))

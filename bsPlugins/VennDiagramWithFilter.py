@@ -18,7 +18,7 @@ class VennDiagramWithFilterForm(BaseForm):
     filters = twf.TextField(label='filters: ',
         validator=twc.Validator(required=True),
         value='',
-        help_text='comma separated list of simple filters which will be applied to each corresponding column id before doing the Venn diagram (e.g. >2,<0.05)')
+        help_text='comma separated list of simple filters which will be applied to each corresponding column id before doing the Venn diagram (e.g. >2,<0.05,>=2 OR <=-2,>=-2 AND <2,==2,!=2) - one filter per column should be given - leave an empty string if no filter should be applied to a given column (e.g., >2,,<0.05)')
     format = twf.SingleSelectField(label='Output format: ',
         options=["png","pdf"],
         prompt_text=None,
