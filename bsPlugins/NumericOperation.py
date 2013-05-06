@@ -14,7 +14,6 @@ class NumericOperationForm(BaseForm):
     function =  twf.SingleSelectField(label='Operation: ',
                                       prompt_text=None,
                                       options=["log2","log10","sqrt"],
-                                      validator=twc.Validator(required=False),
                                       help_text='Select a function')
     format = twf.SingleSelectField(label='Output format: ',
                                    options=["sql","bedgraph","bigwig","wig"],
@@ -61,12 +60,12 @@ class NumericOperationPlugin(BasePlugin):
             format = kw.get('format',tinput.format)
             shortname = os.path.splitext(os.path.basename(tname))[0]
             out_name = shortname+'_'+func+'.'+format
-            outtrack = self.temporary_path(out_name)
-            out_track = track(output_name,chrmeta=tinput.chrmeta)
+            outtemp = self.temporary_path(out_name)
+            out_track = track(outtemp,chrmeta=tinput.chrmeta)
             filtered = score_threshold(tinput, strict=(func[:3] == "log"))
             out_track.write(apply(filtered,'score',eval(func)), mode='write')
             out_track.close()
-            outall.append(out_name)
+            outall.append(outtemp)
             tinput.close()
         if len(outall) == 1:
             self.new_file(outall[0], 'converted_track')
@@ -76,5 +75,4 @@ class NumericOperationPlugin(BasePlugin):
             [tar.add(f,arcname=os.path.basename(f)) for f in outall]
             tar.close()
             self.new_file(tar_name, 'converted_track_tar')
-            
         return self.display_time()
