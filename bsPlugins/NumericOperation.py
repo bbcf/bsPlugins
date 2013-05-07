@@ -32,6 +32,8 @@ in_parameters = [{'id': 'track', 'type': 'track', 'required': True, 'multiple':'
 out_parameters = [{'id': 'converted_track_tar', 'type': 'file'},
                   {'id': 'converted_track', 'type': 'track'}]
 
+def log2(x):
+    return math.log(x,2)
 
 class NumericOperationPlugin(BasePlugin):
 
@@ -45,9 +47,6 @@ class NumericOperationPlugin(BasePlugin):
         'out': out_parameters,
         'meta': meta,
         }
-
-    def log2(x):
-        return math.log(x,2)
 
     def __call__(self, **kw):
         func = kw.get('function',"log2")
