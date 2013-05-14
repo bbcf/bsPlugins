@@ -3,6 +3,7 @@ from bbcflib.btrack import track
 from bbcflib import genrep
 import os, tarfile
 
+
 class Table2TracksForm(BaseForm):
     table = twb.BsFileField(label='Table: ',
         help_text='Select table',
