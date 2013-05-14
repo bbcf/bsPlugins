@@ -30,7 +30,7 @@ out_parameters = [{'id':'stats', 'type':'file'},
 
 class StatisticsPlugin(BasePlugin):
     description = """Calculates diverse statistics from a track file,
-    such as a distribution of scores and feature lengths.
+    such as a distribution of scores and feature lengths, and prints them to the output file.
     """
     info = {
         'title': 'Statistics',

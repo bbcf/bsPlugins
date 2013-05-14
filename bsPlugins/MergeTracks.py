@@ -18,7 +18,12 @@ class MergeTracksForm(BaseForm):
     shift = twf.TextField(label='Shift: ',
                           validator=twc.IntValidator(required=True),
                           value=0,
-                          help_text='Enter positive downstream shift ([fragment_size-read_length]/2), or a negative value to estimate shift by cross-correlation')
+                          help_text='Enter positive downstream shift ([fragment_size-read_length]/2), \
+                                     or a negative value to estimate shift by cross-correlation')
+    format = twf.SingleSelectField(label='Output format: ',
+        options=["sql","bed",'bedGraph','wig','sga'],
+        prompt_text=None,
+        help_text='Format of the output file', )
     submit = twf.SubmitButton(id="submit", value='Merge tracks')
 
 
@@ -34,10 +39,14 @@ out_parameters = [{'id': 'density_merged', 'type': 'track'}]
 
 
 class MergeTracksPlugin(BasePlugin):
+    description = """Shift and average scores from forward and reverse strand densities. <br /><br />
+Typically built to merge ChIP-seq signals from both DNA strands, it can also be used to add (average)
+several numeric genomic tracks, replicates for instance.<br />
+The output is the sum of all the input signals, position by position."""
 
     info = {
         'title': 'Merge strands',
-        'description': 'Shift and average scores from forward and reverse strand densities',
+        'description': '',
         'path': ['Signal', 'Merge strands'],
         'output': MergeTracksForm,
         'in': in_parameters,
@@ -57,18 +66,9 @@ class MergeTracksPlugin(BasePlugin):
             return track.FeatureStream((_apply_shift(x) for x in stream),
                                        fields=stream.fields)
 
-        tfwd = track.track(kw.get('forward'), chrmeta=kw.get('assembly') or None)
-        trev = track.track(kw.get('reverse'), chrmeta=kw.get('assembly') or None)
-        if not kw.get('assembly'):  # btrack does the job, take the max of both chromosome lengths
-            chrmeta = tfwd.chrmeta
-            for k, v in trev.chrmeta.iteritems():
-                chrmeta.setdefault(k, {})['length'] = max(v['length'], chrmeta.get(k, {}).get('length', 0))
-        elif tfwd.chrmeta:
-            chrmeta = tfwd.chrmeta  # For sql files, btrack doesn't make it,
-        elif trev.chrmeta:
-            chrmeta = trev.chrmeta  # so one can contain the info while the second does not.
-        else:
-            raise ValueError("Must specify an assembly.")  # In case nothing works - should not happen
+        chrmeta = genrep.Assembly(kw['assembly']).chrmeta
+        tfwd = track.track(kw.get('forward'), chrmeta=chrmeta)
+        trev = track.track(kw.get('reverse'), chrmeta=chrmeta)
 
         shiftval = int(kw.get('shift', 0))
         if shiftval < 0:  # Determine shift automatically
@@ -82,16 +82,12 @@ class MergeTracksPlugin(BasePlugin):
                 max_xcor_idx = xcor.argmax()
                 if xcor[max_xcor_idx] > 0.2:
                     shiftval = (max_xcor_idx - xcor_lim - 1)/2
-                    #print "Autocorrelation shift=%i, correlation is %f at index %d for chromosome %s." \
-                    #       % (shiftval,xcor[max_xcor_idx],max_xcor_idx,chrom)
                     break
             if not shiftval:
                 raise ValueError("Unable to detect shift automatically. Must specify a shift value.")
 
         output = self.temporary_path(fname='density_merged', ext='sql')
-        fields = ['chr', 'start', 'end', 'score']
-        tout = track.track(output, format='sql', fields=fields, chrmeta=chrmeta,
-                           info={'datatype': 'quantitative'})
+        tout = track.track(output, format=kw['format'], chrmeta=chrmeta, info={'datatype': 'quantitative'})
         mode = 'write'
         for chrom in chrmeta.keys():
             tout.write(merge_scores([_shift(tfwd.read(selection=chrom), shiftval),

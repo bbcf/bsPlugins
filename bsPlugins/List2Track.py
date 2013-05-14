@@ -21,8 +21,7 @@ class List2TrackForm(BaseForm):
     format = twf.SingleSelectField(label='Output format: ',
         options=["sql","bed"],
         prompt_text=None,
-        help_text='Format of the output file',
-        required=True, )
+        help_text='Format of the output file', )
     submit = twf.SubmitButton(id="submit", value="Submit")
 
 
@@ -36,7 +35,8 @@ out_parameters = [{'id': 'fulltrack', 'type': 'track'}]
 
 
 class List2TrackPlugin(BasePlugin):
-    description = """Create a fully annotated track file from a features type or a subset of Ensembl IDs."""
+    description = """Create a fully annotated track file from a features type or a subset of Ensembl IDs. <br /><br />
+Either upload a raw text file with one Ensembl ID on each line, or choose a feature type to fetch them all."""
     info = {
         'title': 'List2Track',
         'description': description,

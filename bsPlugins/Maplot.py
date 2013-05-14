@@ -13,18 +13,15 @@ prom_down_def = 100
 
 class MaplotForm(BaseForm):
     child = twd.HidingTableLayout()
-
     input_type = twd.HidingRadioButtonList(label='Input type: ',
                                            options=('Table', 'Signals'),
                                            mapping={'Table':  ['table'],
                                                     'Signals': ['Group1','Group2','feature_type','assembly'],},
-                                           value='Table', 
+                                           value='Table',
                                            help_text='Select input type (Formatted table, or signal tracks)')
-
     table = twb.BsFileField(label='Table: ',
         help_text='Select scores table',
         validator=twb.BsFileFieldValidator(required=True))
-
     class Group1(twb.BsMultiple):
         label = "Signals group 1: "
         signals1 = twf.FileField(label=' ',
@@ -35,7 +32,6 @@ class MaplotForm(BaseForm):
         signals2 = twf.FileField(label=' ',
             help_text='Select signal files (position and score, e.g. bedgraph)',
             validator=twf.FileValidator(required=True))
-
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
         options=ftypes, prompt_text=None,
         mapping={ftypes[-1][0]: ['features'],
@@ -58,7 +54,6 @@ class MaplotForm(BaseForm):
         validator=twc.Validator(required=True),
         help_text='Reference genome')
     submit = twf.SubmitButton(id="submit", value="Submit")
-
 
 
 meta = {'version': "1.0.0",
@@ -139,7 +134,8 @@ The input can be of two different types: <br />
             nscores = len(signals)
             qtable = QuantifyTablePlugin().quantify(**kw)
             # Remove useless fields and add header based on file names
-            qtable = track(qtable, format='txt', fields=['chr','start','end','name']+['score'+str(i) for i in range(nscores)])
+            qtable = track(qtable, format='txt', fields=['chr','start','end','name']+ \
+                                                        ['score'+str(i) for i in range(nscores)])
             table = self.temporary_path('scores_table.txt')
             _f = ['score'+str(i) for i in range(nscores)]
             strack = track(table, fields=['name']+_f)

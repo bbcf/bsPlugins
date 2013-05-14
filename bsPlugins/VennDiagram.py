@@ -50,7 +50,19 @@ out_parameters = [{'id':'venn_diagram', 'type':'file'},
 
 class VennDiagramPlugin(BasePlugin):
     description = """Creates a Venn diagram of the proportions of
-    total coverage/total tag count due to each of the given tracks.
+total coverage/total tag count due to each of the given tracks. <br /><br />
+If the parameter 'type' has the value 'coverage %', the diagram will show the percent
+of the genome covered by each possible combination of the input tracks. For instance,
+If tracks A and B are given, it will show the portion covered by A only, B only, or
+A and B (where they intersect).<br />
+If it has the value 'tag count', the diagram will show the percent of the total (read)
+count due to each combination of the input tracks, as above.<br />
+By default, the graph will display names such as 'A','B',etc. with a legend associating the
+name to its file. But one can also specify the sample names, so that they appear directly
+and without legend on the graph.<br />
+The output includes the figure of the Venn diagram and a text summary of the different statistics.
+If ore than 4 samples are given, no graph is produced, but the text summary still contains
+all the information.
     """
     info = {
         'title': 'Venn Diagram',
