@@ -1,7 +1,14 @@
+"""A script that can parse expressions of the form
+'ENSG,<1000 and >200,,<0.05,'
+that would filter the content of a table
+(in this case, with columns name-position-whatever-pvalue-whateverelse),
+and return for each line a boolean vector according to whether each value passed its filter."""
 
 import re
 
 def parse_filter(filter):
+    """Parses the string expression for the filter and returns a vector of functions
+    to apply to each field (an identity if nothing is given - between two commas)."""
     def operation(f):
         try:
             if not f: return lambda x:True
