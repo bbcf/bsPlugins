@@ -67,8 +67,12 @@ class GenomeGraphPlugin(BasePlugin):
             chrmeta = ftracks[0].chrmeta
         else:
             raise ValueError("No data provided")
+        if assembly in [x[0] for x in genrep.GenRep().assemblies_available()]:
+            chrnames = genrep.Assembly(assembly).chrnames
+        else:
+            chrnames = [x[1] for x in sorted([(v['length'],c) for c,v in chrmeta.iteritems()],reverse=True)]
         pdf = self.temporary_path(fname='genome_graph.pdf')
-        genomeGraph(chrmeta,
+        genomeGraph([(c,chrmeta[c]['length']) for c in chrnames],
                     [sig.read() for sig in sptracks],
                     [sig.read() for sig in smtracks],
                     [feat.read() for feat in ftracks],
