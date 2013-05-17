@@ -58,7 +58,7 @@ class GenomeGraphPlugin(BasePlugin):
         sptracks = [track(sig,chrmeta=assembly) for sig in signals_plus]
         smtracks = [track(sig,chrmeta=assembly) for sig in signals_minus]
         ftracks = [track(feat,chrmeta=assembly) for feat in features]
-        snames = [t.name for t in signals_plus+signal_minus+features]
+        snames = [t.name for t in sptracks+smtracks+ftracks]
         if len(sptracks) > 0:
             chrmeta = sptracks[0].chrmeta
         elif len(smtracks) > 0:
@@ -72,6 +72,6 @@ class GenomeGraphPlugin(BasePlugin):
                     [sig.read() for sig in sptracks],
                     [sig.read() for sig in smtracks],
                     [feat.read() for feat in ftracks],
-                    output=pdf, new=new, last=True, legend=snames)
+                    output=pdf, new=True, last=True, legend=snames)
         self.new_file(pdf, 'genome_graph')
         return self.display_time()
