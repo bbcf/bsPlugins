@@ -28,4 +28,4 @@ except ImportError:
         pass
 
 import os, glob
-PLUGINS_FILES = [os.basename(f)[:-3] for p in __path__ for f in glob.glob(p+"/[a-zA-Z]*.py")]
+PLUGINS_FILES = [os.path.basename(f)[:-3] for p in __path__ for f in glob.glob(p+"/[a-zA-Z]*.py")]
