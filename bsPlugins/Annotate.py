@@ -62,7 +62,7 @@ class AnnotatePlugin(BasePlugin):
         thPromot = int(kw.get("promoter", prom_def))
         thInter = int(kw.get('intergenic', inter_def))
         thUTR = int(kw.get('UTR', utr_def))
-        output = self.temporary_path(fname='Annotated_table.txt')
+        output = self.temporary_path(fname=tinput.name+'_annotated.txt')
         tout = track(output, format='txt', fields=['chr', 'start', 'end', 'name', 'strand',
                                                    'gene', 'location_type', 'distance'])
         mode = 'write'
