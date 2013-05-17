@@ -59,7 +59,7 @@ class SmoothingPlugin(BasePlugin):
         featurewise = kw.get('by_feature', False)
         if isinstance(featurewise, basestring):
             featurewise = (featurewise.lower() in ['1', 'true', 't'])
-        output = self.temporary_path(fname='smoothed_track', ext=outformat)
+        output = self.temporary_path(fname=tinput.name+'_smoothed', ext=outformat)
         if featurewise:
             outfields = tinput.fields
             datatype = "qualitative"

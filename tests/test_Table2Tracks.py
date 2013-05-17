@@ -11,7 +11,7 @@ class Test_Table2TracksPlugin(TestCase):
     def test_single(self):
         #self.plugin(**{'tableFile':path+'Dup_vs_Ctrl_resSelectedFrags_fromSmoothed_KCTD13_part.txt',
         #                'id_columns':'6,7,9,10', 'assembly':'hg19', 'format':'bedGraph'})
-        self.plugin(**{'tableFile':path+'Dup_vs_Ctrl_resSelectedFrags_fromSmoothed_KCTD13_part.txt',
+        self.plugin(**{'table':path+'Dup_vs_Ctrl_resSelectedFrags_fromSmoothed_KCTD13_part.txt',
                        'id_columns':'6', 'assembly':'hg19', 'format':'bedGraph'})
         print("in test_single")
         print(self.plugin.output_files)
@@ -21,7 +21,7 @@ class Test_Table2TracksPlugin(TestCase):
 
 
     def test_multi(self):
-        self.plugin(**{'tableFile':path+'Dup_vs_Ctrl_resSelectedFrags_fromSmoothed_KCTD13_part.txt',
+        self.plugin(**{'table':path+'Dup_vs_Ctrl_resSelectedFrags_fromSmoothed_KCTD13_part.txt',
                        'id_columns':'6,7,9,10', 'assembly':'hg19', 'format':'bedGraph'})
         print("in test_multi")
         print(self.plugin.output_files)
@@ -34,3 +34,4 @@ class Test_Table2TracksPlugin(TestCase):
             if f.startswith('tmp'):
                 os.system("rm -rf %s" % f)
 
+# nosetests --logging-filter=-tw2 test_Table2Tracks.py

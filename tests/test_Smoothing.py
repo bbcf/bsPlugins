@@ -20,3 +20,4 @@ class Test_QuantifyTablePlugin(TestCase):
             if f.startswith('tmp'):
                 os.system("rm -rf %s" % f)
 
+# nosetests --logging-filter=-tw2 test_Smoothing.py

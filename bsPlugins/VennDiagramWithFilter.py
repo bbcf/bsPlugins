@@ -55,6 +55,7 @@ class VennDiagramWithFilterPlugin(BasePlugin):
     def __call__(self, **kw):
         infile = kw.get('table')
         assert os.path.exists(infile),"File not found: %s ." % infile
+        fname = os.path.splitext(os.path.basename(infile))[0]
         s_cols = kw.get('id_columns')
         s_filters = kw.get('filters')
         names = [chr(i+65) for i in range(len(s_cols.split(',')))] # 'A','B','C',...

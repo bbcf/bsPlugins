@@ -16,7 +16,7 @@ def parse_filter(filter):
             if re.search('[><!=]',fsplit[0]):
                 expression = ''
                 for j,e in enumerate(fsplit):
-                    if j%2==0: # operation
+                    if j%2==0: # comparison expression
                         expression += 'float(x)'+e
                     else: # boolean operator
                         expression += ' %s '%e

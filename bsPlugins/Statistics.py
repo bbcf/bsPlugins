@@ -45,8 +45,9 @@ class StatisticsPlugin(BasePlugin):
     def __call__(self, **kw):
         self.debug(**kw)
         #assembly = genrep.Assembly(kw['assembly'])
-        output = self.temporary_path(fname='stats.txt')
         sample = kw['sample']
+        fname = os.path.splitext(os.path.basename(sample))[0]
+        output = self.temporary_path(fname=fname+'_stats.txt')
         with open(output,'wb') as out:
             stats(sample,out=out)
         self.new_file(output, 'stats')

@@ -151,3 +151,5 @@ The input can be of two different types: <br />
         shutil.move(output_filename,output)
         self.new_file(output, 'MA-plot')
         return self.display_time()
+
+# nosetests --logging-filter=-tw2 test_Maplot.py

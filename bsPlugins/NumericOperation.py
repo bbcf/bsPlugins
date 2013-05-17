@@ -57,8 +57,7 @@ class NumericOperationPlugin(BasePlugin):
             tinput = track(tname)
             if 'score' not in tinput.fields: continue
             format = kw.get('format',tinput.format)
-            shortname = os.path.splitext(os.path.basename(tname))[0]
-            out_name = shortname+'_'+func+'.'+format
+            out_name = tinput.name+'_'+func+'.'+format
             outtemp = self.temporary_path(out_name)
             out_track = track(outtemp,chrmeta=tinput.chrmeta)
             filtered = score_threshold(tinput, strict=(func[:3] == "log"))
@@ -75,3 +74,5 @@ class NumericOperationPlugin(BasePlugin):
             tar.close()
             self.new_file(tar_name, 'converted_track_tar')
         return self.display_time()
+
+# nosetests --logging-filter=-tw2 test_NumericOperation.py

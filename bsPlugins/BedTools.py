@@ -156,6 +156,6 @@ class BedToolsPlugin(BasePlugin):
                 kw.pop(k)
         with execution(None) as ex:
             output = eval(selected_tool)(ex, **kw)
-        self.new_file(output, 'bedtools_result')
+        self.new_file(output, selected_tool+'_result')
         return self.display_time()
 

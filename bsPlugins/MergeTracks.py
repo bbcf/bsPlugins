@@ -86,8 +86,8 @@ The output is the sum of all the input signals, position by position."""
             if not shiftval:
                 raise ValueError("Unable to detect shift automatically. Must specify a shift value.")
 
-        output = self.temporary_path(fname='density_merged', ext='sql')
-        tout = track.track(output, format=kw['format'], chrmeta=chrmeta, info={'datatype': 'quantitative'})
+        output = self.temporary_path(fname=tfwd.name+'-'+trev.name+'_merged', ext=kw['format'])
+        tout = track.track(output, chrmeta=chrmeta, info={'datatype': 'quantitative'})
         mode = 'write'
         for chrom in chrmeta.keys():
             tout.write(merge_scores([_shift(tfwd.read(selection=chrom), shiftval),
@@ -100,3 +100,4 @@ The output is the sum of all the input signals, position by position."""
         self.new_file(output, 'density_merged')
         return self.display_time()
 
+# nosetests --logging-filter=-tw2 test_MergeTracks.py

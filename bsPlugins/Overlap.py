@@ -58,8 +58,8 @@ class OverlapPlugin(BasePlugin):
         assert os.path.exists(str(kw.get('filter'))), "Filter file not found: '%s'"%kw.get("filter")
         filter = track(kw.get('filter'), chrmeta=chrmeta or None)
         # Main
-        format = kw.get('format',filter.format)
-        output = self.temporary_path(fname='filtered.'+format)
+        format = kw.get('format',features.format)
+        output = self.temporary_path(fname=features.name+'_filtered.'+format)
         tout = track(output, format, fields=filter.fields,
                      chrmeta=chrmeta, info={'datatype':'qualitative'})
         for chrom in chrmeta:

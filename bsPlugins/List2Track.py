@@ -79,10 +79,14 @@ Either upload a raw text file with one Ensembl ID on each line, or choose a feat
         if ids_list:
             assert os.path.exists(str(ids_list)), "File not found: '%s'" % ids_list
             fulltrack = FeatureStream(_annotate(ids_list),fields=fields)
+            fname = os.path.splitext(os.path.basename(ids_list))[0]
         else:
             fulltrack = FeatureStream((get_info(g,map[g]) for g in map),fields=fields)
-        output = self.temporary_path(fname='output.'+format)
+            fname = kw['feature_type']
+        output = self.temporary_path(fname=fname+'.'+format)
         out = track(output,chrmeta=assembly)
         out.write(fulltrack)
         self.new_file(output, 'fulltrack')
         return self.display_time()
+
+# nosetests --logging-filter=-tw2 test_List2Track.py

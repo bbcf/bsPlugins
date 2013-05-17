@@ -113,7 +113,7 @@ Scores can be the sum/mean/median/min/max of the tag count in the interval."""
             features = _t.read
         else:
             raise ValueError("Take feature_type in %s." %ftypes)
-        output = self.temporary_path(fname='features_quantification.'+format)
+        output = self.temporary_path(fname='quantification.'+format)
         if len(signals) > 1:
             _f = ["score" + str(i) for i in range(len(signals))]
         else:
