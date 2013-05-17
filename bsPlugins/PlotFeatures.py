@@ -17,11 +17,11 @@ class PlotFeaturesForm(BaseForm):
     class SigMulti(twb.BsMultiple):
         label='Signal: '
         signals = twb.BsFileField(label=' ',
-                                help_text='Select signal file (e.g. bedgraph)',
-                                validator=twb.BsFileFieldValidator(required=True))
+                                  help_text='Select signal file (e.g. bedgraph)',
+                                  validator=twb.BsFileFieldValidator(required=True))
     features = twb.BsFileField(label='Features: ',
-                             help_text='Select a feature file (e.g. bed)',
-                             validator=twb.BsFileFieldValidator(required=True))
+                               help_text='Select a feature file (e.g. bed)',
+                               validator=twb.BsFileFieldValidator(required=True))
 
     mode = twf.SingleSelectField(label='Plot type: ',
                                  options=plot_types,
@@ -42,7 +42,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'signals', 'type': 'track', 'multiple':'SigMulti', 'required': True},
+in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': 'SigMulti', 'required': True},
                  {'id': 'features', 'type': 'track'},
                  {'id': 'mode', 'type': 'list', 'required': True},
                  {'id': 'upstream', 'type': 'int'},
@@ -67,9 +67,8 @@ class PlotFeaturesPlugin(BasePlugin):
         features = track(kw.get('features'), chrmeta=chrmeta)
         signals = kw.get('SigMulti',{}).get('signals', [])
         if not isinstance(signals, list): signals = [signals]
-        snames = [os.path.splitext(os.path.basename(sig))[0]
-                  for sig in signals]
         signals = [track(sig) for sig in signals]
+        snames = [sig.name for sig in signals]
         labels = None
         data = None
         if kw.get("upstream") is not None: 
@@ -99,9 +98,11 @@ class PlotFeaturesPlugin(BasePlugin):
         pdf = self.temporary_path(fname='plot_features.pdf')
         if data is None:
             raise ValueError("No data")
-        kw['mode'] = int(kw.get('mode', 0))
+        mode = kw.get('mode', 0)
+        if str(mode) in [str(x[0]) for x in ftypes]:
+            mode = int(mode)
         X = array(range(-upstr[1]+1,nbins+downstr[1]+1))/(1.0*nbins)
-        if kw['mode'] == 0: #heatmap
+        if mode in plot_type[0]: #heatmap
             new = True
             for n in range(data.shape[-1]-1):
                 heatmap(data[:, :, n], output=pdf, new=new, last=False,
@@ -111,13 +112,13 @@ class PlotFeaturesPlugin(BasePlugin):
             heatmap(data[:, :, -1], output=pdf, new=new, last=True,
                     rows=labels,  columns=X, main=snames[-1],
                     orderRows=True, orderCols=False)
-        elif kw['mode'] == 1: #average lineplot
+        elif mode in plot_type[1]: #average lineplot
             Y = data.mean(axis=0)
             ymin = min([x.min() for x in Y]+[0])
             ymax = max([x.max() for x in Y])
             lineplot(X, [Y[:, n] for n in range(data.shape[-1])],
                      output=pdf, new=True, last=True, legend=snames, ylim=(ymin,ymax))
-        elif kw['mode'] == 2: #mosaic
+        elif mode in plot_type[2]: #mosaic
             new = True
             mfrow = [4, 3]
             nplot = min(data.shape[0], max_pages*mfrow[0]*mfrow[1])
@@ -133,6 +134,6 @@ class PlotFeaturesPlugin(BasePlugin):
                      output=pdf, new=new, last=True, main=labels[-1],
                      legend=snames, ylim=(ymin,ymax))
         else:
-            raise ValueError("Mode not implemented: %s" % kw['mode'])
+            raise ValueError("Mode not implemented: %s" % mode)
         self.new_file(pdf, 'plot_features')
         return self.display_time()

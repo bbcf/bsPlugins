@@ -1,6 +1,3 @@
-import warnings
-
-
 try:
     from tw2 import core as twc
     from tw2 import forms as twf
@@ -30,7 +27,5 @@ except ImportError:
     class DynForm():
         pass
 
-import os
-filterplugins = lambda x: x.endswith('.py') and x not in ('__init__.py',)
-
-PLUGINS_FILES = [str(f)[:-3] for p in __path__ for f in os.listdir(p) if filterplugins(f)]
+import os, glob
+PLUGINS_FILES = [os.basename(f)[:-3] for p in __path__ for f in glob.glob(p+"/[a-zA-Z]*.py")]

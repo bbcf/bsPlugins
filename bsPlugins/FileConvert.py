@@ -42,7 +42,7 @@ out_parameters = [{'id': 'converted_file', 'type': 'track'}]
 class FileConvertPlugin(BasePlugin):
     info = {
         'title': 'Convert file',
-        'description': 'Convert a file to a different format',
+        'description': 'Convert a file to another equivalent format (example: wig to bedgraph, gff to bed)',
         'path': ['Files', 'Convert'],
         'output': FileConvertForm,
         'in': in_parameters,

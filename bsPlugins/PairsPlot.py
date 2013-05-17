@@ -87,8 +87,8 @@ class PairsPlotPlugin(BasePlugin):
             raise ValueError("Please specify an assembly")
         signals = kw.get('SigMulti',{}).get('signals', [])
         if not isinstance(signals, list): signals = [signals]
-        snames = [os.path.splitext(os.path.basename(sig))[0] for sig in signals]
         signals = [track(sig, chrmeta=chrmeta) for sig in signals]
+        snames = [sig.name for sig in signals]
         if feature_type == 0: #bodies
             features = genes
         elif feature_type == 1: #promoters

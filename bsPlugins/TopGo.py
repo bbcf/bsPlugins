@@ -13,6 +13,7 @@ class TopGoForm(BaseForm):
                               validator=twb.BsFileFieldValidator(required=True))
     assembly = twf.SingleSelectField(label='Assembly: ',
                                      options=mart_map,
+                                     prompt_text=None,
                                      help_text='Reference genome')
     submit = twf.SubmitButton(id="submit", value="TopGo analysis")
 
@@ -44,6 +45,12 @@ class TopGoPlugin(BasePlugin):
 
     def __call__(self, **kw):
         assembly_id = kw.get('assembly') or None
+        for k,v in mart_map:
+            if assembly_id == v:
+                assembly_id = k
+                break
+        if assembly_id is None:
+            raise ValueError("Please specify an assembly")
         filename = kw.get('gene_list')
         assert os.path.exists(str(filename)), "File not found: '%s'" %filename
         script_path = kw.get("script_path",default_path)

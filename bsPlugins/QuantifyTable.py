@@ -81,7 +81,9 @@ Scores can be the sum/mean/median/min/max of the tag count in the interval.
         'meta': meta,
         }
     def quantify(self,**kw):
-        feature_type = int(kw.get('feature_type', 0))
+        feature_type = kw.get('feature_type', 0)
+        if str(feature_type) in [str(x[0]) for x in ftypes]:
+            feature_type = int(feature_type)
         func = str(kw.get('score_op', 'mean'))
         assembly_id = kw.get('assembly')
         format = kw['format']
@@ -91,21 +93,21 @@ Scores can be the sum/mean/median/min/max of the tag count in the interval.
             chrmeta = assembly.chrmeta
             genes = assembly.gene_track
             exons = assembly.exon_track
-        elif not(feature_type == 3):
+        elif not(feature_type in ftype[3]):
             raise ValueError("Please specify an assembly")
         signals = kw['SigMulti']['signals']
         if not isinstance(signals, list): signals = [signals]
         signals = [track(sig, chrmeta=chrmeta) for sig in signals]
-        if feature_type == 0:
+        if feature_type in ftypes[0]:
             features = genes
-        elif feature_type == 1:
+        elif feature_type in ftypes[1]:
             prom_pars = {'before_start': int(kw.get('upstream') or prom_up_def),
                          'after_start': int(kw.get('downstream') or prom_down_def),
                          'on_strand': True}
             features = lambda c: neighborhood(genes(c), **prom_pars)
-        elif feature_type == 2:
-                features = exons
-        elif feature_type == 3:
+        elif feature_type in ftypes[2]:
+            features = exons
+        elif feature_type in ftypes[3]:
             assert os.path.exists(str(kw.get('features'))), "Features file not found: '%s'" % kw.get("features")
             _t = track(kw['features'], chrmeta=chrmeta)
             chrmeta = _t.chrmeta
