@@ -46,7 +46,7 @@ The output is the sum of all the input signals, position by position."""
 
     info = {
         'title': 'Merge strands',
-        'description': '',
+        'description': description,
         'path': ['Signal', 'Merge strands'],
         'output': MergeTracksForm,
         'in': in_parameters,
