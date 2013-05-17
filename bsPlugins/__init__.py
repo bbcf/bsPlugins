@@ -27,5 +27,6 @@ except ImportError:
     class DynForm():
         pass
 
-import os, glob
-PLUGINS_FILES = [os.basename(f)[:-3] for p in __path__ for f in glob.glob(p+"/[a-zA-Z]*.py")]
+from os.path import basename 
+from glob import glob
+PLUGINS_FILES = [basename(f)[:-3] for p in __path__ for f in glob(p+"/[a-zA-Z]*.py")]

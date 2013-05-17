@@ -38,9 +38,9 @@ class GenomeGraphForm(BaseForm):
 
 
 class GenomeGraphPlugin(BasePlugin):
-    description = """Generates a whole genome overview of several signal and/or feature tracks."""
+    """Generates a whole genome overview of several signal and/or feature tracks."""
     info = {'title': 'Genome overview graph',
-            'description': description,
+            'description': __doc__,
             'path': ['Graphics', 'Genome graph'],
             'output': GenomeGraphForm,
             'in': in_parameters,

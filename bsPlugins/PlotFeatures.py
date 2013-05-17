@@ -51,10 +51,10 @@ out_parameters = [{'id': 'plot_features', 'type': 'pdf'}]
 
 
 class PlotFeaturesPlugin(BasePlugin):
-
+    """Plot signals from a selection of regions"""
     info = {
         'title': 'Plot signal',
-        'description': 'Plot signal from a selection of regions',
+        'description': __doc__,
         'path': ['Graphics', 'Plot features'],
         'output': PlotFeaturesForm,
         'in': in_parameters,

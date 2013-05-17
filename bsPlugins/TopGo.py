@@ -31,17 +31,16 @@ out_parameters = [{'id': 'TopGO_table_tar', 'type': 'file'},
 
 
 class TopGoPlugin(BasePlugin):
-
+    """Makes a GO analysis on a list of Ensembl IDs"""
     info = {
         'title': 'TopGo',
-        'description': 'Makes a GO analysis on a list of Ensembl IDs',
+        'description': __doc__,
         'path': ['Analysis', 'TopGo'],
         'output': TopGoForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
         }
-
 
     def __call__(self, **kw):
         assembly_id = kw.get('assembly') or None

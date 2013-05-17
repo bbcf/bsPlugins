@@ -44,10 +44,10 @@ class AnnotateForm(BaseForm):
 
 
 class AnnotatePlugin(BasePlugin):
-
+    """Associate features with genome annotations"""
     info = {
         'title': 'Annotate',
-        'description': 'Associate features with genome annotations',
+        'description': __doc__,
         'path': ['Analysis', 'Annotate'],
         'output': AnnotateForm,
         'in': in_parameters,
