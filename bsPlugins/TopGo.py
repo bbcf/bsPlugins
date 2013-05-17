@@ -31,13 +31,13 @@ out_parameters = [{'id': 'TopGO_table_tar', 'type': 'file'},
 
 
 class TopGoPlugin(BasePlugin):
-    description = """Makes a GO analysis on a list of Ensembl IDs. <br /><br />
+    """Makes a GO analysis on a list of Ensembl IDs. <br /><br />
 Given a file with one Ensembl ID on each line, it returns a summary table (.txt)
-and GO networks as .pdf graphs.
+and GO networks in a pdf.
     """
     info = {
         'title': 'TopGo',
-        'description': description, #__doc__,
+        'description': __doc__,
         'path': ['Analysis', 'TopGo'],
         'output': TopGoForm,
         'in': in_parameters,
