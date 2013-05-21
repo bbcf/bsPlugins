@@ -19,6 +19,10 @@ class TopGoForm(BaseForm):
                               validator=twc.IntValidator(required=False),
                               value=10,
                               help_text='Number of most significant terms to return')
+    pval = twf.TextField(label='Number of significant terms: ',
+                         validator=twc.RangeValidator(min=0.0,max=1.0),
+                         value=.05,
+                         help_text='Maximum p-value to include in the output')
     submit = twf.SubmitButton(id="submit", value="TopGo analysis")
 
 
@@ -28,7 +32,8 @@ meta = {'version': "1.0.0",
 
 in_parameters = [{'id': 'gene_list', 'type': 'userfile', 'required': True},
                  {'id': 'assembly', 'type': 'assembly'},
-                 {'id': 'num_terms', 'type': 'int'}]
+                 {'id': 'num_terms', 'type': 'int'},
+                 {'id': 'pval', 'type': 'float'}]
 out_parameters = [{'id': 'TopGO_table_tar', 'type': 'file'},
                   {'id': 'TopGO_plots_tar', 'type': 'file'},
                   {'id': 'TopGO_table', 'type': 'txt'},
@@ -65,11 +70,11 @@ and GO networks in a pdf.
         pdf = self.temporary_path(fname='TopGO_plots'+fname+'.pdf')
         table = self.temporary_path(fname='TopGO_tables'+fname+'.txt')
         num_terms = int(kw.get('num_terms') or 10)
+        pval = float(kw.get('pval') or .05)
         robjects.r("""
 source("%s/TopGo.R")
-nterms = %i
-out = multi_topGo("%s","%s","%s","%s")
-"""%(script_path,num_terms,filename,assembly_id,pdf,table))
+out = multi_topGo("%s","%s","%s","%s",%i,%f)
+"""%(script_path,filename,assembly_id,pdf,table,num_terms,pval))
 
         pdf_list = [f[0] for f in robjects.r('out')[0]]
         table_list = [f[0] for f in robjects.r('out')[1]]
