@@ -1,5 +1,5 @@
 from bsPlugins import *
-from bbcflib.btrack import convert
+from bbcflib.btrack import convert, _track_map
 from bbcflib import genrep
 import os
 
@@ -40,9 +40,11 @@ out_parameters = [{'id': 'converted_file', 'type': 'track'}]
 
 
 class FileConvertPlugin(BasePlugin):
+    """Converts a file to another equivalent format (example: wig to bedgraph, gff to bed). Allowed file input extensions are %s.""" 
+    __doc__ %=", ".join(_track_map.keys())
     info = {
         'title': 'Convert file',
-        'description': 'Convert a file to another equivalent format (example: wig to bedgraph, gff to bed)',
+        'description': __doc__,
         'path': ['Files', 'Convert'],
         'output': FileConvertForm,
         'in': in_parameters,
