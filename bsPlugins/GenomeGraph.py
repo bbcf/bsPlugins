@@ -72,10 +72,12 @@ class GenomeGraphPlugin(BasePlugin):
         else:
             chrnames = [x[1] for x in sorted([(v['length'],c) for c,v in chrmeta.iteritems()],reverse=True)]
         pdf = self.temporary_path(fname='genome_graph.pdf')
+        _fs = ['chr','start','end','score']
+        _ff = ['chr','start','end','name']
         genomeGraph([(c,chrmeta[c]['length']) for c in chrnames],
-                    [sig.read() for sig in sptracks],
-                    [sig.read() for sig in smtracks],
-                    [feat.read() for feat in ftracks],
+                    [sig.read(fields=_fs) for sig in sptracks],
+                    [sig.read(fields=_fs) for sig in smtracks],
+                    [feat.read(fields=_ff) for feat in ftracks],
                     output=pdf, new=True, last=True, legend=snames)
         self.new_file(pdf, 'genome_graph')
         return self.display_time()
