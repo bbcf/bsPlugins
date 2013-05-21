@@ -57,8 +57,8 @@ and GO networks in a pdf.
         assert os.path.exists(str(filename)), "File not found: '%s'" %filename
         script_path = kw.get("script_path",default_path)
         fname = os.path.splitext(os.path.basename(filename))[0]
-        pdf = self.temporary_path(fname=fname+'_TopGO_plots.pdf')
-        table = self.temporary_path(fname=fname+'_TopGO_tables.txt')
+        pdf = self.temporary_path(fname='TopGO_plots'+fname+'.pdf')
+        table = self.temporary_path(fname='TopGO_tables'+fname+'.txt')
 
         robjects.r("""
 source("%s/TopGo.R")
@@ -68,12 +68,12 @@ out = multi_topGo("%s","%s","%s","%s")
         pdf_list = [f[0] for f in robjects.r('out')[0]]
         table_list = [f[0] for f in robjects.r('out')[1]]
         if len(pdf_list) > 1:
-            tar_pdf_name = self.temporary_path(fname+'_TopGO_plots.tgz')
+            tar_pdf_name = self.temporary_path('TopGO_plots_'+fname+'.tgz')
             tar_pdf = tarfile.open(tar_pdf_name, "w:gz")
             [tar_pdf.add(f) for f in pdf_list]
             tar_pdf.close()
 
-            tar_table_name = self.temporary_path(fname=fname+'_TopGO_tables.tgz')
+            tar_table_name = self.temporary_path(fname='TopGO_tables_'+fname+'.tgz')
             tar_table = tarfile.open(tar_table_name, "w:gz")
             [tar_table.add(f,arcname=os.path.basename(f)) for f in table_list]
             tar_table.close()
