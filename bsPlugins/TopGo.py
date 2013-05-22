@@ -71,8 +71,8 @@ with a threshold on the p-value.
         assert os.path.exists(str(filename)), "File not found: '%s'" %filename
         script_path = kw.get("script_path",default_path)
         fname = os.path.splitext(os.path.basename(filename))[0]
-        pdf = self.temporary_path(fname='TopGO_plots'+fname+'.pdf')
-        table = self.temporary_path(fname='TopGO_tables'+fname+'.txt')
+        pdf = self.temporary_path(fname='TopGO_plots.pdf')
+        table = self.temporary_path(fname='TopGO_tables.txt')
         num_terms = int(kw.get('num_terms') or 10)
         pval = float(kw.get('pval') or .05)
         robjects.r("""
