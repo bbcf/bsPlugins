@@ -87,7 +87,8 @@ The output is the sum of all the input signals, position by position."""
                 raise ValueError("Unable to detect shift automatically. Must specify a shift value.")
 
         output = self.temporary_path(fname=tfwd.name+'-'+trev.name+'_merged', ext=kw['format'])
-        tout = track.track(output, chrmeta=chrmeta, info={'datatype': 'quantitative'})
+        tout = track.track(output, chrmeta=chrmeta, 
+                           info={'datatype': 'quantitative', 'shift': shiftval})
         mode = 'write'
         for chrom in chrmeta.keys():
             tout.write(merge_scores([_shift(tfwd.read(selection=chrom), shiftval),
