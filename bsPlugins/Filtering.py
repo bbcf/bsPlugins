@@ -69,19 +69,22 @@ class FilteringPlugin(BasePlugin):
                 raise ValueError("Empty range: %f:%f" %(minscore,maxscore))
             for s in selection:
                 s['score'] = (float(minscore),float(maxscore))
+        select_length = False
         if minlength or maxlength:
             minlength = int(minlength or 0)
             maxlength = int(maxlength or sys.maxint)
             if minlength > maxlength: 
                 raise ValueError("Empty range: %i:%i" %(minlength,maxlength))
+            select_length = True
         for tin in [track(t) for t in tracks]:
             outname = self.temporary_path(tin.name+"_filtered."+tin.format)
             tout = track(outname)
             outtracks.append(outname)
             outstream = tin.read(selection=selection)
-            if minlength and maxlength: 
-                outstream = FeatureStream(_length_threshold(stream,minlength,maxlength),
-                                          fields=outstream.fields)
+            if select_length: 
+                outstream = FeatureStream(
+                    _length_threshold(outstream,minlength,maxlength),
+                    fields=outstream.fields)
             tout.write(outstream)
             tout.close()
 
