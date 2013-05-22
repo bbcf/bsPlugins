@@ -26,10 +26,11 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 in_parameters = [{'id': 'tracks', 'type': 'track', 'required': True, 'multiple':'TrackMulti'},
-                {'id': 'minscore', 'type': 'float'},
-                {'id': 'maxscore', 'type': 'float'},
-                {'id': 'minlength', 'type': 'int'},
-                {'id': 'maxlength', 'type': 'int'}]
+                 {'id': 'minscore', 'type': 'float'},
+                 {'id': 'maxscore', 'type': 'float'},
+                 {'id': 'minlength', 'type': 'int'},
+                 {'id': 'maxlength', 'type': 'int'},
+                 {'id': 'chrom', 'type': 'text'}]
 out_parameters = [{'id': 'output', 'type': 'track'},
                   {'id': 'archive', 'type': 'file'}]
 
@@ -54,7 +55,6 @@ class FilteringPlugin(BasePlugin):
 
         tracks = kw['TrackMulti']['tracks']
         if not isinstance(tracks, list): tracks = [tracks]
-        outtracks =[]
         minscore = kw.get('minscore')
         maxscore = kw.get('maxscore')
         minlength = kw.get('minlength')
@@ -76,12 +76,13 @@ class FilteringPlugin(BasePlugin):
             if minlength > maxlength: 
                 raise ValueError("Empty range: %i:%i" %(minlength,maxlength))
             select_length = True
+        outtracks =[]
         for tin in [track(t) for t in tracks]:
             outname = self.temporary_path(tin.name+"_filtered."+tin.format)
             tout = track(outname)
             outtracks.append(outname)
             outstream = tin.read(selection=selection)
-            if select_length: 
+            if select_length:
                 outstream = FeatureStream(
                     _length_threshold(outstream,minlength,maxlength),
                     fields=outstream.fields)
