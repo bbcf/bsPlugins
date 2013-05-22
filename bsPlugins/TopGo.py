@@ -20,7 +20,7 @@ class TopGoForm(BaseForm):
                               value=10,
                               help_text='Number of most significant terms to return')
     pval = twf.TextField(label='P-value threshold: ',
-                         validator=twc.RangeValidator(min=0.0,max=1.0),
+                         validator=twc.RangeValidator(min="0",max="1"),
                          value=.05,
                          help_text='Maximum p-value to include in the output')
     submit = twf.SubmitButton(id="submit", value="TopGo analysis")
