@@ -36,11 +36,10 @@ def log2(x):
     return math.log(x,2)
 
 class NumericOperationPlugin(BasePlugin):
-
-    description = """Apply a numeric transformation to the track scores - such as logarithm or square root."""
+    """Apply a numeric transformation to the track scores - such as logarithm or square root."""
     info = {
         'title': 'Numeric Operation',
-        'description': description,
+        'description': __doc__,
         'path': ['Signal', 'Numeric Operation'],
         'output': NumericOperationForm,
         'in': in_parameters,
