@@ -6,3 +6,7 @@ def BsFileField(*args,**kwargs):
 
 def BsFileFieldValidator(*args,**kwargs):
     pass
+
+def FloatValidator(*args,**kwargs):
+    pass
+
