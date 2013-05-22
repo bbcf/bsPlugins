@@ -12,12 +12,13 @@ class CombineForm(BaseForm):
                                   help_text='Select files to combine',
                                   validator=twb.BsFileFieldValidator(required=True))
     format = twf.SingleSelectField(label='Output format: ',
-        options=["sql","bed","sga"],
-        validator=twc.Validator(required=True),
-        help_text='Format of the output file')
+                                   options=["sql","bed","sga"],
+                                   prompt_text=None,
+                                   validator=twc.Validator(required=True),
+                                   help_text='Format of the output file')
     assembly = twf.SingleSelectField(label='Assembly: ',
-        options=genrep.GenRep().assemblies_available(),
-        help_text='Reference genome')
+                                     options=genrep.GenRep().assemblies_available(),
+                                     help_text='Reference genome')
     submit = twf.SubmitButton(id="submit", value="Quantify")
 
 
