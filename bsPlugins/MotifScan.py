@@ -53,9 +53,10 @@ in_parameters = [{'id': 'input_type', 'type': 'radio'},
 out_parameters = [{'id': 'motif_track', 'type': 'track'}]
 
 class MotifScanPlugin(BasePlugin):
+    """Scan motifs PWM on a set of a sequences"""
     info = {
         'title': 'Motif scanner',
-        'description': 'Scan motifs PWM on a set of a sequences',
+        'description': __doc__,
         'path': ['Sequence analysis', 'Motif scanner'],
         'output': MotifScanForm,
         'in': in_parameters,

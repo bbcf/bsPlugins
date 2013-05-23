@@ -16,7 +16,7 @@ class StatisticsForm(BaseForm):
                                    help_text='Type of report')
     by_chrom = twf.CheckBox(label='By chromosome: ',
                             value=False,
-                            help_text='Return statistics by chromosome instead of whole genome')
+                            help_text='Split statistics by chromosome (default: whole genome)')
     submit = twf.SubmitButton(id="submit", value="Submit")
 
 
