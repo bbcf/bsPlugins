@@ -44,9 +44,9 @@ class AnnotateForm(BaseForm):
 
 
 class AnnotatePlugin(BasePlugin):
-    """Associate features with genome annotations"""
+    """Searches closest gene to each feature and returns associated distance and inclusion informations"""
     info = {
-        'title': 'Annotate',
+        'title': 'Associate features with genome annotations',
         'description': __doc__,
         'path': ['Analysis', 'Annotate'],
         'output': AnnotateForm,

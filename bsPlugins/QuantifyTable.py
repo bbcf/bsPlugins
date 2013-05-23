@@ -65,13 +65,13 @@ out_parameters = [{'id': 'features_quantification', 'type': 'track'}]
 
 
 class QuantifyTablePlugin(BasePlugin):
-    """Quantify a signal track on a set of regions.<br /><br />
+    """Quantify signal tracks on a set of regions.<br /><br />
 Given a set of signal tracks, and a bed-like track containing intervals (e.g. genes),
 builds a table of the score of each signal in each of the intervals. That is, each cell
 of the output table is the score given by one of the tracks to a specific interval. <br />
 Scores can be the sum/mean/median/min/max of the tag count in the interval."""
     info = {
-        'title': 'Signal quantification',
+        'title': 'Quantify signals in regions',
         'description': __doc__,
         'path': ['Analysis', 'Quantify features'],
         'output': QuantifyTableForm,

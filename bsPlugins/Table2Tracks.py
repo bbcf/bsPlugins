@@ -37,10 +37,10 @@ out_parameters = [{'id': 'output_tar', 'type': 'file'},
 
 
 class Table2TracksPlugin(BasePlugin):
-    description = """generate signal tracks from a tab-delimited table"""
+    """Generates signal tracks from a tab-delimited table"""
     info = {
-        'title': 'Table2Tracks',
-        'description': description,
+        'title': 'Genome tracks from scores table',
+        'description': __doc__,
         'path': ['Files', 'Table2Tracks'],
         'output': Table2TracksForm,
         'in': in_parameters,

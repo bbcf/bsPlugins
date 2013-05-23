@@ -53,7 +53,7 @@ starting from its first position (e.g. with a read extension of zero, only the s
 the reads will be considered).
 """
     info = {
-        'title': 'Bam2density',
+        'title': 'Genome-wide reads density from bam',
         'description': description,
         'path': ['Files', 'Bam2density'],
         'output': Bam2DensityForm,

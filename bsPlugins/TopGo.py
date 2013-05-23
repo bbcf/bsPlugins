@@ -50,7 +50,7 @@ One can choose the maximum number of each of these terms to include in the outpu
 with a threshold on the p-value.
     """
     info = {
-        'title': 'TopGo',
+        'title': 'Gene Ontology analysis (TopGO)',
         'description': __doc__,
         'path': ['Analysis', 'TopGo'],
         'output': TopGoForm,

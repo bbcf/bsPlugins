@@ -35,11 +35,11 @@ out_parameters = [{'id': 'fulltrack', 'type': 'track'}]
 
 
 class List2TrackPlugin(BasePlugin):
-    description = """Create a fully annotated track file from a features type or a subset of Ensembl IDs. <br /><br />
+    """Create a fully annotated track file from a features type or a subset of Ensembl IDs. <br /><br />
 Either upload a raw text file with one Ensembl ID on each line, or choose a feature type to fetch them all."""
     info = {
-        'title': 'List2Track',
-        'description': description,
+        'title': 'Genome track from ids',
+        'description': __doc__,
         'path': ['Files', 'List2Track'],
         'output': List2TrackForm,
         'in': in_parameters,

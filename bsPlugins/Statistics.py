@@ -36,7 +36,7 @@ class StatisticsPlugin(BasePlugin):
     """Calculates diverse statistics from a track file,
     such as a distribution of scores and feature lengths, and prints them to the output file."""
     info = {
-        'title': 'Statistics',
+        'title': 'Basic track statistics',
         'description': __doc__,
         'path': ['Files', 'Statistics'],
         'output': StatisticsForm,

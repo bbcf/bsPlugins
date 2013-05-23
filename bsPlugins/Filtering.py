@@ -37,7 +37,7 @@ out_parameters = [{'id': 'output', 'type': 'track'},
 class FilteringPlugin(BasePlugin):
     """Select features from a track passing a filter."""
     info = {
-        'title': 'Apply a filter on a given track',
+        'title': 'Apply a filter to a track',
         'description': __doc__,
         'path': ['Files', 'Filtering'],
         'output': FilteringForm,
@@ -46,13 +46,6 @@ class FilteringPlugin(BasePlugin):
         'meta': meta}
 
     def __call__(self, **kw):
-        def _length_threshold(stream, lmin, lmax):
-            si = stream.fields.index('start')
-            ei = stream.fields.index('end')
-            for x in stream:
-                if lmax >= x[ei]-x[si] >= lmin:
-                    yield x
-
         tracks = kw['TrackMulti']['tracks']
         if not isinstance(tracks, list): tracks = [tracks]
         minscore = kw.get('minscore')
