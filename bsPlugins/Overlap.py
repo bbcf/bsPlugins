@@ -33,10 +33,11 @@ out_parameters = [{'id': 'filtered', 'type': 'track'}]
 
 
 class OverlapPlugin(BasePlugin):
+    """Returns only the regions of the first input file that overlap
+(or contain) some feature from the second ('filter')."""
     info = {
         'title': 'Overlap',
-        'description': "Returns only the regions of the first input file that overlap \
-                        (or contain) some feature from the second ('filter').",
+        'description': __doc__,
         'path': ['Intervals', 'Overlap'],
         'output': OverlapForm,
         'in': in_parameters,

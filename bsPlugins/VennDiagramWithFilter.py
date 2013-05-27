@@ -41,11 +41,10 @@ out_parameters = [{'id':'venn_diagram', 'type':'file'}]
 
 
 class VennDiagramWithFilterPlugin(BasePlugin):
-    description = """Creates a Venn diagram of a table preliminarly filtered on given columns.
-    """
+    """Creates a Venn diagram of a table preliminarly filtered on given columns."""
     info = {
         'title': 'Venn Diagram With Filter',
-        'description': description,
+        'description': __doc__,
         'path': ['Graphics', 'Venn Diagram With Filter'],
         'output': VennDiagramWithFilterForm,
         'in': in_parameters,

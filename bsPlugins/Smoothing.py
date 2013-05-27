@@ -17,7 +17,7 @@ class SmoothingForm(BaseForm):
     window_size = twf.TextField(label='Window size: ',
         validator=twc.IntValidator(required=True),
         value=size_def,
-        help_text='Size of window')
+        help_text='Size of the sliding window')
     window_step = twf.TextField(label='Window step: ',
         validator=twc.IntValidator(required=True),
         value=step_def,
@@ -25,7 +25,7 @@ class SmoothingForm(BaseForm):
     by_feature = twf.CheckBox(label='Window size in features (not basepairs): ',
         value=False,
         help_text='Will count size and step parameters in number of features, not in basepairs')
-    submit = twf.SubmitButton(id="submit", value="Smooth")
+    submit = twf.SubmitButton(id="submit", value="Submit")
 
 meta = {'version': "1.0.0",
             'author': "BBCF",
@@ -40,10 +40,12 @@ out_parameters = [{'id': 'smoothed_track', 'type': 'track'}]
 
 
 class SmoothingPlugin(BasePlugin):
-
+    """Applies a moving average transformation to smooth the signal of a quantitative
+track. <br /><br />
+    """
     info = {
         'title': 'Window smoothing',
-        'description': 'Window smoothing',
+        'description': __doc__,
         'path': ['Signal', 'Smoothing'],
         'output': SmoothingForm,
         'in': in_parameters,

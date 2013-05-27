@@ -51,7 +51,7 @@ out_parameters = [{'id': 'plot_features', 'type': 'pdf'}]
 
 
 class PlotFeaturesPlugin(BasePlugin):
-    """Plot signals from a selection of regions"""
+    """Plot signals from a selection of regions."""
     info = {
         'title': 'Plot signals in genomic regions',
         'description': __doc__,
@@ -71,12 +71,12 @@ class PlotFeaturesPlugin(BasePlugin):
         snames = [sig.name for sig in signals]
         labels = None
         data = None
-        if kw.get("upstream") is not None: 
+        if kw.get("upstream") is not None:
             _up = int(kw["upstream"])
             if _up > 50: upstr = (_up,5)
             elif _up > 0: upstr = (_up,1)
             else: upstr = (0,0)
-        if kw.get("downstream") is not None: 
+        if kw.get("downstream") is not None:
             _down = int(kw["downstream"])
             if _down > 50: downstr = (_down,5)
             elif _down > 0: downstr = (_down,1)

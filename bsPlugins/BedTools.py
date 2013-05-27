@@ -123,10 +123,10 @@ out_parameters = [{'id': 'bedtools_result', 'type': 'track'}]
 
 
 class BedToolsPlugin(BasePlugin):
-
+    """Bedtools collection."""
     info = {
         'title': 'BedTools',
-        'description': 'Bedtools collection',
+        'description': __doc__,
         'path': ['Intervals', 'Bedtools'],
         'output': BedToolsForm,
         'in': in_parameters,

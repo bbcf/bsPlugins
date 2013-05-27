@@ -18,7 +18,7 @@ class DESeqForm(BaseForm):
     child = twd.HidingTableLayout()
 
     input_type = twd.HidingRadioButtonList(label='Input type: ',
-                                           options=['Table', 'Signals'], 
+                                           options=['Table', 'Signals'],
                                            mapping={'Table': ['table'],
                                                     'Signals': ['Group1','Group2','feature_type','assembly'],},
                                            value='Table',
@@ -81,11 +81,9 @@ out_parameters = [{'id': 'differential_expression', 'type': 'file'}]
 
 
 class DESeqPlugin(BasePlugin):
-
-    description = """Gets the score associated to each genomic feature in each sample and runs DESeq
+    """Gets the score associated to each genomic feature in each sample and runs DESeq
 for differential analysis within them. It returns a tab-delimited file with the following fields:<br />
 Name, MeanA, MeanB, fold change, adjusted p-value.<br /><br />
-
 The input can be of two different types: <br />
 <ul>
 <li> Two sets of 'signal' files - i.e. bedGraph-type text files - one for each of the two groups to compare -,
@@ -104,7 +102,7 @@ The input can be of two different types: <br />
     """
     info = {
         'title': 'Differential expression analysis',
-        'description': description,
+        'description': __doc__,
         'path': ['Analysis', 'DE analysis'],
         'output': DESeqForm,
         'in': in_parameters,

@@ -38,7 +38,7 @@ class List2TrackPlugin(BasePlugin):
     """Create a fully annotated track file from a features type or a subset of Ensembl IDs. <br /><br />
 Either upload a raw text file with one Ensembl ID on each line, or choose a feature type to fetch them all."""
     info = {
-        'title': 'Genome track from ids',
+        'title': 'Genome track from IDs',
         'description': __doc__,
         'path': ['Files', 'List2Track'],
         'output': List2TrackForm,

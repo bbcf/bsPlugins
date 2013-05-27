@@ -49,7 +49,7 @@ out_parameters = [{'id':'venn_diagram', 'type':'file'},
 
 
 class VennDiagramPlugin(BasePlugin):
-    description = """Creates a Venn diagram of the proportions of
+    """Creates a Venn diagram of the proportions of
 total coverage/total tag count due to each of the given tracks. <br /><br />
 If the parameter 'type' has the value 'coverage %', the diagram will show the percent
 of the genome covered by each possible combination of the input tracks. For instance,
@@ -66,7 +66,7 @@ all the information.
     """
     info = {
         'title': 'Venn Diagram',
-        'description': description,
+        'description': __doc__,
         'path': ['Graphics', 'Venn Diagram'],
         'output': VennDiagramForm,
         'in': in_parameters,

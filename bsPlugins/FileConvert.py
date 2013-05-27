@@ -9,16 +9,19 @@ format_list = ['bedgraph', 'wig', 'bed', 'sql', 'gff', 'sga', 'bigwig']
 class FileConvertForm(BaseForm):
     hover_help = True
     show_errors = True
-    infile = twb.BsFileField(label='File: ', help_text='Select file.',
+    infile = twb.BsFileField(label='File: ',
+        help_text='Select file.',
         validator=twb.BsFileFieldValidator(required=True))
     child = twd.HidingTableLayout()
     to = twd.HidingSingleSelectField(label='Output format: ',
-        options=format_list,  prompt_text=None,
+        options=format_list,
+        prompt_text=None,
         mapping={'sql': ['dtype', 'assembly'],
                  'bigwig': ['assembly']},
         validator=twc.Validator(required=True),
         help_text='Select the format of your result')
-    dtype = twf.SingleSelectField(label='Output datatype: ', prompt_text=None,
+    dtype = twf.SingleSelectField(label='Output datatype: ',
+        prompt_text=None,
         options=['quantitative', 'qualitative'],
         help_text='Choose sql data type attribute')
     assembly = twf.SingleSelectField(label='Assembly: ',
@@ -40,7 +43,7 @@ out_parameters = [{'id': 'converted_file', 'type': 'track'}]
 
 
 class FileConvertPlugin(BasePlugin):
-    """Converts a file to another equivalent format (examples: wig to bedgraph, gff to bed). Recognised input formats are %s.""" 
+    """Converts a file to another equivalent format (examples: wig to bedgraph, gff to bed). Recognised input formats are %s."""
     __doc__ %= ", ".join(sorted(_track_map.keys()))
     info = {
         'title': 'File format conversion',
@@ -53,7 +56,7 @@ class FileConvertPlugin(BasePlugin):
         }
 
     def __call__(self, **kw):
-        ext = kw.get('to') or 'sql'
+        ext = kw.get('to','sql')
         info = {'datatype': kw.get('datatype') or 'qualitative'}
         infile = kw.get('infile')
         fname = os.path.splitext(os.path.split(infile)[-1])[0]

@@ -39,14 +39,14 @@ out_parameters = [{'id': 'density_merged', 'type': 'track'}]
 
 
 class MergeTracksPlugin(BasePlugin):
-    description = """Shift and average scores from forward and reverse strand densities. <br /><br />
+    """Shift and average scores from forward and reverse strand densities. <br /><br />
 Typically built to merge ChIP-seq signals from both DNA strands, it can also be used to add (average)
 several numeric genomic tracks, replicates for instance.<br />
-The output is the sum of all the input signals, position by position."""
-
+The output is the sum of all the input signals, position by position.
+    """
     info = {
         'title': 'Merge strands',
-        'description': description,
+        'description': __doc__,
         'path': ['Signal', 'Merge strands'],
         'output': MergeTracksForm,
         'in': in_parameters,
@@ -87,7 +87,7 @@ The output is the sum of all the input signals, position by position."""
                 raise ValueError("Unable to detect shift automatically. Must specify a shift value.")
 
         output = self.temporary_path(fname=tfwd.name+'-'+trev.name+'_merged', ext=kw['format'])
-        tout = track.track(output, chrmeta=chrmeta, 
+        tout = track.track(output, chrmeta=chrmeta,
                            info={'datatype': 'quantitative', 'shift': shiftval})
         mode = 'write'
         for chrom in chrmeta.keys():

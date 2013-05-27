@@ -75,10 +75,8 @@ out_parameters = [{'id': 'MA-plot', 'type': 'file'}]
 
 
 class MaplotPlugin(BasePlugin):
-
-    description = """Creates an MA-plot to compare levels of expression of genomic features
+    """Creates an MA-plot to compare levels of expression of genomic features
 across two samples. <br /><br />
-
 The input can be of two different types: <br />
 <ul>
 <li> Two 'signal' files, i.e. bedGraph-type text files,
@@ -92,7 +90,7 @@ The input can be of two different types: <br />
     """
     info = {
         'title': 'MA-plot',
-        'description': description,
+        'description': __doc__,
         'path': ['Graphics', 'MA-plot'],
         'output': MaplotForm,
         'in': in_parameters,

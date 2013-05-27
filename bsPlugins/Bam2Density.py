@@ -44,7 +44,7 @@ class Bam2DensityForm(BaseForm):
 
 
 class Bam2DensityPlugin(BasePlugin):
-    description = """From a BAM file, creates a track file of the read count/density along the whole genome,
+    """From a BAM file, creates a track file of the read count/density along the whole genome,
 in the chosen format. <br /><br />
 By default, all scores are divided by the total read count (times 10^-7) to normalize across samples.
 One can deactivate this behavior in the plugin options. Positive and negative strands can be merged,
@@ -53,8 +53,8 @@ starting from its first position (e.g. with a read extension of zero, only the s
 the reads will be considered).
 """
     info = {
-        'title': 'Genome-wide reads density from bam',
-        'description': description,
+        'title': 'Genome-wide reads density from BAM',
+        'description': __doc__,
         'path': ['Files', 'Bam2density'],
         'output': Bam2DensityForm,
         'in': in_parameters,

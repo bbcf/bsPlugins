@@ -63,10 +63,10 @@ out_parameters = [{'id': 'plot_pairs', 'type': 'pdf'}]
 
 
 class PairsPlotPlugin(BasePlugin):
-
+    """Plots pairwise comparisons between signal tracks."""
     info = {
         'title': 'Pairwise plots',
-        'description': 'Plots pairwise comparisons between signal tracks',
+        'description': __doc__,
         'path': ['Graphics', 'Plot pairs'],
         'output': PairsPlotForm,
         'in': in_parameters,
