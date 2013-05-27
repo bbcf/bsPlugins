@@ -41,7 +41,7 @@ out_parameters = [{'id': 'converted_file', 'type': 'track'}]
 
 class FileConvertPlugin(BasePlugin):
     """Converts a file to another equivalent format (examples: wig to bedgraph, gff to bed). Recognised input formats are %s.""" 
-    __doc__ %= ", ".join(_track_map.keys())
+    __doc__ %= ", ".join(sorted(_track_map.keys()))
     info = {
         'title': 'File format conversion',
         'description': __doc__,

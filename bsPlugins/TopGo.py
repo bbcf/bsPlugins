@@ -85,7 +85,7 @@ out = multi_topGo("%s","%s","%s","%s",%i,%f)
         if len(pdf_list) > 1:
             tar_pdf_name = self.temporary_path('TopGO_plots_'+fname+'.tgz')
             tar_pdf = tarfile.open(tar_pdf_name, "w:gz")
-            [tar_pdf.add(f) for f in pdf_list]
+            [tar_pdf.add(f,arcname=os.path.basename(f)) for f in pdf_list]
             tar_pdf.close()
 
             tar_table_name = self.temporary_path(fname='TopGO_tables_'+fname+'.tgz')
