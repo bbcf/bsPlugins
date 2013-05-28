@@ -2,6 +2,7 @@ from bsPlugins import *
 from bbcflib.bFlatMajor.stream import neighborhood, score_by_feature
 from bbcflib.btrack import track
 from bbcflib import genrep
+import os
 
 prom_up_def = 1000
 prom_down_def = 100
