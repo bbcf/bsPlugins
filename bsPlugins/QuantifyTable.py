@@ -123,7 +123,7 @@ Scores can be the sum/mean/median/min/max of the tag count in the interval."""
                      chrmeta=chrmeta, info={'datatype':'qualitative'})
         for chrom in chrmeta:
             sread = [sig.read(chrom) for sig in signals]
-            tout.write(score_by_feature(sread, features(chrom), fn=func),
+            tout.write(score_by_feature(sread, features(chrom), method=func),
                        chrom=chrom, clip=True)
         tout.close()
         return output
