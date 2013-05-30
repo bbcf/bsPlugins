@@ -42,7 +42,7 @@ class MergeTracksPlugin(BasePlugin):
     """Shift and average scores from forward and reverse strand densities. <br /><br />
 Typically built to merge ChIP-seq signals from both DNA strands, it can also be used to add (average)
 several numeric genomic tracks, replicates for instance.<br />
-The output is the sum of all the input signals, position by position.
+The output is the average of all the input signals, position by position.
     """
     info = {
         'title': 'Merge strands',
@@ -66,9 +66,10 @@ The output is the sum of all the input signals, position by position.
             return track.FeatureStream((_apply_shift(x) for x in stream),
                                        fields=stream.fields)
 
-        chrmeta = genrep.Assembly(kw['assembly']).chrmeta
-        tfwd = track.track(kw.get('forward'), chrmeta=chrmeta)
-        trev = track.track(kw.get('reverse'), chrmeta=chrmeta)
+        assembly = kw.get('assembly') or 'guess'
+        tfwd = track.track(kw.get('forward'), chrmeta=assembly)
+        trev = track.track(kw.get('reverse'), chrmeta=assembly)
+        chrmeta = tfwd.chrmeta
 
         shiftval = int(kw.get('shift', 0))
         if shiftval < 0:  # Determine shift automatically
