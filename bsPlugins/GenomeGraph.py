@@ -28,8 +28,7 @@ class GenomeGraphForm(BaseForm):
     class FeatMulti(twb.BsMultiple):
         label='Features: '
         features = twb.BsFileField(label=' ',
-                                   help_text='Features files (e.g. bed) to plot as lines on the axis',
-                                   validator=twb.BsFileFieldValidator(required=True))
+                                   help_text='Features files (e.g. bed) to plot as segments on the axis')
     assembly = twf.SingleSelectField(label='Assembly: ',
                                      options=genrep.GenRep().assemblies_available(),
                                      help_text='Reference genome')
