@@ -32,7 +32,6 @@ class GenomeGraphForm(BaseForm):
                                    validator=twb.BsFileFieldValidator(required=True))
     assembly = twf.SingleSelectField(label='Assembly: ',
                                      options=genrep.GenRep().assemblies_available(),
-                                     prompt_text=None,
                                      help_text='Reference genome')
     submit = twf.SubmitButton(id="submit", value="Plot")
 
