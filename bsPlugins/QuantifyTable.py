@@ -86,14 +86,14 @@ Scores can be the sum/mean/median/min/max of the tag count in the interval."""
             feature_type = int(feature_type)
         func = str(kw.get('score_op', 'mean'))
         assembly_id = kw.get('assembly')
-        format = kw['format']
+        format = kw.get('format') or 'txt'
         chrmeta = "guess"
         if assembly_id:
             assembly = genrep.Assembly(assembly_id)
             chrmeta = assembly.chrmeta
             genes = assembly.gene_track
             exons = assembly.exon_track
-        elif not(feature_type in ftype[3]):
+        elif not(feature_type in ftypes[3]):
             raise ValueError("Please specify an assembly")
         signals = kw['SigMulti']['signals']
         if not isinstance(signals, list): signals = [signals]
@@ -116,15 +116,18 @@ Scores can be the sum/mean/median/min/max of the tag count in the interval."""
             raise ValueError("Take feature_type in %s." %ftypes)
         output = self.temporary_path(fname='quantification.'+format)
         if len(signals) > 1:
-            _f = ["score" + str(i) for i in range(len(signals))]
+            _f = ["score%i"%i for i in range(len(signals))]
         else:
             _f = ["score"]
-        tout = track(output, format, fields=['chr','start','end','name'] + _f,
+        tout = track(output, format, fields=['chr','start','end','name']+_f,
                      chrmeta=chrmeta, info={'datatype':'qualitative'})
+        with open(tout.path,"w") as tf:
+            header = ['chr','start','end','name']+[s.name for s in signals]
+            tf.write("\t".join(header)+"\n")
         for chrom in chrmeta:
             sread = [sig.read(chrom) for sig in signals]
             tout.write(score_by_feature(sread, features(chrom), method=func),
-                       chrom=chrom, clip=True)
+                       chrom=chrom, clip=True, mode="append")
         tout.close()
         return output
 
