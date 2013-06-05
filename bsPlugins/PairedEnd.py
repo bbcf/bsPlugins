@@ -32,7 +32,7 @@ class PairedEndForm(BaseForm):
 
 
 class PairedEndPlugin(BasePlugin):
-    """Computes statistics and genome-wide fragment sizes distribution from mapped paired-end sequencing reads."""
+    """Computes statistics and genome-wide distribution of fragment sizes from mapped paired-end reads."""
 
     info = {
         'title': 'Analysis of fragment size in paired-end bam files.',
@@ -43,40 +43,44 @@ class PairedEndPlugin(BasePlugin):
         'out': out_parameters,
         'meta': meta }
 
-    def _frag_stats(self, bam, frag_nb, frag_size, nb_frag):
+    def _frag_stats(self, bam, frag_rep, frag_size, nb_frag):
         _plast = -1
-        _slast = -1
-        _rep_last = 0
+        _buff = {}
         for read in bam:
             if read.is_reverse: continue
             nb_frag += 1
             _p = read.pos
             _s = read.isize
-            frag_size[_s] = frag_size.get(_s,0)+1
-            if _p == _plast and _s == _slast:
-                _rep_last += 1
+            if _p == _plast:
+                _buff[_s] = _buff.get(_s,0)+1
             else:
-                if _rep_last>0: frag_nb[_rep_last] = 1+frag_nb.get(_rep_last,0)
+                for _size,_rep in _buff.iteritems():
+                    frag_size[_size] = frag_size.get(_size,0)+_rep
+                    frag_rep[_rep] = frag_rep.get(_rep,0)+1
                 _plast = _p
-                _slast = _s
-                _rep_last = 1
-        if _rep_last>0: frag_nb[_rep_last] = 1+frag_nb.get(_rep_last,0)
+                _buff = {}
+        for _rep in _buff.values():
+            frag_rep[_rep] = 1+frag_rep.get(_rep,0)
+        return frag_rep, frag_size, nb_frag
 
-
-    def _plot_stats(self, frag_nb, frag_size, nb_frag, bam_name):
-        robjects.r.assign('rep_cnt',numpy2ri.numpy2ri(frag_nb.keys()))
-        robjects.r.assign('rep_freq',numpy2ri.numpy2ri(frag_nb.values()))
+    def _plot_stats(self, frag_rep, frag_size, nb_frag, bam_name):
+        robjects.r.assign('rep_cnt',numpy2ri.numpy2ri(frag_rep.keys()))
+        robjects.r.assign('rep_freq',numpy2ri.numpy2ri(frag_rep.values()))
         robjects.r.assign('size_distr',numpy2ri.numpy2ri(frag_size.keys()))
         robjects.r.assign('size_freq',numpy2ri.numpy2ri(frag_size.values()))
         robjects.r.assign('nb_frag',nb_frag)
         robjects.r.assign('main',bam_name)
         robjects.r("""
 rep_cnt=as.integer(rep_cnt)
-rep_freq=as.integer(rep_freq)
+O=order(rep_cnt)
+rep_freq=as.integer(rep_freq)[O]
+rep_cnt=rep_cnt[O]
 size_distr=as.integer(size_distr)
-size_freq=as.integer(size_freq)
-par(mfrow=c(2,1),lwd=2,cex=1.1,cex.main=1.3,cex.lab=1.1,cex.axis=.8,oma=c(3,3,0,3),mar=c(2,2,0,0),las=1,pch=20)
-plot(rep_cnt,rep_freq/nb_frag,type='s',main='Fragment redundancy',xlab='Nb of copies',ylab='Frequency',log='y')
+O=order(size_distr)
+size_freq=as.integer(size_freq)[O]
+size_distr=size_distr[O]
+par(mfrow=c(2,1),lwd=2,cex=1.1,cex.main=1.3,cex.lab=1.1,cex.axis=.8,oma=c(0,3,0,0),mar=c(5,5,1,1),las=1,pch=20)
+plot(rep_cnt,rep_freq/nb_frag,type='s',main='Fragment redundancy',xlab='Nb of copies',ylab='Frequency',log='y',xlim=c(1,100))
 plot(size_distr,size_freq/nb_frag,type='s',main='Fragment size distribution',xlab='Fragment size',ylab='Frequency')
 title(main=main,outer=T)
 """)
@@ -96,14 +100,15 @@ title(main=main,outer=T)
             outname = self.temporary_path(fname=tname)
             all_tracks.append(outname)
             trout = track(outname, fields=_f, chrmeta=bam.chrmeta)
-            frag_nb = {}
+            frag_rep = {}
             frag_size = {}
             nb_frag = 0
             for chrom,cval in bam.chrmeta.iteritems():
-                self._frag_stats(bam.fetch(chrom, 0, cval['length']), frag_nb, frag_size, nb_frag)
+                frag_rep, frag_size, nb_frag = self._frag_stats(bam.fetch(chrom, 0, cval['length']), 
+                                                                frag_rep, frag_size, nb_frag)
                 trout.write( bam.PE_fragment_size(chrom), fields=_f, chrom=chrom )
             trout.close()
-            self._plot_stats(frag_nb, frag_size, nb_frag, bam.name)
+            self._plot_stats(frag_rep, frag_size, nb_frag, bam.name)
         robjects.r('dev.off()')
         if len(all_tracks)>1:
             tarname = self.temporary_path(fname='PE_fragment_tracks.tgz')
