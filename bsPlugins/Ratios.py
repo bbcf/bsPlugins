@@ -5,10 +5,12 @@ from bbcflib.btrack import track
 class RatiosForm(BaseForm):
     numerator = twf.FileField(
         label='File 1: ',
-        help_text='Select the track with the numerators')
+        help_text='Select the track with the numerators',
+        validator=twb.BsFileFieldValidator(required=True))
     denominator = twf.FileField(
         label='File 2: ',
-        help_text='Select the track with the denominators')
+        help_text='Select the track with the denominators',
+        validator=twb.BsFileFieldValidator(required=True))
     format = twf.SingleSelectField(
         label='Output format ',
         prompt_text=None,
