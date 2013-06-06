@@ -43,7 +43,7 @@ class PairedEndPlugin(BasePlugin):
         'out': out_parameters,
         'meta': meta }
 
-    def _frag_stats(self, bam, frag_rep, frag_size, nb_frag):
+    def _compute_stats(self, bam, frag_rep, frag_size, nb_frag):
         _plast = -1
         _buff = {}
         for read in bam:
@@ -73,22 +73,24 @@ class PairedEndPlugin(BasePlugin):
         robjects.r("""
 rep_cnt = as.integer(rep_cnt)
 Od = order(rep_cnt)
-rep_freq = as.integer(rep_freq)[Od]
+rep_freq = as.integer(rep_freq)[Od]*1e-6
 rep_cnt = rep_cnt[Od]
 I100 = rep_cnt<100
 rep_cnt = c(rep_cnt[I100],100)
 rep_freq = c(rep_freq[I100],sum(rep_freq[!I100]))
 size_distr = as.integer(size_distr)
 Od = order(size_distr)
-size_freq = as.integer(size_freq)[Od]
+size_freq = as.integer(size_freq)[Od]*1e-6
 size_distr = size_distr[Od]
 par(mfrow=c(2,1),lwd=2,cex=1.1,cex.main=1.3,cex.lab=1.1,cex.axis=.8,oma=c(0,0,3,0),mar=c(5,5,1,1),las=1,pch=20)
-plot(rep_cnt,rep_freq,type='s',main='Fragment redundancy',xlab='Nb of copies',ylab='Frequency',
+plot(rep_cnt,rep_freq,type='s',main='Fragment redundancy',xlab='Nb of copies',ylab='Frequency (millions)',
      log='y',xlim=c(1,100),xaxt='n',ylim=c(0,nb_frag)+1)
 abline(h=nb_frag,col='red')
-axis(side=3,at=seq(10,100,by=10),labels=c(seq(1,90,by=10),">100"))
-plot(size_distr,size_freq,type='s',main='Fragment size distribution',xlab='Fragment size',ylab='Frequency')
+text(50,nb_frag,nb_frag,col='red',pos=1)
+axis(side=1,at=seq(10,100,by=10),labels=c(seq(10,90,by=10),">100"))
+plot(size_distr,size_freq,type='s',main='Fragment size distribution',xlab='Size',ylab='Frequency (millions)',ylim=c(0,nb_frag)+1)
 abline(h=nb_frag,col='red')
+text(mean(range(size_distr)),nb_frag,nb_frag,col='red',pos=1)
 title(main=main,outer=T)
 """)
 
@@ -111,8 +113,8 @@ title(main=main,outer=T)
             frag_size = {}
             nb_frag = 0
             for chrom,cval in bam.chrmeta.iteritems():
-                frag_rep, frag_size, nb_frag = self._frag_stats(bam.fetch(chrom, 0, cval['length']), 
-                                                                frag_rep, frag_size, nb_frag)
+                reads = bam.fetch(chrom, 0, cval['length'])
+                frag_rep, frag_size, nb_frag = self._compute_stats(reads, frag_rep, frag_size, nb_frag)
                 trout.write( bam.PE_fragment_size(chrom), fields=_f, chrom=chrom )
             trout.close()
             self._plot_stats(frag_rep, frag_size, nb_frag, bam.name)
