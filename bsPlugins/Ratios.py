@@ -3,11 +3,11 @@ from bbcflib.bFlatMajor.stream import merge_scores
 from bbcflib.btrack import track
 
 class RatiosForm(BaseForm):
-    numerator = twf.FileField(
+    numerator = twb.bsFileField(
         label='File 1: ',
         help_text='Select the track with the numerators',
         validator=twb.BsFileFieldValidator(required=True))
-    denominator = twf.FileField(
+    denominator = twb.bsFileField(
         label='File 2: ',
         help_text='Select the track with the denominators',
         validator=twb.BsFileFieldValidator(required=True))
