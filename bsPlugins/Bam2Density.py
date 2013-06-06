@@ -2,6 +2,7 @@ from bsPlugins import *
 from bein import execution
 from bbcflib.btrack import track, convert
 from bbcflib.mapseq import bam_to_density
+import os
 
 __requires__ = ["pysam"]
 
@@ -46,11 +47,11 @@ class Bam2DensityForm(BaseForm):
 class Bam2DensityPlugin(BasePlugin):
     """From a BAM file, creates a track file of the read count/density along the whole genome,
 in the chosen format. <br /><br />
-By default, all scores are divided by the total read count (times 10^-7) to normalize across samples.
-One can deactivate this behavior in the plugin options. Positive and negative strands can be merged,
-and shifted if necessary (ChIP-seq). The read extension is the length of the region a read will cover,
-starting from its first position (e.g. with a read extension of zero, only the starting positions of
-the reads will be considered).
+Read counts are divided by 10^-7 the normalization factor (which is total number of reads by default).
+Positive and negative strand densities are generated and optionally merged (averaged) if a 
+shift value >=0 is given. The read extension is the number of basepairs a read will cover,
+starting from its most 5' position (e.g. with a read extension of 1, only the starting position of
+each alignment will be considered, default is read length).
 """
     info = {
         'title': 'Genome-wide reads density from BAM',
@@ -67,12 +68,12 @@ the reads will be considered).
         control = None
         sample = kw.get("sample")
         assert os.path.exists(str(sample)), "Bam file not found: '%s'." % sample
+        sample = os.path.abspath(sample)
         if kw.get('control'):
             control = kw['control']
             b2wargs = ["-c", str(control)]
             assert os.path.exists(str(control)), "Control file not found: '%s'." % control
             control = os.path.abspath(control)
-        sample = os.path.abspath(sample)
         nreads = int(kw.get('normalization') or -1)
         bamfile = track(sample, format='bam')
         if nreads < 0:
