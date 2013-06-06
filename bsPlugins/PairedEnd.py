@@ -84,13 +84,13 @@ size_freq = as.integer(size_freq)[Od]*1e-6
 size_distr = size_distr[Od]
 par(mfrow=c(2,1),lwd=2,cex=1.1,cex.main=1.3,cex.lab=1.1,cex.axis=.8,oma=c(0,0,3,0),mar=c(5,5,1,1),las=1,pch=20)
 plot(rep_cnt,rep_freq,type='s',main='Fragment redundancy',xlab='Nb of copies',ylab='Frequency (millions)',
-     log='y',xlim=c(1,100),xaxt='n',ylim=c(0,nb_frag)+1)
-abline(h=nb_frag,col='red')
-text(50,nb_frag,nb_frag,col='red',pos=1)
+     log='y',xlim=c(1,100),xaxt='n',ylim=c(0,nb_frag*1e-6)+1)
+abline(h=nb_frag*1e-6,col='red')
+text(50,nb_frag*1e-6,nb_frag,col='red',pos=1)
 axis(side=1,at=seq(10,100,by=10),labels=c(seq(10,90,by=10),">100"))
-plot(size_distr,size_freq,type='s',main='Fragment size distribution',xlab='Size',ylab='Frequency (millions)',ylim=c(0,nb_frag)+1)
-abline(h=nb_frag,col='red')
-text(mean(range(size_distr)),nb_frag,nb_frag,col='red',pos=1)
+plot(size_distr,size_freq,type='s',main='Fragment size distribution',xlab='Size',ylab='Frequency (millions)',ylim=c(0,nb_frag*1e-6)+1)
+abline(h=nb_frag*1e-6,col='red')
+text(mean(range(size_distr)),nb_frag*1e-6,nb_frag,col='red',pos=1)
 title(main=main,outer=T)
 """)
 
