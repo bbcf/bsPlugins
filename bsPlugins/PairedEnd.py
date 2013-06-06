@@ -43,32 +43,31 @@ class PairedEndPlugin(BasePlugin):
         'out': out_parameters,
         'meta': meta }
 
-    def _compute_stats(self, bam, frag_rep, frag_size, nb_frag):
+    def _compute_stats(self, bam):
         _plast = -1
         _buff = {}
         for read in bam:
             if read.is_reverse: continue
-            nb_frag += 1
+            self.nb_frag += 1
             _p = read.pos
             _s = read.isize
             if _p == _plast:
                 _buff[_s] = _buff.get(_s,0)+1
             else:
                 for _size,_rep in _buff.iteritems():
-                    frag_size[_size] = frag_size.get(_size,0)+_rep
-                    frag_rep[_rep] = frag_rep.get(_rep,0)+1
+                    self.frag_size[_size] = self.frag_size.get(_size,0)+_rep
+                    self.frag_rep[_rep] = self.frag_rep.get(_rep,0)+1
                 _plast = _p
                 _buff = {}
         for _rep in _buff.values():
-            frag_rep[_rep] = 1+frag_rep.get(_rep,0)
-        return frag_rep, frag_size, nb_frag
+            self.frag_rep[_rep] = 1+self.frag_rep.get(_rep,0)
 
-    def _plot_stats(self, frag_rep, frag_size, nb_frag, bam_name):
-        robjects.r.assign('rep_cnt',numpy2ri.numpy2ri(frag_rep.keys()))
-        robjects.r.assign('rep_freq',numpy2ri.numpy2ri(frag_rep.values()))
-        robjects.r.assign('size_distr',numpy2ri.numpy2ri(frag_size.keys()))
-        robjects.r.assign('size_freq',numpy2ri.numpy2ri(frag_size.values()))
-        robjects.r.assign('nb_frag',nb_frag)
+    def _plot_stats(self, bam_name):
+        robjects.r.assign('rep_cnt',numpy2ri.numpy2ri(self.frag_rep.keys()))
+        robjects.r.assign('rep_freq',numpy2ri.numpy2ri(self.frag_rep.values()))
+        robjects.r.assign('size_distr',numpy2ri.numpy2ri(self.frag_size.keys()))
+        robjects.r.assign('size_freq',numpy2ri.numpy2ri(self.frag_size.values()))
+        robjects.r.assign('nb_frag',self.nb_frag)
         robjects.r.assign('main',bam_name)
         robjects.r("""
 rep_cnt = as.integer(rep_cnt)
@@ -80,17 +79,15 @@ rep_cnt = c(rep_cnt[I100],100)
 rep_freq = c(rep_freq[I100],sum(rep_freq[!I100]))
 size_distr = as.integer(size_distr)
 Od = order(size_distr)
-size_freq = as.integer(size_freq)[Od]*1e-6
+size_freq = as.integer(size_freq)[Od]/nb_frag
 size_distr = size_distr[Od]
 par(mfrow=c(2,1),lwd=2,cex=1.1,cex.main=1.3,cex.lab=1.1,cex.axis=.8,oma=c(0,0,3,0),mar=c(5,5,1,1),las=1,pch=20)
 plot(rep_cnt,rep_freq,type='s',main='Fragment redundancy',xlab='Nb of copies',ylab='Frequency (millions)',
-     log='y',xlim=c(1,100),xaxt='n',ylim=c(0,nb_frag*1e-6)+1)
+     log='y',xlim=c(1,100),xaxt='n',ylim=c(1e-6,nb_frag*1e-6))
 abline(h=nb_frag*1e-6,col='red')
 text(50,nb_frag*1e-6,nb_frag,col='red',pos=1)
 axis(side=1,at=seq(10,100,by=10),labels=c(seq(10,90,by=10),">100"))
-plot(size_distr,size_freq,type='s',main='Fragment size distribution',xlab='Size',ylab='Frequency (millions)',ylim=c(0,nb_frag*1e-6)+1)
-abline(h=nb_frag*1e-6,col='red')
-text(mean(range(size_distr)),nb_frag*1e-6,nb_frag,col='red',pos=1)
+plot(size_distr,size_freq,type='s',main='Fragment size distribution',xlab='Size',ylab='Density')
 title(main=main,outer=T)
 """)
 
@@ -109,15 +106,14 @@ title(main=main,outer=T)
             outname = self.temporary_path(fname=tname)
             all_tracks.append(outname)
             trout = track(outname, fields=_f, chrmeta=bam.chrmeta)
-            frag_rep = {}
-            frag_size = {}
-            nb_frag = 0
+            self.frag_rep = {}
+            self.frag_size = {}
+            self.nb_frag = 0
             for chrom,cval in bam.chrmeta.iteritems():
-                reads = bam.fetch(chrom, 0, cval['length'])
-                frag_rep, frag_size, nb_frag = self._compute_stats(reads, frag_rep, frag_size, nb_frag)
+                self._compute_stats(bam.fetch(chrom, 0, cval['length']))
                 trout.write( bam.PE_fragment_size(chrom), fields=_f, chrom=chrom )
             trout.close()
-            self._plot_stats(frag_rep, frag_size, nb_frag, bam.name)
+            self._plot_stats(bam.name)
         robjects.r('dev.off()')
         if len(all_tracks)>1:
             tarname = self.temporary_path(fname='PE_fragment_tracks.tgz')
