@@ -7,6 +7,20 @@ mart_map = [("GRCh37.p5",'hg19'), ("NCBIM37",'mm9'), ("EF3","sacCer2"),
 
 default_path = "/mnt/common/epfl/share"
 
+meta = {'version': "1.0.0",
+        'author': "BBCF",
+        'contact': "webmaster-bbcf@epfl.ch"}
+
+in_parameters = [{'id': 'gene_list', 'type': 'userfile', 'required': True},
+                 {'id': 'assembly', 'type': 'assembly'},
+                 {'id': 'num_terms', 'type': 'int'},
+                 {'id': 'pval', 'type': 'float'}]
+out_parameters = [{'id': 'TopGO_table_tar', 'type': 'file'},
+                  {'id': 'TopGO_plots_tar', 'type': 'file'},
+                  {'id': 'TopGO_table', 'type': 'txt'},
+                  {'id': 'TopGO_plots', 'type': 'pdf'}]
+
+
 class TopGoForm(BaseForm):
     gene_list = twb.BsFileField(label='Genes: ',
                               help_text='Provide a list of ensmbl IDs',
@@ -24,20 +38,6 @@ class TopGoForm(BaseForm):
                          value=.05,
                          help_text='Maximum p-value to include in the output')
     submit = twf.SubmitButton(id="submit", value="TopGo analysis")
-
-
-meta = {'version': "1.0.0",
-        'author': "BBCF",
-        'contact': "webmaster-bbcf@epfl.ch"}
-
-in_parameters = [{'id': 'gene_list', 'type': 'userfile', 'required': True},
-                 {'id': 'assembly', 'type': 'assembly'},
-                 {'id': 'num_terms', 'type': 'int'},
-                 {'id': 'pval', 'type': 'float'}]
-out_parameters = [{'id': 'TopGO_table_tar', 'type': 'file'},
-                  {'id': 'TopGO_plots_tar', 'type': 'file'},
-                  {'id': 'TopGO_table', 'type': 'txt'},
-                  {'id': 'TopGO_plots', 'type': 'pdf'}]
 
 
 class TopGoPlugin(BasePlugin):

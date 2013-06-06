@@ -3,6 +3,8 @@ from bein import execution
 from bbcflib.btrack import track, convert
 from bbcflib.mapseq import bam_to_density
 
+__requires__ = ["pysam"]
+
 
 meta = {'version': "1.0.0",
         'author': "BBCF",
@@ -17,8 +19,6 @@ in_parameters = [{'id': 'sample', 'type': 'bam', 'required': True},
 out_parameters = [{'id': 'density_merged', 'type': 'track'},
                   {'id': 'density_fwd', 'type': 'track'},
                   {'id': 'density_rev', 'type': 'track'}]
-
-__requires__ = ["pysam"]
 
 
 class Bam2DensityForm(BaseForm):

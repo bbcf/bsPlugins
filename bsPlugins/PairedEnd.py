@@ -71,20 +71,27 @@ class PairedEndPlugin(BasePlugin):
         robjects.r.assign('nb_frag',nb_frag)
         robjects.r.assign('main',bam_name)
         robjects.r("""
-rep_cnt=as.integer(rep_cnt)
-O=order(rep_cnt)
-rep_freq=as.integer(rep_freq)[O]
-rep_cnt=rep_cnt[O]
-size_distr=as.integer(size_distr)
-O=order(size_distr)
-size_freq=as.integer(size_freq)[O]
-size_distr=size_distr[O]
-par(mfrow=c(2,1),lwd=2,cex=1.1,cex.main=1.3,cex.lab=1.1,cex.axis=.8,oma=c(0,3,0,0),mar=c(5,5,1,1),las=1,pch=20)
-plot(rep_cnt,rep_freq/nb_frag,type='s',main='Fragment redundancy',xlab='Nb of copies',ylab='Frequency',log='y',xlim=c(1,100))
-plot(size_distr,size_freq/nb_frag,type='s',main='Fragment size distribution',xlab='Fragment size',ylab='Frequency')
+rep_cnt = as.integer(rep_cnt)
+Od = order(rep_cnt)
+rep_freq = as.integer(rep_freq)[Od]
+rep_cnt = rep_cnt[Od]
+I100 = rep_cnt<100
+rep_cnt = c(rep_cnt[I100],100)
+rep_freq = c(rep_freq[I100],sum(rep_freq[!I100]))
+size_distr = as.integer(size_distr)
+Od = order(size_distr)
+size_freq = as.integer(size_freq)[Od]
+size_distr = size_distr[Od]
+par(mfrow=c(2,1),lwd=2,cex=1.1,cex.main=1.3,cex.lab=1.1,cex.axis=.8,oma=c(0,0,3,0),mar=c(5,5,1,1),las=1,pch=20)
+plot(rep_cnt,rep_freq,type='s',main='Fragment redundancy',xlab='Nb of copies',ylab='Frequency',
+     log='y',xlim=c(1,100),xaxt='n',ylim=c(0,nb_frag)+1)
+abline(h=nb_frag,col='red')
+axis(side=3,at=seq(10,100,by=10),labels=c(seq(1,90,by=10),">100"))
+plot(size_distr,size_freq,type='s',main='Fragment size distribution',xlab='Fragment size',ylab='Frequency')
+abline(h=nb_frag,col='red')
 title(main=main,outer=T)
 """)
-            
+
 
     def __call__(self, **kw):
         _f = ['start','end','score']

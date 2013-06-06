@@ -9,6 +9,19 @@ prom_down_def = 100
 ftypes = [(0, 'gene bodies'), (1, 'gene promoters'), (2, 'exons'), (3, 'custom upload')]
 funcs = ['mean', 'sum', 'median', 'min', 'max']
 
+meta = {'version': "1.0.0",
+        'author': "BBCF",
+        'contact': "webmaster-bbcf@epfl.ch"}
+
+in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': 'SigMulti', 'required': True},
+                 {'id': 'feature_type', 'type': 'list'},
+                 {'id': 'features', 'type': 'track'},
+                 {'id': 'format', 'type': 'text'},
+                 {'id': 'assembly', 'type': 'assembly'},
+                 {'id': 'upstream', 'type': 'int', 'required': True},
+                 {'id': 'downstream', 'type': 'int', 'required': True}]
+out_parameters = [{'id': 'features_quantification', 'type': 'track'}]
+
 class QuantifyTableForm(BaseForm):
     child = twd.HidingTableLayout()
     class SigMulti(twb.BsMultiple):
@@ -50,19 +63,6 @@ class QuantifyTableForm(BaseForm):
         help_text='Size of promoter downstream of TSS')
     submit = twf.SubmitButton(id="submit", value="Quantify")
 
-
-meta = {'version': "1.0.0",
-        'author': "BBCF",
-        'contact': "webmaster-bbcf@epfl.ch"}
-
-in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': 'SigMulti', 'required': True},
-                 {'id': 'feature_type', 'type': 'list'},
-                 {'id': 'features', 'type': 'track'},
-                 {'id': 'format', 'type': 'text'},
-                 {'id': 'assembly', 'type': 'assembly'},
-                 {'id': 'upstream', 'type': 'int', 'required': True},
-                 {'id': 'downstream', 'type': 'int', 'required': True}]
-out_parameters = [{'id': 'features_quantification', 'type': 'track'}]
 
 
 class QuantifyTablePlugin(BasePlugin):

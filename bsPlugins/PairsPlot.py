@@ -13,6 +13,21 @@ prom_down_def = 100
 plot_types = [(0, 'correlations'), (1, 'density plots')]
 cormax = 500
 
+meta = {'version': "1.0.0",
+        'author': "BBCF",
+        'contact': "webmaster-bbcf@epfl.ch"}
+
+in_parameters = [{'id': 'input_type', 'type': 'radio'},
+                 {'id': 'signals', 'type': 'track', 'required': True, 'multiple':'SigMulti'},
+                 {'id': 'feature_type', 'type': 'list'},
+                 {'id': 'features', 'type': 'track'},
+                 {'id': 'upstream', 'type': 'int', 'required': True},
+                 {'id': 'downstream', 'type': 'int', 'required': True},
+                 {'id': 'assembly', 'type': 'assembly'},
+                 {'id': 'mode', 'type': 'list', 'required': True}]
+out_parameters = [{'id': 'plot_pairs', 'type': 'pdf'}]
+
+
 class PairsPlotForm(BaseForm):
     child = twd.HidingTableLayout()
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
@@ -45,21 +60,6 @@ class PairsPlotForm(BaseForm):
                                  options=plot_types,
                                  prompt_text=None)
     submit = twf.SubmitButton(id="submit", value="Plot")
-
-
-meta = {'version': "1.0.0",
-        'author': "BBCF",
-        'contact': "webmaster-bbcf@epfl.ch"}
-
-in_parameters = [{'id': 'input_type', 'type': 'radio'},
-                 {'id': 'signals', 'type': 'track', 'required': True, 'multiple':'SigMulti'},
-                 {'id': 'feature_type', 'type': 'list'},
-                 {'id': 'features', 'type': 'track'},
-                 {'id': 'upstream', 'type': 'int', 'required': True},
-                 {'id': 'downstream', 'type': 'int', 'required': True},
-                 {'id': 'assembly', 'type': 'assembly'},
-                 {'id': 'mode', 'type': 'list', 'required': True}]
-out_parameters = [{'id': 'plot_pairs', 'type': 'pdf'}]
 
 
 class PairsPlotPlugin(BasePlugin):
