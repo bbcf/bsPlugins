@@ -66,7 +66,7 @@ track. <br /><br />
             outfields = tinput.fields
             datatype = "qualitative"
         else:
-            outfields = ["start", "end", "score"]
+            outfields = ["chr","start", "end", "score"]
             datatype = "quantitative"
         tout = track.track(output, format=outformat, fields=outfields, chrmeta=tinput.chrmeta, info={'datatype': datatype})
         for chrom in tout.chrmeta.keys():

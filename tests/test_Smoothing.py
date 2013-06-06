@@ -5,7 +5,7 @@ import os
 
 path = 'testing_files/'
 
-class Test_QuantifyTablePlugin(TestCase):
+class Test_SmoothingPlugin(TestCase):
     def setUp(self):
         self.plugin = SmoothingPlugin()
 
