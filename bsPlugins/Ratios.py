@@ -44,7 +44,7 @@ and returns a single track with the ratios as new scores."""
     info = {
         'title': 'Score ratios',
         'description': __doc__,
-        'path': ['Analysis', 'Ratios'],
+        'path': ['Signal', 'Ratios'],
         'output': RatiosForm,
         'in': in_parameters,
         'out': out_parameters,
