@@ -1,5 +1,5 @@
 from bsPlugins import *
-from bbcflib.btrack import track
+from bbcflib.track import track
 from bbcflib import genrep
 from bbcflib.bFlatMajor.figure import genomeGraph
 import os

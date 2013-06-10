@@ -3,7 +3,7 @@ from bein import execution
 from bbcflib import genrep
 from bbcflib.common import fasta_composition
 from bbcflib.motif import save_motif_profile
-from bbcflib.btrack import track, FeatureStream
+from bbcflib.track import track, FeatureStream
 import re, os
 
 

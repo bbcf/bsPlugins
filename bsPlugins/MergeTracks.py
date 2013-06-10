@@ -1,7 +1,7 @@
 from bsPlugins import *
 from bbcflib.bFlatMajor.stream import merge_scores
 from bbcflib.bFlatMajor.numeric import correlation
-from bbcflib import btrack as track
+from bbcflib import track as track
 from bbcflib import genrep
 
 

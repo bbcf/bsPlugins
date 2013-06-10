@@ -1,5 +1,5 @@
 from bsPlugins import *
-from bbcflib.btrack import track
+from bbcflib.track import track
 import rpy2.robjects as robjects
 import rpy2.robjects.numpy2ri as numpy2ri
 import os, tarfile
@@ -8,7 +8,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 
+in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True,
                   'multiple': 'BamMulti'},
                  {'id': 'format', 'type': 'text'}]
 

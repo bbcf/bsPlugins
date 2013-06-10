@@ -1,5 +1,5 @@
 from bsPlugins import *
-from bbcflib.btrack import track
+from bbcflib.track import track
 import tarfile, sys
 
 class FilteringForm(BaseForm):
@@ -58,14 +58,14 @@ class FilteringPlugin(BasePlugin):
                 minscore = -sys.maxint
             if not maxscore:
                 maxscore = sys.maxint
-            if minscore > maxscore: 
+            if minscore > maxscore:
                 raise ValueError("Empty range: %f:%f" %(minscore,maxscore))
             for s in selection:
                 s['score'] = (float(minscore),float(maxscore))
         if minlength or maxlength:
             minlength = int(minlength or 0)
             maxlength = int(maxlength or sys.maxint)
-            if minlength > maxlength: 
+            if minlength > maxlength:
                 raise ValueError("Empty range: %i:%i" %(minlength,maxlength))
             for s in selection:
                 s['length'] = (minlength,maxlength)

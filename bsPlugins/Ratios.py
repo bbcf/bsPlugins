@@ -1,6 +1,6 @@
 from bsPlugins import *
 from bbcflib.bFlatMajor.stream import merge_scores
-from bbcflib.btrack import track
+from bbcflib.track import track
 
 class RatiosForm(BaseForm):
     numerator = twb.bsFileField(

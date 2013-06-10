@@ -1,5 +1,5 @@
 from bsPlugins import *
-from bbcflib.btrack import track,FeatureStream
+from bbcflib.track import track,FeatureStream
 from bbcflib import genrep
 import os
 

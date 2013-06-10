@@ -1,6 +1,6 @@
 from bsPlugins import *
 from bein import execution
-from bbcflib.btrack import track, convert
+from bbcflib.track import track, convert
 from bbcflib.mapseq import bam_to_density
 import os
 

@@ -1,6 +1,6 @@
 from bsPlugins import *
 from bbcflib.bFlatMajor import stream as gm_stream
-from bbcflib.btrack import track
+from bbcflib.track import track
 from bbcflib import genrep
 
 prom_def = 2000

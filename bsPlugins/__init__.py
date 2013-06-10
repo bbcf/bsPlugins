@@ -27,6 +27,6 @@ except ImportError:
     class DynForm():
         pass
 
-from os.path import basename 
+from os.path import basename
 from glob import glob
 PLUGINS_FILES = sorted([basename(f)[:-3] for p in __path__ for f in glob(p+"/[a-zA-Z]*.py")])

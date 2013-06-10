@@ -1,7 +1,7 @@
 from bsPlugins import *
 from bbcflib.bFlatMajor.numeric import feature_matrix
 from bbcflib.bFlatMajor.figure import heatmap, lineplot
-from bbcflib.btrack import track
+from bbcflib.track import track
 from numpy import vstack, concatenate, array
 
 _nbins = 50

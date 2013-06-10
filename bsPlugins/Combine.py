@@ -1,6 +1,6 @@
 from bsPlugins import *
 from bbcflib.bFlatMajor.stream import combine
-from bbcflib.btrack import track, FeatureStream
+from bbcflib.track import track, FeatureStream
 from bbcflib import genrep
 
 

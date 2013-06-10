@@ -1,5 +1,5 @@
 from bsPlugins import *
-from bbcflib.btrack import track
+from bbcflib.track import track
 from bbcflib.bFlatMajor.common import *
 from bbcflib.bFlatMajor.stream import concatenate
 from bbcflib.bFlatMajor.figure import venn

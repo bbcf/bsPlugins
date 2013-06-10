@@ -1,5 +1,5 @@
 from bsPlugins import *
-from bbcflib.btrack import track,stats
+from bbcflib.track import track,stats
 from bbcflib import genrep
 import os
 
@@ -102,21 +102,21 @@ points(men,ypos,pch=19,col='blue')
         by_chrom = kw.get('by_chrom',False)
         if isinstance(by_chrom, basestring):
             by_chrom = (by_chrom.lower() in ['1', 'true', 't'])
-        outf = kw.get('output') 
+        outf = kw.get('output')
         if outf not in output_list:
             outf = output_list[0]
         output = self.temporary_path(fname=sample.name+'_stats.'+outf)
-        if outf == 'txt': 
+        if outf == 'txt':
             out = open(output,"w")
-        else: 
+        else:
             out = {}
         if by_chrom:
             chromlist = sample.chrmeta.keys()
         else:
             chromlist = [None]
         for chrom in chromlist:
-            if outf == 'txt': 
-                if chrom: 
+            if outf == 'txt':
+                if chrom:
                     out.write("Chromosome %s\n--------------------\n"%chrom)
                 stats(sample,out=out,selection=chrom)
             else:
