@@ -1,7 +1,7 @@
 from bsPlugins import *
 import re
 from bein import execution
-from bbcflib.bFlatMajor.bedtools import *
+from bbcflib.gfminer.bedtools import *
 
 all_tools = ["annotateBed", "bamToBed", "bamToFastq", "bed12ToBed6",
              "bedpeToBam", "bedToBam", "bedToIgv", "closestBed",

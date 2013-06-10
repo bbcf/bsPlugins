@@ -1,6 +1,6 @@
 from bsPlugins import *
-from bbcflib.bFlatMajor.numeric import feature_matrix
-from bbcflib.bFlatMajor.figure import heatmap, lineplot
+from bbcflib.gfminer.numeric import feature_matrix
+from bbcflib.gfminer.figure import heatmap, lineplot
 from bbcflib.track import track
 from numpy import vstack, concatenate, array
 

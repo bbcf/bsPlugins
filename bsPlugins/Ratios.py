@@ -1,5 +1,5 @@
 from bsPlugins import *
-from bbcflib.bFlatMajor.stream import merge_scores
+from bbcflib.gfminer.stream import merge_scores
 from bbcflib.track import track
 
 class RatiosForm(BaseForm):

@@ -1,7 +1,7 @@
 from bsPlugins import *
 from bbcflib import genrep
 from bbcflib.track import track
-from bbcflib.bFlatMajor.common import score_threshold, apply
+from bbcflib.gfminer.common import score_threshold, apply
 from math import log10, sqrt, log
 import os, tarfile
 

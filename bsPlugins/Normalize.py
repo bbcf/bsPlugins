@@ -1,5 +1,5 @@
 from bsPlugins import *
-from bbcflib.bFlatMajor import common
+from bbcflib.gfminer import common
 from bbcflib.track import track
 from bbcflib import genrep
 from numpy import asarray,transpose

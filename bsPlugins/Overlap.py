@@ -1,5 +1,5 @@
 from bsPlugins import *
-from bbcflib.bFlatMajor.stream import overlap
+from bbcflib.gfminer.stream import overlap
 from bbcflib.track import track
 from bbcflib import genrep
 

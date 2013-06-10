@@ -1,6 +1,6 @@
 from bsPlugins import *
-from bbcflib.bFlatMajor.stream import merge_scores
-from bbcflib.bFlatMajor.numeric import correlation
+from bbcflib.gfminer.stream import merge_scores
+from bbcflib.gfminer.numeric import correlation
 from bbcflib import track as track
 from bbcflib import genrep
 

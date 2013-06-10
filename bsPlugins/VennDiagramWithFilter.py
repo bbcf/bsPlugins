@@ -1,7 +1,7 @@
 from bsPlugins import *
 from bbcflib.track import track
 from bbcflib import genrep
-from bbcflib.bFlatMajor.figure import venn
+from bbcflib.gfminer.figure import venn
 import rpy2.robjects as robjects
 import os
 

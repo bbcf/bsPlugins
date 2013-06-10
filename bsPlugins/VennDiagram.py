@@ -1,8 +1,8 @@
 from bsPlugins import *
 from bbcflib.track import track
-from bbcflib.bFlatMajor.common import *
-from bbcflib.bFlatMajor.stream import concatenate
-from bbcflib.bFlatMajor.figure import venn
+from bbcflib.gfminer.common import *
+from bbcflib.gfminer.stream import concatenate
+from bbcflib.gfminer.figure import venn
 from bbcflib import genrep
 from itertools import combinations
 import os

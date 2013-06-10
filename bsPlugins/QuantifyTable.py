@@ -1,5 +1,5 @@
 from bsPlugins import *
-from bbcflib.bFlatMajor.stream import neighborhood, score_by_feature
+from bbcflib.gfminer.stream import neighborhood, score_by_feature
 from bbcflib.track import track
 from bbcflib import genrep
 import os

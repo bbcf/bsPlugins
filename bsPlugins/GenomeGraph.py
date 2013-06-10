@@ -1,7 +1,7 @@
 from bsPlugins import *
 from bbcflib.track import track
 from bbcflib import genrep
-from bbcflib.bFlatMajor.figure import genomeGraph
+from bbcflib.gfminer.figure import genomeGraph
 import os
 
 meta = {'version': "1.0.0",

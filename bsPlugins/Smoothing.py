@@ -1,5 +1,5 @@
 from bsPlugins import *
-from bbcflib.bFlatMajor import stream as gm_stream
+from bbcflib.gfminer import stream as gm_stream
 from bbcflib import track as track
 from bbcflib import genrep
 

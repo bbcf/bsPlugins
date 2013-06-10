@@ -1,8 +1,8 @@
 from bsPlugins import *
-from bbcflib.bFlatMajor.common import sorted_stream
-from bbcflib.bFlatMajor.stream import neighborhood, score_by_feature
-from bbcflib.bFlatMajor.numeric import score_array, correlation
-from bbcflib.bFlatMajor.figure import pairs
+from bbcflib.gfminer.common import sorted_stream
+from bbcflib.gfminer.stream import neighborhood, score_by_feature
+from bbcflib.gfminer.numeric import score_array, correlation
+from bbcflib.gfminer.figure import pairs
 from bbcflib.track import track
 from bbcflib import genrep
 from numpy import vstack, array
