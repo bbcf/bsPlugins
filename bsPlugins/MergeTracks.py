@@ -1,7 +1,7 @@
 from bsPlugins import *
 from bbcflib.gfminer.stream import merge_scores
 from bbcflib.gfminer.numeric import correlation
-from bbcflib import track as track
+from bbcflib.track import track, FeatureStream
 from bbcflib import genrep
 
 
@@ -63,12 +63,12 @@ The output is the average of all the input signals, position by position.
 
             def _apply_shift(x):
                 return x[:i1] + (x[i1] + shift,) + x[i1 + 1:i2] + (x[i2] + shift,) + x[i2 + 1:]
-            return track.FeatureStream((_apply_shift(x) for x in stream),
+            return FeatureStream((_apply_shift(x) for x in stream),
                                        fields=stream.fields)
 
         assembly = kw.get('assembly') or 'guess'
-        tfwd = track.track(kw.get('forward'), chrmeta=assembly)
-        trev = track.track(kw.get('reverse'), chrmeta=assembly)
+        tfwd = track(kw.get('forward'), chrmeta=assembly)
+        trev = track(kw.get('reverse'), chrmeta=assembly)
         chrmeta = tfwd.chrmeta
 
         shiftval = int(kw.get('shift', 0))
@@ -88,7 +88,7 @@ The output is the average of all the input signals, position by position.
                 raise ValueError("Unable to detect shift automatically. Must specify a shift value.")
 
         output = self.temporary_path(fname=tfwd.name+'-'+trev.name+'_merged', ext=kw['format'])
-        tout = track.track(output, chrmeta=chrmeta,
+        tout = track(output, chrmeta=chrmeta,
                            info={'datatype': 'quantitative', 'shift': shiftval})
         mode = 'write'
         for chrom in chrmeta.keys():

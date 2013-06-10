@@ -1,6 +1,6 @@
 from bsPlugins import *
 from bbcflib.gfminer import stream as gm_stream
-from bbcflib import track as track
+from bbcflib.track import track
 from bbcflib import genrep
 
 size_def = 11
@@ -54,7 +54,7 @@ track. <br /><br />
         }
 
     def __call__(self, **kw):
-        tinput = track.track(kw.get('track'), chrmeta=kw.get('assembly') or None)
+        tinput = track(kw.get('track'), chrmeta=kw.get('assembly') or None)
         outformat = kw.get('format',tinput.format)
         wsize = int(kw.get('window_size', size_def))
         wstep = int(kw.get('window_step', step_def))
@@ -68,7 +68,7 @@ track. <br /><br />
         else:
             outfields = ["chr","start", "end", "score"]
             datatype = "quantitative"
-        tout = track.track(output, format=outformat, fields=outfields, chrmeta=tinput.chrmeta, info={'datatype': datatype})
+        tout = track(output, format=outformat, fields=outfields, chrmeta=tinput.chrmeta, info={'datatype': datatype})
         for chrom in tout.chrmeta.keys():
             s = gm_stream.window_smoothing(
                     tinput.read(selection=chrom, fields=outfields),

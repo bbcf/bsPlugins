@@ -4,17 +4,31 @@ from bbcflib import genrep
 from bbcflib.common import fasta_composition
 from bbcflib.motif import save_motif_profile
 from bbcflib.track import track, FeatureStream
-import re, os
+import os
 
 
 g = genrep.GenRep()
+motif_list = g.motifs_available()
+assembly_list = g.assemblies_available()
+
 input_types = [(0, 'Fasta upload'), (1, 'Select regions from genome')]
 input_map = {0: ['fastafile'], 1: ['assembly', 'regions']}
 
-class MotifScanForm(BaseForm):
+meta = {'version': "1.0.0",
+        'author': "BBCF",
+        'contact': "webmaster-bbcf@epfl.ch"}
 
-    motif_list = g.motifs_available()
-    assembly_list = g.assemblies_available()
+in_parameters = [{'id': 'input_type', 'type': 'radio'},
+                 {'id': 'fastafile', 'type': 'userfile'},
+                 {'id': 'background', 'type': 'txt'},
+                 {'id': 'assembly', 'type': 'assembly'},
+                 {'id': 'regions', 'type': 'track'},
+                 {'id': 'motifs', 'type': 'list'},
+                 {'id': 'customMotif', 'type': 'txt'},
+                 {'id': 'threshold', 'type': 'float', 'required': True}]
+out_parameters = [{'id': 'motif_track', 'type': 'track'}]
+
+class MotifScanForm(BaseForm):
 
     child = twd.HidingTableLayout()
     input_type = twd.HidingRadioButtonList(label='Sequence source: ',
@@ -37,20 +51,6 @@ class MotifScanForm(BaseForm):
     threshold = twf.TextField(label='Threshold: ', value='0.0')
     submit = twf.SubmitButton(id="submit", value='Scan sequences')
 
-
-meta = {'version': "1.0.0",
-        'author': "BBCF",
-        'contact': "webmaster-bbcf@epfl.ch"}
-
-in_parameters = [{'id': 'input_type', 'type': 'radio'},
-                 {'id': 'fastafile', 'type': 'userfile'},
-                 {'id': 'background', 'type': 'txt'},
-                 {'id': 'assembly', 'type': 'assembly'},
-                 {'id': 'regions', 'type': 'track'},
-                 {'id': 'motifs', 'type': 'list'},
-                 {'id': 'customMotif', 'type': 'txt'},
-                 {'id': 'threshold', 'type': 'float', 'required': True}]
-out_parameters = [{'id': 'motif_track', 'type': 'track'}]
 
 class MotifScanPlugin(BasePlugin):
     """Scan motifs PWM on a set of a sequences"""
