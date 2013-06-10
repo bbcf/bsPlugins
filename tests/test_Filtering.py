@@ -1,6 +1,6 @@
 from unittest2 import TestCase, skip
 from bsPlugins.Filtering import FilteringPlugin
-from bbcflib.btrack import track
+from bbcflib.track import track
 import os
 path = './testing_files/'
 class Test_FilteringPlugin(TestCase):

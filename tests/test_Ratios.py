@@ -1,5 +1,5 @@
 from unittest2 import TestCase, skip
-from bbcflib.btrack import track
+from bbcflib.track import track
 from bsPlugins.Ratios import RatiosPlugin
 import os
 

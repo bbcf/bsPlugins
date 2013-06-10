@@ -1,6 +1,6 @@
 from unittest2 import TestCase, skip
 from bsPlugins.Smoothing import SmoothingPlugin
-from bbcflib.btrack import track
+from bbcflib.track import track
 import os
 
 path = 'testing_files/'
