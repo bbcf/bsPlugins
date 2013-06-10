@@ -28,7 +28,7 @@ class Test_VennDiagramPlugin(TestCase):
     #@skip('Set par() options so that it looks like it should in pdf format')
     def test_allkinds(self):
         format = 'png'
-        from bbcflib.bFlatMajor.figure import venn
+        from bbcflib.gfminer.figure import venn
         D1 = {'A':126}
         D2 = {'Albert':126, 'Barthur':247, 'Albert|Barthur':50}
         D31 = {'Ar':521, 'Bi':14, 'Co':290, 'Ar|Bi':11, 'Ar|Co':100, 'Bi|Co':4, 'Ar|Bi|Co':1}
