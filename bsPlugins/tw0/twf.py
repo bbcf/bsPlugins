@@ -13,6 +13,9 @@ def FileValidator(*args,**kwargs):
 def SingleSelectField(*args,**kwargs):
     pass
 
+def MultipleSelectField(*args,**kwargs):
+    pass
+
 def Spacer(*args,**kwargs):
     pass
 
