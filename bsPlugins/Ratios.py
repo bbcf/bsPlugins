@@ -3,11 +3,11 @@ from bbcflib.gfminer.stream import merge_scores
 from bbcflib.track import track
 
 class RatiosForm(BaseForm):
-    numerator = twb.bsFileField(
+    numerator = twb.BsFileField(
         label='File 1: ',
         help_text='Select the track with the numerators',
         validator=twb.BsFileFieldValidator(required=True))
-    denominator = twb.bsFileField(
+    denominator = twb.BsFileField(
         label='File 2: ',
         help_text='Select the track with the denominators',
         validator=twb.BsFileFieldValidator(required=True))
