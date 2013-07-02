@@ -35,7 +35,7 @@ class PairedEndPlugin(BasePlugin):
     """Computes statistics and genome-wide distribution of fragment sizes from mapped paired-end reads."""
 
     info = {
-        'title': 'Analysis of fragment size in paired-end bam files.',
+        'title': 'Analysis of paired-end fragment sizes',
         'description': __doc__,
         'path': ['Analysis', 'Paired-end analysis'],
         'output': PairedEndForm,
