@@ -99,10 +99,10 @@ class PlotFeaturesPlugin(BasePlugin):
         if data is None:
             raise ValueError("No data")
         mode = kw.get('mode', 0)
-        if str(mode) in ['0','1','2','3']:
+        if str(mode) in [str(x[0]) for x in plot_types]:
             mode = int(mode)
         X = array(range(-upstr[1]+1,nbins+downstr[1]+1))/(1.0*nbins)
-        if mode in plot_type[0]: #heatmap
+        if mode in plot_types[0]: #heatmap
             new = True
             for n in range(data.shape[-1]-1):
                 heatmap(data[:, :, n], output=pdf, new=new, last=False,
@@ -112,13 +112,13 @@ class PlotFeaturesPlugin(BasePlugin):
             heatmap(data[:, :, -1], output=pdf, new=new, last=True,
                     rows=labels,  columns=X, main=snames[-1],
                     orderRows=True, orderCols=False)
-        elif mode in plot_type[1]: #average lineplot
+        elif mode in plot_types[1]: #average lineplot
             Y = data.mean(axis=0)
             ymin = min([x.min() for x in Y]+[0])
             ymax = max([x.max() for x in Y])
             lineplot(X, [Y[:, n] for n in range(data.shape[-1])],
                      output=pdf, new=True, last=True, legend=snames, ylim=(ymin,ymax))
-        elif mode in plot_type[2]: #mosaic
+        elif mode in plot_types[2]: #mosaic
             new = True
             mfrow = [4, 3]
             nplot = min(data.shape[0], max_pages*mfrow[0]*mfrow[1])
