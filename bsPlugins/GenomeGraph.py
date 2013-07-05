@@ -54,9 +54,9 @@ class GenomeGraphPlugin(BasePlugin):
         if not isinstance(signals_minus, list): signals_minus = [signals_minus]
         features = kw.get('FeatMulti',{}).get('features', [])
         if not isinstance(features, list): features = [features]
-        sptracks = [track(sig,chrmeta=assembly) for sig in signals_plus]
-        smtracks = [track(sig,chrmeta=assembly) for sig in signals_minus]
-        ftracks = [track(feat,chrmeta=assembly) for feat in features]
+        sptracks = [track(sig,chrmeta=assembly) for sig in signals_plus if os.path.exists(sig)]
+        smtracks = [track(sig,chrmeta=assembly) for sig in signals_minus if os.path.exists(sig)]
+        ftracks = [track(feat,chrmeta=assembly) for feat in features if os.path.exists(feat)]
         snames = [t.name for t in sptracks+smtracks+ftracks]
         if len(sptracks) > 0:
             chrmeta = sptracks[0].chrmeta
