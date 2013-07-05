@@ -44,10 +44,6 @@ class QuantifyTableForm(BaseForm):
     features = twb.BsFileField(label='Custom feature set: ',
         help_text='Select a feature file (e.g. bed)',
         validator=twb.BsFileFieldValidator(required=True))
-    assembly = twf.SingleSelectField(label='Assembly: ',
-        prompt_text=None,
-        options=genrep.GenRep().assemblies_available(),
-        help_text='Reference genome')
     upstream = twf.TextField(label='Promoter upstream distance: ',
         validator=twc.IntValidator(required=True),
         value=prom_up_def,
@@ -56,6 +52,10 @@ class QuantifyTableForm(BaseForm):
         validator=twc.IntValidator(required=True),
         value=prom_down_def,
         help_text='Size of promoter downstream of TSS')
+    assembly = twf.SingleSelectField(label='Assembly: ',
+        prompt_text=None,
+        options=genrep.GenRep().assemblies_available(),
+        help_text='Reference genome')
     format = twf.SingleSelectField(label='Output format: ',
         prompt_text=None,
         options=["txt", "sql"],
