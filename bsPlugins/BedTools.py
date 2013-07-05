@@ -119,7 +119,7 @@ meta = {'version': "1.0.0",
 
 in_parameters = all_file_params + other_params
 
-out_parameters = [{'id': 'bedtools_result', 'type': 'track'}]
+out_parameters = [{'id': tool+'_result', 'type': 'track'} for tool in all_tools]
 
 
 class BedToolsPlugin(BasePlugin):

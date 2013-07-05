@@ -19,17 +19,17 @@ class GenomeGraphForm(BaseForm):
         label='Positive Signals: '
         signals_plus = twb.BsFileField(label=' ',
                                        help_text='Signal files (e.g. bedgraph) to plot above the axis',
-                                       validator=twb.BsFileFieldValidator())
+                                       validator=twb.BsFileFieldValidator(required=False))
     class SigMultiM(twb.BsMultiple):
         label='Negative Signals: '
         signals_minus = twb.BsFileField(label=' ',
                                        help_text='Signal files (e.g. bedgraph) to plot below the axis',
-                                       validator=twb.BsFileFieldValidator())
+                                       validator=twb.BsFileFieldValidator(required=False))
     class FeatMulti(twb.BsMultiple):
         label='Features: '
         features = twb.BsFileField(label=' ',
                                    help_text='Features files (e.g. bed) to plot as segments on the axis',
-                                   validator=twb.BsFileFieldValidator())
+                                   validator=twb.BsFileFieldValidator(required=False))
     assembly = twf.SingleSelectField(label='Assembly: ',
                                      options=genrep.GenRep().assemblies_available(),
                                      help_text='Reference genome')

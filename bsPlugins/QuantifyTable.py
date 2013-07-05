@@ -44,11 +44,6 @@ class QuantifyTableForm(BaseForm):
     features = twb.BsFileField(label='Custom feature set: ',
         help_text='Select a feature file (e.g. bed)',
         validator=twb.BsFileFieldValidator(required=True))
-    format = twf.SingleSelectField(label='Output format: ',
-        prompt_text=None,
-        options=["txt", "sql"],
-        validator=twc.Validator(required=True),
-        help_text='Format of the output file')
     assembly = twf.SingleSelectField(label='Assembly: ',
         prompt_text=None,
         options=genrep.GenRep().assemblies_available(),
@@ -61,6 +56,11 @@ class QuantifyTableForm(BaseForm):
         validator=twc.IntValidator(required=True),
         value=prom_down_def,
         help_text='Size of promoter downstream of TSS')
+    format = twf.SingleSelectField(label='Output format: ',
+        prompt_text=None,
+        options=["txt", "sql"],
+        validator=twc.Validator(required=True),
+        help_text='Format of the output file')
     submit = twf.SubmitButton(id="submit", value="Quantify")
 
 
