@@ -99,7 +99,7 @@ class PlotFeaturesPlugin(BasePlugin):
         if data is None:
             raise ValueError("No data")
         mode = kw.get('mode', 0)
-        if str(mode) in [str(x[0]) for x in ftypes]:
+        if str(mode) in ['0','1','2','3']:
             mode = int(mode)
         X = array(range(-upstr[1]+1,nbins+downstr[1]+1))/(1.0*nbins)
         if mode in plot_type[0]: #heatmap
