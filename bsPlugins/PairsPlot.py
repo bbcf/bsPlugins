@@ -82,7 +82,7 @@ class PairsPlotPlugin(BasePlugin):
             chrmeta = assembly.chrmeta
             genes = assembly.gene_track
             exons = assembly.exon_track
-        elif not(feature_type == 2):
+        elif not(feature_type == 3):
             raise ValueError("Please specify an assembly")
         signals = kw.get('SigMulti',{}).get('signals', [])
         if not isinstance(signals, list): signals = [signals]
