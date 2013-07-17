@@ -29,6 +29,11 @@ out_parameters = [{'id': 'plot_pairs', 'type': 'pdf'}]
 
 
 class PairsPlotForm(BaseForm):
+    class SigMulti(twb.BsMultiple):
+        label='Signal: '
+        signals = twb.BsFileField(label=' ',
+                                help_text='Select signal file (.g. bedgraph)',
+                                validator=twb.BsFileFieldValidator(required=True))
     child = twd.HidingTableLayout()
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
                                                options=ftypes, prompt_text=None,
@@ -36,11 +41,6 @@ class PairsPlotForm(BaseForm):
                                                         1: ['upstream', 'downstream']},
                                                help_text='Choose a feature set or upload your own',
                                                validator=twc.Validator(required=True))
-    class SigMulti(twb.BsMultiple):
-        label='Signal: '
-        signals = twb.BsFileField(label=' ',
-                                help_text='Select signal file (.g. bedgraph)',
-                                validator=twb.BsFileFieldValidator(required=True))
     features = twb.BsFileField(label='Custom feature set: ',
                              help_text='Select a feature file (e.g. bed)',
                              validator=twb.BsFileFieldValidator())
@@ -54,7 +54,6 @@ class PairsPlotForm(BaseForm):
                                help_text='Size of promoter downstream of TSS')
     assembly = twf.SingleSelectField(label='Assembly: ',
                                      options=genrep.GenRep().assemblies_available(),
-                                     validator=twc.Validator(required=True),
                                      help_text='Reference genome')
     mode = twf.SingleSelectField(label='Plot type: ',
                                  options=plot_types,

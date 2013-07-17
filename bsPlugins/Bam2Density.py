@@ -86,7 +86,7 @@ each alignment will be considered, default is read length).
         else:
             merge_strands = int(kw.get('merge_strands'))
         read_extension = int(kw.get('read_extension') or -1)
-        output = self.temporary_path(fname='density_')
+        output = self.temporary_path(fname=bamfile.name+'_density_')
         format = kw.get("format", "sql")
         with execution(None) as ex:
             files = bam_to_density( ex, sample, output,
