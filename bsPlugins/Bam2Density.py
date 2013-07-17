@@ -81,7 +81,10 @@ each alignment will be considered, default is read length).
                 nreads = len(set((t[4] for t in bamfile.read())))
             else:
                 b2wargs += ["-r"]
-        merge_strands = int(kw.get('merge_strands') or -1)
+        if kw.get('merge_strands') is None:
+            merge_strands = -1
+        else:
+            merge_strands = int(kw.get('merge_strands'))
         read_extension = int(kw.get('read_extension') or -1)
         output = self.temporary_path(fname='density_')
         format = kw.get("format", "sql")
