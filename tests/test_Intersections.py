@@ -1,5 +1,4 @@
 from unittest2 import TestCase, skip
-from bbcflib.track import track
 from bsPlugins.Intersections import IntersectionsPlugin
 import os
 
@@ -14,11 +13,6 @@ class Test_IntersectionsPlugin(TestCase):
                                   path+'genes_differential_KH1-KH2.txt_UP',
                                   path+'genes_differential_R1-R3.txt_UP'],
                        'column':0})
-       # with open(self.plugin.output_files[0][0]) as t:
-       #     s = t.readlines()
-       #     content = list(s)
-       # print content
-       # raise
 
     def tearDown(self):
         for f in os.listdir('.'):

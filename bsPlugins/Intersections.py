@@ -1,7 +1,6 @@
 from bsPlugins import *
 from itertools import combinations
-import os
-import tarfile
+import os, tarfile
 
 
 class IntersectionsForm(BaseForm):
