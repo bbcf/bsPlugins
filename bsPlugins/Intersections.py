@@ -10,8 +10,8 @@ class IntersectionsForm(BaseForm):
             help_text='Select signal files (e.g. bedgraph)',
             validator=twb.BsFileFieldValidator(required=True))
     columns = twf.TextField(label='Column(s): ',
-        prompt_text='0',
-        value = 0,
+        prompt_text='1',
+        value = 1,
         help_text='Column(s) number (1-based).')
     submit = twf.SubmitButton(id="submit", value="Submit")
 
@@ -93,7 +93,7 @@ intersections, i.e. for each intersection one text file with the list of common 
 
     def __call__(self,**kw):
         files_list = kw['signals']
-        column = kw['column']
+        column = int(kw['column'])-1
         output = self.temporary_path(fname='intersections.')
         self.compare(files_list, output, column)
         # compress
