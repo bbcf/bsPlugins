@@ -2,6 +2,7 @@ from bsPlugins import *
 from bein import execution
 from bbcflib.track import track, convert
 from bbcflib.mapseq import bam_to_density
+from bbcflib.gfminer.stream import merge_scores
 import os
 
 __requires__ = ["pysam"]
@@ -11,7 +12,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'sample', 'type': 'bam', 'required': True},
+in_parameters = [{'id': 'sample', 'type': 'bam', 'required': True, 'multiple': 'BamMulti'},
                  {'id': 'control', 'type': 'bam'},
                  {'id': 'format', 'type': 'text'},
                  {'id': 'normalization', 'type': 'int'},
@@ -23,9 +24,11 @@ out_parameters = [{'id': 'density_merged', 'type': 'track'},
 
 
 class Bam2DensityForm(BaseForm):
-    sample = twb.BsFileField(label='Test BAM: ',
-                             help_text='Select main bam file',
-                             validator=twb.BsFileFieldValidator(required=True))
+    class BamMulti(twb.BsMultiple):
+        label='Test BAMs: '
+        sample = twb.BsFileField(label=' ',
+                                 help_text='Select main bam file(s)',
+                                 validator=twb.BsFileFieldValidator(required=True))
     control = twb.BsFileField(label='Control BAM: ',
                               help_text='Select control bam file to compute enrichment')
     format = twf.SingleSelectField(label='Output format: ',
@@ -37,10 +40,12 @@ class Bam2DensityForm(BaseForm):
                                   help_text='Normalization factor, default is total number of reads')
     merge_strands = twf.TextField(label='Shift and merge strands: ',
                                   validator=twc.IntValidator(required=False),
-                                  help_text='Enter shift value (in bp) if you want to merge strand-specific densities')
+                                  value=-1,
+                                  help_text='Shift value (in bp) if you want to merge strand-specific densities (will not merge if negative)')
     read_extension = twf.TextField(label='Read extension: ',
                                    validator=twc.IntValidator(required=False),
-                                   help_text='Enter read extension (in bp) to be applied when constructing densities')
+                                   value=-1,
+                                   help_text='Read extension (in bp) to be applied when constructing densities (will use read length if negative)')
     submit = twf.SubmitButton(id="submit", value='bam2density')
 
 
@@ -66,45 +71,63 @@ each alignment will be considered, default is read length).
     def __call__(self, **kw):
         b2wargs = []
         control = None
-        sample = kw.get("sample")
-        assert os.path.exists(str(sample)), "Bam file not found: '%s'." % sample
-        sample = os.path.abspath(sample)
+        samples = kw.get('BamMulti',{}).get('sample', [])
+        if not isinstance(samples, list): samples = [samples]
+        samples = [os.path.abspath(s) for s in samples if os.path.exists(s)]
         if kw.get('control'):
             control = kw['control']
             b2wargs = ["-c", str(control)]
             assert os.path.exists(str(control)), "Control file not found: '%s'." % control
             control = os.path.abspath(control)
         nreads = int(kw.get('normalization') or -1)
-        bamfile = track(sample, format='bam')
+        bamfiles = [track(s, format='bam') for s in samples]
         if nreads < 0:
             if control is None:
-                nreads = len(set((t[4] for t in bamfile.read())))
+                _nreads = [len(set((t[4] for t in b.read()))) for b in bamfiles]
             else:
                 b2wargs += ["-r"]
+        else:
+            _nreads = [nreads for s in samples]
         if kw.get('merge_strands') is None:
             merge_strands = -1
         else:
             merge_strands = int(kw.get('merge_strands'))
         read_extension = int(kw.get('read_extension') or -1)
-        output = self.temporary_path(fname=bamfile.name+'_density_')
+        output = [self.temporary_path(fname=b.name+'_density_') for b in bamfiles]
         format = kw.get("format", "sql")
         with execution(None) as ex:
-            files = bam_to_density( ex, sample, output,
-                                    nreads=nreads, merge=merge_strands,
-                                    read_extension=read_extension,
-                                    sql=True, args=b2wargs )
+            files = [bam_to_density( ex, s, output[n], nreads=_nreads[n], 
+                                     merge=merge_strands,
+                                     read_extension=read_extension,
+                                     sql=True, args=b2wargs ) 
+                     for n,s in enumerate(samples)]
         if merge_strands >= 0:
             suffixes = ["merged"]
         else:
             suffixes = ["fwd", "rev"]
-        for n, x in enumerate(files):
-            tsql = track( x, format='sql', fields=['start', 'end', 'score'],
-                          chrmeta=bamfile.chrmeta, info={'datatype': 'quantitative'} )
-            tsql.save()
-            if format == "sql":
+        chrmeta = bamfiles[0].chrmeta
+        for suf in suffixes:
+            all_s_files = [x for y in files for x in y if x.endswith(suf+".sql")]
+            if len(all_s_files) > 1:
+                x = self.temporary_path(fname="Density_average_"+suf+".sql")
+                tsql = track( x, fields=['start', 'end', 'score'],
+                              chrmeta=chrmeta, info={'datatype': 'quantitative'} )
+                insql = []
+                for f in all_s_files:
+                    t = track(f, format='sql', chrmeta=chrmeta)
+                    t.save()
+                    insql.append(t)
+                for c in tsql.chrmeta:
+                    tsql.write(merge_scores([t.read(c) for t in insql]),chrom=c)
+            else:
+                x = all_s_files[0]
+                tsql = track( x, format='sql', fields=['start', 'end', 'score'],
+                              chrmeta=chrmeta, info={'datatype': 'quantitative'} )
+                tsql.save()
+            if format in [None,"sql"]:
                 outname = x
             else:
                 outname = os.path.splitext(x)[0]+"."+format
                 convert(x, outname, mode="overwrite")
-            self.new_file(outname, 'density_'+suffixes[n])
+            self.new_file(outname, 'density_'+suf)
         return self.display_time()
