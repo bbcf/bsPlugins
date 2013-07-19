@@ -1,6 +1,4 @@
 from bsPlugins import *
-#from bbcflib.track import track
-#from bbcflib import genrep
 from itertools import combinations
 import os
 import tarfile
@@ -15,10 +13,7 @@ class IntersectionsForm(BaseForm):
     columns = twf.TextField(label='Column(s): ',
         prompt_text='0',
         value = 0,
-        help_text='Column(s) number (1-based).') # or column name')
-    #assembly = twf.SingleSelectField(label='Assembly: ',
-    #    options=['']+genrep.GenRep().assemblies_available(),
-    #    help_text='Reference genome (if some input files are binary).')
+        help_text='Column(s) number (1-based).')
     submit = twf.SubmitButton(id="submit", value="Submit")
 
 
@@ -100,19 +95,6 @@ intersections, i.e. for each intersection one text file with the list of common 
     def __call__(self,**kw):
         files_list = kw['signals']
         column = kw['column']
-
-        # Set chrmeta if oe of the files is binary
-        #if kw['assembly'] and any([os.path.splitext(f)[1].lower() in ['bw','bigwig','bam'] \
-        #                           for f in files_list]):
-        #    chrmeta = genrep.Assembly(kw['assembly']).chrmeta
-        #else: chrmeta = None
-        #track_list = [track(f,chrmeta=chrmeta) for f in files_list]
-
-        # Check that the column exists, or use column name
-        #t = None # later
-        #try: column = int(column)
-        #except ValueError: column = t.fields.index(column)
-
         output = self.temporary_path(fname='intersections.')
         self.compare(files_list, output, column)
         # compress
