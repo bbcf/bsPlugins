@@ -1,22 +1,24 @@
-"""Still need to (g?)zip the output folder and  use track to read input files"""
-
 from bsPlugins import *
-from bbcflib.track import track
+#from bbcflib.track import track
+#from bbcflib import genrep
 from itertools import combinations
 import os
-import zipfile
+import tarfile
 
 
 class IntersectionsForm(BaseForm):
     class SigMulti(twb.BsMultiple):
         label='Signals: '
         signals = twb.BsFileField(label=' ',
-                                help_text='Select signal files (e.g. bedgraph)',
-                                validator=twb.BsFileFieldValidator(required=True))
-    column = twf.TextField(label='Column: ',
+            help_text='Select signal files (e.g. bedgraph)',
+            validator=twb.BsFileFieldValidator(required=True))
+    columns = twf.TextField(label='Column(s): ',
         prompt_text='0',
         value = 0,
-        help_text='Column number (1-based) or column name')
+        help_text='Column(s) number (1-based).') # or column name')
+    #assembly = twf.SingleSelectField(label='Assembly: ',
+    #    options=['']+genrep.GenRep().assemblies_available(),
+    #    help_text='Reference genome (if some input files are binary).')
     submit = twf.SubmitButton(id="submit", value="Submit")
 
 
@@ -30,14 +32,19 @@ out_parameters = [{'id': 'intersections', 'type': 'track'}]
 
 
 class IntersectionsPlugin(BasePlugin):
-    """Returns the elements that are common to a set of files,
+    """Returns the elements that are common to a set of text files,
 for instance the list of genes common to several lists of genes or annotation files.<br /><br />
 
-In the case when more that two files are given, all the possible combinations of intersections
+In the case when more that two files are given, all possible combinations of intersections
 are performed (2-by-2, 3-by-3, etc.), in the manner of a Venn diagram.
-If the elements to intersect are not in the first column, one can specify the column to consider,
-either by its column index (first column is 1) or by the field name.<br />
-The output is a zipped folder containing a summary file and a sub-folder with all the possible
+If the elements to intersect are not in the first column, one can specify the column to consider
+by its index (first column is 1), or a list of column indices separated by commas if the columns
+are different between files (e.g. '5,1,2' for column 5 of file 1, column 1 of file 2, etc.).<br /><br />
+
+Since the number of comparisons is approximately 2^(number of files), it is unadvised to compare more
+that a dozen of files (10 input files -> 2^10-11=1013 comparisons).
+
+The output is a compressed folder containing a summary file and a sub-folder with all the possible
 intersections, i.e. for each intersection one text file with the list of common elements.
     """
     info = {
@@ -49,19 +56,6 @@ intersections, i.e. for each intersection one text file with the list of common 
         'out': out_parameters,
         'meta': meta,
         }
-
-    def zip_file(self,target):
-        target_dir = os.path.abspath(target)
-        target_name = os.path.splitext(os.path.basename(target))[0]
-        parent_dir = os.path.dirname(target)
-        zipped = os.path.join(parent_dir,target_name+'.zip')
-        zip = zipfile.ZipFile(zipped, 'w', zipfile.ZIP_DEFLATED)
-        rootlen = len(target_dir) + 1
-        for base, dirs, files in os.walk(parent_dir):
-           for file in files:
-              fn = os.path.join(base, file)
-              zip.write(fn, fn[rootlen:])
-        return zipped
 
     def intersect(self, files_list, idx=0):
         common = set()
@@ -101,16 +95,32 @@ intersections, i.e. for each intersection one text file with the list of common 
                     out.write(x+'\n')
                 out.close()
         counts.close()
+        return output
 
     def __call__(self,**kw):
         files_list = kw['signals']
         column = kw['column']
-        t = None # later
-        try: column = int(column)
-        except ValueError: column = t.fields.index(column)
-        output = 'intersections'
+
+        # Set chrmeta if oe of the files is binary
+        #if kw['assembly'] and any([os.path.splitext(f)[1].lower() in ['bw','bigwig','bam'] \
+        #                           for f in files_list]):
+        #    chrmeta = genrep.Assembly(kw['assembly']).chrmeta
+        #else: chrmeta = None
+        #track_list = [track(f,chrmeta=chrmeta) for f in files_list]
+
+        # Check that the column exists, or use column name
+        #t = None # later
+        #try: column = int(column)
+        #except ValueError: column = t.fields.index(column)
+
+        output = self.temporary_path(fname='intersections.')
         self.compare(files_list, output, column)
-        #output = self.zip_file(output)
-        self.new_file(output, 'intersections')
+        # compress
+        output_targz = self.temporary_path(fname=output+'tar.gz')
+        tar = tarfile.open(output_targz, 'w:gz')
+        tar.add(output)
+        tar.close()
+        # send
+        self.new_file(output+'.tar.gz', 'intersections')
         return self.display_time()
 
