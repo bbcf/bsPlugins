@@ -45,7 +45,7 @@ intersections, i.e. for each intersection one text file with the list of common 
     info = {
         'title': 'Intersections',
         'description': __doc__,
-        'path': ['Signal', 'Intersections'],
+        'path': ['Analysis', 'Intersections'],
         'output': IntersectionsForm,
         'in': in_parameters,
         'out': out_parameters,
