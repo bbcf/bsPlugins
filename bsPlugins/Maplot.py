@@ -17,21 +17,20 @@ class MaplotForm(BaseForm):
                                            options=('Table', 'Signals'),
                                            mapping={'Table':  ['table'],
                                                     'Signals': ['Group1','Group2','feature_type','assembly'],},
-                                           value='Table',
                                            help_text='Select input type (Formatted table, or signal tracks)')
     table = twb.BsFileField(label='Table: ',
         help_text='Select scores table',
         validator=twb.BsFileFieldValidator(required=True))
     class Group1(twb.BsMultiple):
         label = "Signals group 1: "
-        signals1 = twf.BsFileField(label=' ',
+        signals1 = twb.BsFileField(label=' ',
             help_text='Select signal files (position and score, e.g. bedgraph)',
-            validator=twf.BsFileFieldValidator(required=True))
+            validator=twb.BsFileFieldValidator(required=True))
     class Group2(twb.BsMultiple):
         label = "Signals group 2: "
-        signals2 = twf.BsFileField(label=' ',
+        signals2 = twb.BsFileField(label=' ',
             help_text='Select signal files (position and score, e.g. bedgraph)',
-            validator=twf.BsFileFieldValidator(required=True))
+            validator=twb.BsFileFieldValidator(required=True))
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
         options=ftypes, prompt_text=None,
         mapping={ftypes[-1][0]: ['features'],
