@@ -25,3 +25,5 @@ def SubmitButton(*args,**kwargs):
 def TextField(*args,**kwargs):
     pass
 
+def TextArea(*args,**kwargs):
+    pass
