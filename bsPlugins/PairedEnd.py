@@ -120,7 +120,7 @@ title(main=main,outer=T)
             tar_tracks = tarfile.open(tarname, "w:gz")
             [tar_tracks.add(f,arcname=os.path.basename(f)) for f in all_tracks]
             tar_tracks.close()
-            self.new_file(tar_tracks, 'fragment_track_tar')
+            self.new_file(tarname, 'fragment_track_tar')
         else:
             self.new_file(all_tracks[0], 'fragment_track')
         self.new_file(pdf,'statistics_plot')
