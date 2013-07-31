@@ -1,5 +1,6 @@
 from bsPlugins import *
 from itertools import combinations
+from bbcflib.gfminer.figure import venn
 import os, tarfile
 
 
@@ -22,7 +23,8 @@ meta = {'version': "1.0.0",
 
 in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': 'SigMulti', 'required': True},
                  {'id': 'column', 'type': 'text'}]
-out_parameters = [{'id': 'intersections', 'type': 'track'}]
+out_parameters = [{'id': 'intersections', 'type': 'track'},
+                  {'id': 'venn_diagram', 'type': 'file'}]
 
 
 class IntersectionsPlugin(BasePlugin):
@@ -65,43 +67,53 @@ intersections, i.e. for each intersection one text file with the list of common 
         if not os.path.exists(output):
             os.mkdir(output)
         counts = {}
-        counts = open(os.path.join(output,"summary.txt"), 'wb')
-        counts.write("# Legend:\n")
+        legend = {}
+        summary = open(os.path.join(output,"summary.txt"), 'wb')
+        summary.write("# Legend:\n")
         for i,f in enumerate(files_list):
-            counts.write("%d\t%s\n" % (i,f))
-        counts.write("\n### Files\tnb_elements\n")
-        counts.write("\n# Self\n\n")
+            summary.write("%d\t%s\n" % (i,f))
+            legend[i] = f
+        summary.write("\n### Files\tnb_elements\n")
+        summary.write("\n# Self\n\n")
         for i,f in enumerate(files_list):
-            counts.write("%d\t%d\n" % (i,len(open(f).readlines())))
+            nlines = len(open(f).readlines())
+            summary.write("%d\t%d\n" % (i,nlines))
+            counts[str(i)] = nlines
         for k in range(2,len(files_list)+1):
-            counts.write("\n# %d-by-%d\n\n" % (k,k))
+            summary.write("\n# %d-by-%d\n\n" % (k,k))
             path = os.path.join(output,"%s-by-%s/" % (k,k))
             if not os.path.exists(path):
                 os.mkdir(path)
             combs = combinations(range(len(files_list)), k)
             for cb in combs:
                 names = sorted([str(x) for x in cb])
-                name = "-".join(names)
+                name = "|".join(names)
                 out = open(os.path.join(path,"%s.txt" % name), 'wb')
                 common = self.intersect([files_list[i] for i in cb], idx)
-                counts.write("%s\t%s\n" % (name,len(common)))
+                summary.write("%s\t%s\n" % (name,len(common)))
+                counts[name] = len(common)
                 for x in common:
                     out.write(x+'\n')
                 out.close()
-        counts.close()
-        return output
+        summary.close()
+        return counts, legend
 
     def __call__(self,**kw):
         files_list = kw['signals']
         column = int(kw['column'])-1
         output = self.temporary_path(fname='intersections.')
-        self.compare(files_list, output, column)
+        counts,legend = self.compare(files_list, output, column)
         # compress
         output_targz = self.temporary_path(fname=output+'tar.gz')
         tar = tarfile.open(output_targz, 'w:gz')
         tar.add(output)
         tar.close()
+        # Venn diagram
+        venn_format = 'png'
+        venn_outname = self.temporary_path(fname='venn'+venn_format)
+        venn(counts,legend=None,options={},output=venn_outname,format=venn_format)
         # send
         self.new_file(output+'.tar.gz', 'intersections')
+        self.new_file(venn_outname, 'venn_diagram')
         return self.display_time()
 
