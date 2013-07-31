@@ -8,8 +8,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True,
-                  'multiple': 'BamMulti'},
+in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple': 'BamMulti'},
                  {'id': 'format', 'type': 'text'}]
 
 out_parameters = [{'id': 'statistics_plot', 'type': 'pdf'},
