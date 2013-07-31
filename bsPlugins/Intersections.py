@@ -6,8 +6,8 @@ import os, tarfile
 
 class IntersectionsForm(BaseForm):
     class SigMulti(twb.BsMultiple):
-        label='Signals: '
-        signals = twb.BsFileField(label=' ',
+        label='Files: '
+        files = twb.BsFileField(label=' ',
             help_text='Select signal files (e.g. bedgraph)',
             validator=twb.BsFileFieldValidator(required=True))
     columns = twf.TextField(label='Column(s): ',
@@ -21,7 +21,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': 'SigMulti', 'required': True},
+in_parameters = [{'id': 'files', 'type': 'track', 'multiple': 'SigMulti', 'required': True},
                  {'id': 'column', 'type': 'text'}]
 out_parameters = [{'id': 'intersections', 'type': 'track'},
                   {'id': 'venn_diagram', 'type': 'file'}]
@@ -99,7 +99,7 @@ intersections, i.e. for each intersection one text file with the list of common 
         return counts, legend
 
     def __call__(self,**kw):
-        files_list = kw['signals']
+        files_list = kw['SigMulti']['files']
         column = int(kw['column'])-1
         output = self.temporary_path(fname='intersections.')
         counts,legend = self.compare(files_list, output, column)

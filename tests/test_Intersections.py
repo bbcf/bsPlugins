@@ -9,9 +9,10 @@ class Test_IntersectionsPlugin(TestCase):
         self.plugin = IntersectionsPlugin()
 
     def test_intersections(self):
-        self.plugin(**{'signals':[path+'genes_differential_KE1-KE2.txt_UP',
-                                  path+'genes_differential_KH1-KH2.txt_UP',
-                                  path+'genes_differential_R1-R3.txt_UP'],
+        self.plugin(**{'SigMulti':{'files':[path+'genes_differential_KE1-KE2.txt_UP',
+                                            path+'genes_differential_KH1-KH2.txt_UP',
+                                            path+'genes_differential_R1-R3.txt_UP']
+                                  },
                        'column':1})
 
     def tearDown(self):
