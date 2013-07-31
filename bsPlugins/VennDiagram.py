@@ -112,7 +112,7 @@ all the information.
                 score = _score(x)
                 length = x[end_idx]-x[start_idx]
                 total_cov += length
-                sub = sorted(x[name_idx].split('|'))
+                sub = sorted(list(set(x[name_idx].split('|')))) # avoid 'A|A'
                 cb = [combinations(sub,k) for k in range(1,len(sub)+1)]
                 cb = ['|'.join(sorted(y)) for c in cb for y in c]
                 for c in cb:
