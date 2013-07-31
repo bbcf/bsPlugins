@@ -108,12 +108,12 @@ intersections, i.e. for each intersection one text file with the list of common 
         tar = tarfile.open(output_targz, 'w:gz')
         tar.add(output)
         tar.close()
-        # Venn diagram
-        venn_format = 'png'
-        venn_outname = self.temporary_path(fname='venn'+venn_format)
-        venn(counts,legend=None,options={},output=venn_outname,format=venn_format)
-        # send
         self.new_file(output+'.tar.gz', 'intersections')
-        self.new_file(venn_outname, 'venn_diagram')
+        if len(files_list) <= 4:
+            # Venn diagram
+            venn_format = 'png'
+            venn_outname = self.temporary_path(fname='venn'+venn_format)
+            venn(counts,legend=None,options={},output=venn_outname,format=venn_format)
+            self.new_file(venn_outname, 'venn_diagram')
         return self.display_time()
 
