@@ -4,7 +4,7 @@ from bbcflib.common import fasta_length
 from bbcflib.motif import meme
 from bbcflib import genrep
 from bbcflib.track import track, FeatureStream
-import os
+import os, tarfile
 
 input_types = [(0, 'Fasta upload'), (1, 'Select regions from genome')]
 input_map = {0: ['fastafile'], 1: ['assembly', 'regions']}
