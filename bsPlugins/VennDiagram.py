@@ -128,8 +128,9 @@ all the information.
             return
         venn_options = {} # tune it here
         output = self.temporary_path(fname='venn_diagram.'+kw['format'])
-        legend = None if len(group_names)==len(tracks) \
-                 else [os.path.basename(f) for i,f in enumerate(filenames)]
+        # Set legend
+        if len(group_names)==len(tracks): legend = None
+        else: legend = dict(zip(track_names,[os.path.basename(f) for i,f in enumerate(filenames)]))
         if kw['type']=='tag count':
             for c in cnt:
                 cumcnt[c] = round(cumcnt[c])
