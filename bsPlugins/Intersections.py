@@ -10,7 +10,7 @@ class IntersectionsForm(BaseForm):
         files = twb.BsFileField(label=' ',
             help_text='Select signal files (e.g. bedgraph)',
             validator=twb.BsFileFieldValidator(required=True))
-    columns = twf.TextField(label='Column(s): ',
+    column = twf.TextField(label='Column(s): ',
         prompt_text='1',
         value = 1,
         help_text='Column(s) number (1-based).')
@@ -34,8 +34,7 @@ for instance the list of genes common to several lists of genes or annotation fi
 In the case when more that two files are given, all possible combinations of intersections
 are performed (2-by-2, 3-by-3, etc.), in the manner of a Venn diagram.
 If the elements to intersect are not in the first column, one can specify the column to consider
-by its index (first column is 1), or a list of column indices separated by commas if the columns
-are different between files (e.g. '5,1,2' for column 5 of file 1, column 1 of file 2, etc.).<br /><br />
+by its index (first column is 1).<br /><br />
 
 Since the number of comparisons is approximately 2^(number of files), it is unadvised to compare more
 that a dozen of files (10 input files -> 2^10-11=1013 comparisons).
