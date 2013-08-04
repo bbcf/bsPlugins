@@ -8,6 +8,7 @@ import os, tarfile
 
 input_types = [(0, 'Fasta upload'), (1, 'Select regions from genome')]
 input_map = {0: ['fastafile'], 1: ['assembly', 'regions']}
+_nm = 4
 
 assembly_list = genrep.GenRep().assemblies_available()
 
@@ -18,7 +19,8 @@ meta = {'version': "1.0.0",
 in_parameters = [{'id': 'input_type', 'type': 'radio'},
                  {'id': 'fastafile', 'type': 'userfile'},
                  {'id': 'assembly', 'type': 'assembly'},
-                 {'id': 'regions', 'type': 'track'}]
+                 {'id': 'regions', 'type': 'track'},
+                 {'id': 'nmotifs', 'type': 'int'}]
 out_parameters = [{'id': 'meme_archive', 'type': 'file'}]
 
 
@@ -36,6 +38,10 @@ class MotifSearchForm(BaseForm):
                                      help_text='Assembly to fetch sequences from')
     regions = twb.BsFileField(label='Regions: ', help_text='Genomic regions to search (e.g. bed)')
 
+    nmotifs = twf.TextField(label='Number of motifs: ',
+                            validator=twc.IntValidator(),
+                            value=_nm,
+                            help_text='Number of motifs to search')
     submit = twf.SubmitButton(id="submit", value='Search sequences')
 
 
@@ -80,9 +86,13 @@ class MotifSearchPlugin(BasePlugin):
         output = self.temporary_path(fname=name+"_meme.tgz")
         outdir = os.path.join(os.path.split(fasta)[0],name+"_meme")
         meme_args = kw.get("meme_args",[])
+        nmotifs = kw.get('nmotifs') or _nm
+        if not '-nmotifs' in meme_args:
+            meme_args += ['-nmotifs',"%i" %int(nmotifs)]
         with execution(None) as ex:
             if size is None: size = sum(fasta_length(ex,fasta).values())
-            meme_out = meme( ex, fasta, outdir, background, maxsize=(size*3)/2, args=meme_args )
+            meme_out = meme( ex, fasta, outdir, background, maxsize=(size*3)/2, 
+                             args=meme_args )
         tarf = tarfile.open(output, "w:gz")
         tarf.add(outdir,arcname=os.path.basename(outdir))
         tarf.add(fasta,arcname=os.path.basename(fasta))
