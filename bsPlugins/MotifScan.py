@@ -40,7 +40,8 @@ class MotifScanForm(BaseForm):
     assembly = twf.SingleSelectField(label='Assembly: ', options=assembly_list,
                                      prompt_text=None,
                                      help_text='Assembly to fetch sequences from')
-    regions = twb.BsFileField(label='Regions: ', help_text='Genomic regions to scan (e.g. bed)')
+    regions = twb.BsFileField(label='Regions: ', help_text='Genomic regions to scan (e.g. bed)',
+                              validator=twb.BsFileFieldValidator())
 
     background = twb.BsFileField(label='Background: ',
                                help_text='File of background frequencies (default: genome-wide frequencies)')

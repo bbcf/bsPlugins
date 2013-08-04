@@ -30,20 +30,21 @@ class Bam2DensityForm(BaseForm):
                                  help_text='Select main bam file(s)',
                                  validator=twb.BsFileFieldValidator(required=True))
     control = twb.BsFileField(label='Control BAM: ',
-                              help_text='Select control bam file to compute enrichment')
+                              help_text='Select control bam file to compute enrichment',
+                              validator=twb.BsFileFieldValidator(required=False))
     format = twf.SingleSelectField(label='Output format: ',
                                    options=["sql", "bedGraph", "bigWig"],
                                    prompt_text=None,
                                    help_text='Format of the output file')
     normalization = twf.TextField(label='Normalization: ',
-                                  validator=twc.IntValidator(required=False),
+                                  validator=twc.IntValidator(),
                                   help_text='Normalization factor, default is total number of reads')
     merge_strands = twf.TextField(label='Shift and merge strands: ',
-                                  validator=twc.IntValidator(required=False),
+                                  validator=twc.IntValidator(),
                                   value=-1,
                                   help_text='Shift value (in bp) if you want to merge strand-specific densities (will not merge if negative)')
     read_extension = twf.TextField(label='Read extension: ',
-                                   validator=twc.IntValidator(required=False),
+                                   validator=twc.IntValidator(),
                                    value=-1,
                                    help_text='Read extension (in bp) to be applied when constructing densities (will use read length if negative)')
     submit = twf.SubmitButton(id="submit", value='bam2density')

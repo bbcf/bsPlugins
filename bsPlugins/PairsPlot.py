@@ -45,11 +45,11 @@ class PairsPlotForm(BaseForm):
                              help_text='Select a feature file (e.g. bed)',
                              validator=twb.BsFileFieldValidator())
     upstream = twf.TextField(label='Promoter upstream distance: ',
-                             validator=twc.IntValidator(required=True),
+                             validator=twc.IntValidator(),
                              value=prom_up_def,
                              help_text='Size of promoter upstream of TSS')
     downstream = twf.TextField(label='Promoter downstream distance: ',
-                               validator=twc.IntValidator(required=True),
+                               validator=twc.IntValidator(),
                                value=prom_down_def,
                                help_text='Size of promoter downstream of TSS')
     assembly = twf.SingleSelectField(label='Assembly: ',

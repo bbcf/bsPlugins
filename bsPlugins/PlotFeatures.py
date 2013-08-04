@@ -1,3 +1,4 @@
+
 from bsPlugins import *
 from bbcflib.gfminer.numeric import feature_matrix
 from bbcflib.gfminer.figure import heatmap, lineplot
@@ -34,15 +35,14 @@ class PlotFeaturesForm(BaseForm):
         label='Signal: '
         signals = twb.BsFileField(label=' ',
                                   help_text='Select signal file (e.g. bedgraph)',
-                                  validator=twb.BsFileFieldValidator(required=True))
+                                  validator=twb.BsFileFieldValidator())
     features = twb.BsFileField(label='Features: ',
                                help_text='Select a feature file (e.g. bed)',
-                               validator=twb.BsFileFieldValidator(required=True))
+                               validator=twb.BsFileFieldValidator())
 
     mode = twf.SingleSelectField(label='Plot type: ',
                                  options=plot_types,
-                                 prompt_text=None,
-                                 validator=twc.Validator(required=True))
+                                 prompt_text=None)
     upstream = twf.TextField(label='Upstream flank: ',
                              validator=twc.IntValidator(),
                              value=prom_up_def,

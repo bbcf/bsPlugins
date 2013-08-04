@@ -36,13 +36,13 @@ class MotifSearchForm(BaseForm):
     assembly = twf.SingleSelectField(label='Assembly: ', options=assembly_list,
                                      prompt_text=None,
                                      help_text='Assembly to fetch sequences from')
-    regions = twb.BsFileField(label='Regions: ', help_text='Genomic regions to search (e.g. bed)')
-
+    regions = twb.BsFileField(label='Regions: ', help_text='Genomic regions to search (e.g. bed)',
+                              validator=twb.BsFileFieldValidator())
     nmotifs = twf.TextField(label='Number of motifs: ',
                             validator=twc.IntValidator(),
                             value=_nm,
                             help_text='Number of motifs to search')
-    submit = twf.SubmitButton(id="submit", value='Search sequences')
+    submit = twf.SubmitButton(id="submit", value='Search motifs')
 
 
 class MotifSearchPlugin(BasePlugin):

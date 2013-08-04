@@ -39,17 +39,16 @@ class QuantifyTableForm(BaseForm):
                                                prompt_text=None,
                                                mapping={ftypes[-1][0]: ['features'],
                                                         1: ['upstream', 'downstream']},
-                                               help_text='Choose a feature set or upload your own',
-                                               validator=twc.Validator(required=True))
+                                               help_text='Choose a feature set or upload your own')
     features = twb.BsFileField(label='Custom feature set: ',
         help_text='Select a feature file (e.g. bed)',
-        validator=twb.BsFileFieldValidator(required=True))
+        validator=twb.BsFileFieldValidator())
     upstream = twf.TextField(label='Promoter upstream distance: ',
-        validator=twc.IntValidator(required=True),
+        validator=twc.IntValidator(),
         value=prom_up_def,
         help_text='Size of promoter upstream of TSS')
     downstream = twf.TextField(label='Promoter downstream distance: ',
-        validator=twc.IntValidator(required=True),
+        validator=twc.IntValidator(),
         value=prom_down_def,
         help_text='Size of promoter downstream of TSS')
     assembly = twf.SingleSelectField(label='Assembly: ',
