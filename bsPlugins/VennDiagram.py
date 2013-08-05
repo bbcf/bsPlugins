@@ -61,7 +61,7 @@ By default, the graph will display names such as 'A','B',etc. with a legend asso
 name to its file. But one can also specify the sample names, so that they appear directly
 and without legend on the graph.<br />
 The output includes the figure of the Venn diagram and a text summary of the different statistics.
-If ore than 4 samples are given, no graph is produced, but the text summary still contains
+If more than 4 samples are given, no graph is produced, but the text summary still contains
 all the information.
     """
     info = {
@@ -139,7 +139,7 @@ all the information.
                 venn(cumcnt,legend=legend,options=venn_options,output=output,format=kw['format'])
         elif kw['type']=='coverage %':
             for c in cnt:
-                cumcnt[c] = round(cumcov[c]/total_cov * 100)
+                cumcov[c] = round(cumcov[c]/total_cov * 100)
                 cov[c] = cov[c]/total_cov * 100
             if len(tracks) <= 4:
                 venn(cumcov,legend=legend,options=venn_options,output=output,format=kw['format'])
