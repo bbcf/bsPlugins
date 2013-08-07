@@ -1,5 +1,5 @@
 from unittest2 import TestCase, skip
-from bsPlugins.Statistics import StatisticsPlugin
+from bsPlugins.Statistics import FileStatisticsPlugin
 import os
 
 path = 'testing_files/'
@@ -7,7 +7,7 @@ path = 'testing_files/'
 
 class Test_StatisticsPlugin(TestCase):
     def setUp(self):
-        self.plugin = StatisticsPlugin()
+        self.plugin = FileStatisticsPlugin()
 
     #@skip('')
     def test_stats(self):

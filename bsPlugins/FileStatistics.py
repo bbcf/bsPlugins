@@ -5,7 +5,7 @@ import os
 
 output_list = ['txt','pdf']
 
-class StatisticsForm(BaseForm):
+class FileStatisticsForm(BaseForm):
     child = twd.HidingTableLayout()
     sample = twb.BsFileField(label='Input file: ',
         help_text='Select the file to examine',
@@ -32,14 +32,14 @@ out_parameters = [{'id':'stats', 'type':'file'},
                   {'id':'pdf', 'type':'file'}]
 
 
-class StatisticsPlugin(BasePlugin):
+class FileStatisticsPlugin(BasePlugin):
     """Calculates diverse statistics from a track file,
     such as a distribution of scores and feature lengths, and prints them to the output file."""
     info = {
         'title': 'Basic track statistics',
         'description': __doc__,
-        'path': ['Files', 'Statistics'],
-        'output': StatisticsForm,
+        'path': ['Analysis', 'File Statistics'],
+        'output': FileStatisticsForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
