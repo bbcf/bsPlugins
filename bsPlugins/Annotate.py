@@ -59,12 +59,16 @@ class AnnotatePlugin(BasePlugin):
         assembly_id = kw.get('assembly') or None
         assembly = genrep.Assembly(assembly_id)
         tinput = track(kw.get('track'), chrmeta=assembly.chrmeta)
-        thPromot = int(kw.get("promoter", prom_def))
-        thInter = int(kw.get('intergenic', inter_def))
-        thUTR = int(kw.get('UTR', utr_def))
+        if kw.get("promoter") is None: thPromot = prom_def
+        else:                          thPromot = int(kw["promoter"])
+        if kw.get("intergenic") is None: thInter = inter_def
+        else:                            thInter = int(kw["intergenic"])
+        if kw.get("UTR") is None: thUTR = utr_def
+        else:                     thUTR = int(kw["UTR"])
         output = self.temporary_path(fname=tinput.name+'_annotated.txt')
-        tout = track(output, format='txt', fields=['chr', 'start', 'end', 'name', 'strand',
-                                                   'gene', 'location_type', 'distance'])
+        _fields = ['chr', 'start', 'end', 'name', 'strand',
+                   'gene', 'location_type', 'distance']
+        tout = track(output, format='txt', fields=_fields)
         mode = 'write'
         for chrom in assembly.chrnames:
             tout.write(gm_stream.getNearestFeature(

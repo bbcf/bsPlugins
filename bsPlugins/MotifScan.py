@@ -8,11 +8,11 @@ import os
 
 
 g = genrep.GenRep()
-motif_list = g.motifs_available()
+available_motifs = g.motifs_available()
 assembly_list = g.assemblies_available()
 
 input_types = [(0, 'Fasta upload'), (1, 'Select regions from genome')]
-input_map = {0: ['fastafile'], 1: ['assembly', 'regions']}
+input_map = {0: ['fastafile'], 1: ['regions']}
 
 meta = {'version': "1.0.0",
         'author': "BBCF",
@@ -37,15 +37,15 @@ class MotifScanForm(BaseForm):
                                            mapping=input_map)
 
     fastafile = twb.BsFileField(label='Fasta file: ', help_text='Sequences to scan')
-    assembly = twf.SingleSelectField(label='Assembly: ', options=assembly_list,
-                                     prompt_text=None,
-                                     help_text='Assembly to fetch sequences from')
     regions = twb.BsFileField(label='Regions: ', help_text='Genomic regions to scan (e.g. bed)',
                               validator=twb.BsFileFieldValidator())
 
+    assembly = twf.SingleSelectField(label='Assembly: ', options=assembly_list,
+                                     prompt_text=None,
+                                     help_text='Assembly to fetch sequences from')
     background = twb.BsFileField(label='Background: ',
-                               help_text='File of background frequencies (default: genome-wide frequencies)')
-    motifs = twf.MultipleSelectField(label='Motifs: ', options=motif_list,
+                                 help_text='File of background frequencies (default: genome-wide frequencies)')
+    motifs = twf.MultipleSelectField(label='Motifs: ', options=available_motifs,
                                      help_text='Select motifs to be scanned')
     customMotif = twb.BsFileField(label='Custom motif: ',
                                 help_text='An optional custom/additional motif to scan (.mat)')
@@ -76,6 +76,7 @@ class MotifScanPlugin(BasePlugin):
         threshold = float(kw.get('threshold') or 0)
 
         if motifs_list is None: motifs_list = []
+        if isinstance(motifs_list, basestring): motifs_list = motifs_list.split("|")
         if not isinstance(motifs_list, list): motifs_list = [motifs_list]
 
         if background is None and assembly_id is None:
