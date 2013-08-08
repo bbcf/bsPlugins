@@ -8,8 +8,8 @@ output_list = ['txt','pdf']
 class FileStatisticsForm(BaseForm):
     child = twd.HidingTableLayout()
     sample = twb.BsFileField(label='Input file: ',
-        help_text='Select the file to examine',
-        validator=twb.BsFileFieldValidator(required=True))
+                             help_text='Select the file to examine',
+                             validator=twb.BsFileFieldValidator(required=True))
     output = twf.SingleSelectField(label='Output: ',
                                    options=output_list,
                                    prompt_text=None,
