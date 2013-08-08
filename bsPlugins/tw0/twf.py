@@ -7,6 +7,9 @@ def FileField(*args,**kwargs):
 def RadioButton(*args,**kwargs):
     pass
 
+def RadioButtonList(*args,**kwargs):
+    pass
+
 def FileValidator(*args,**kwargs):
     pass
 
