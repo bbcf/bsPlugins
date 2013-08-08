@@ -29,12 +29,12 @@ out_parameters = [{'id': 'intersections', 'type': 'track'},
 
 class IntersectionsPlugin(BasePlugin):
     """Returns the elements that are common to a set of text files,
-for instance the list of genes common to several lists of genes or annotation files.<br /><br />
+for instance the list of genes common to several lists of genes or annotation files.
 
 In the case when more that two files are given, all possible combinations of intersections
 are performed (2-by-2, 3-by-3, etc.), in the manner of a Venn diagram.
 If the elements to intersect are not in the first column, one can specify the column to consider
-by its index (first column is 1).<br /><br />
+by its index (first column is 1).
 
 Since the number of comparisons is approximately 2^(number of files), it is unadvised to compare more
 that a dozen of files (10 input files -> 2^10-11=1013 comparisons).

@@ -65,10 +65,12 @@ class QuantifyTableForm(BaseForm):
 
 
 class QuantifyTablePlugin(BasePlugin):
-    """Quantify signal tracks on a set of regions.<br /><br />
+    """Quantify signal tracks on a set of regions.
+
 Given a set of signal tracks, and a bed-like track containing intervals (e.g. genes),
 builds a table of the score of each signal in each of the intervals. That is, each cell
-of the output table is the score given by one of the tracks to a specific interval. <br />
+of the output table is the score given by one of the tracks to a specific interval.
+
 Scores can be the sum/mean/median/min/max of the tag count in the interval."""
     info = {
         'title': 'Quantify signals in regions',

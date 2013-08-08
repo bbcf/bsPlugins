@@ -41,9 +41,11 @@ class TopGoForm(BaseForm):
 
 
 class TopGoPlugin(BasePlugin):
-    """Makes a GO analysis on a list of Ensembl IDs. <br /><br />
+    """Makes a GO analysis on a list of Ensembl IDs.
+
 Given a file with one Ensembl ID on each line, it returns a summary table (.txt)
-and GO networks in a pdf. <br />
+and GO networks in a pdf.
+
 The first regroups the most significant terms concerning
 Biological Processes (BP), Cellular Components (CC) and Molecular Function (MF).
 One can choose the maximum number of each of these terms to include in the output,

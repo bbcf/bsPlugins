@@ -52,7 +52,8 @@ class Bam2DensityForm(BaseForm):
 
 class Bam2DensityPlugin(BasePlugin):
     """From a BAM file, creates a track file of the read count/density along the whole genome,
-in the chosen format. <br /><br />
+in the chosen format.
+
 Read counts are divided by 10^-7 times the normalization factor (which is total number of reads by default).
 Positive and negative strand densities are generated and optionally merged (averaged) if a
 shift value >=0 is given. The read extension is the number of basepairs a read will cover,

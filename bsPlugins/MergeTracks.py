@@ -39,9 +39,11 @@ out_parameters = [{'id': 'density_merged', 'type': 'track'}]
 
 
 class MergeTracksPlugin(BasePlugin):
-    """Shift and average scores from forward and reverse strand densities. <br /><br />
+    """Shift and average scores from forward and reverse strand densities.
+
 Typically built to merge ChIP-seq signals from both DNA strands, it can also be used to add (average)
-several numeric genomic tracks, replicates for instance.<br />
+several numeric genomic tracks, replicates for instance.
+
 The output is the average of all the input signals, position by position.
     """
     info = {
