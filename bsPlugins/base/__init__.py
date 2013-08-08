@@ -62,6 +62,20 @@ class BasePlugin(object):
             t = 0.0
         return 'Time elapsed %0.3fs.' % t
 
+    def html_doc_link(self):
+        """
+        The default link to the plugin documentation. You can override this function
+        to reference the HTML page you want.
+        """
+        return 'http://bbcf.epfl.ch/bsplugins/content/bsPlugins.html#bsPlugins.%s.%s' % (self.__module__, self.__class__.__name__)
+
+    def html_source_code_link(self):
+        """
+        The default link to the plugin source code. You can override this function
+        to reference the HTML page you want.
+        """
+        return 'https://github.com/bbcf/bsPlugins/tree/master/bsPlugins/%s.py' % (self.__module__.split('.')[-1])
+
     def unique_id(self):
         '''
         It's an unique identifier for your plugin.
