@@ -81,7 +81,8 @@ each alignment will be considered, default is read length).
             b2wargs = ["-c", str(control)]
             assert os.path.exists(str(control)), "Control file not found: '%s'." % control
             control = os.path.abspath(control)
-        nreads = int(kw.get('normalization') or -1)
+        if kw.get('normalization') is None: nreads = -1
+        else nreads = int(kw['normalization'])
         bamfiles = [track(s, format='bam') for s in samples]
         if nreads < 0:
             if control is None:
@@ -90,11 +91,10 @@ each alignment will be considered, default is read length).
                 b2wargs += ["-r"]
         else:
             _nreads = [nreads for s in samples]
-        if kw.get('merge_strands') is None:
-            merge_strands = -1
-        else:
-            merge_strands = int(kw.get('merge_strands'))
-        read_extension = int(kw.get('read_extension') or -1)
+        if kw.get('merge_strands') is None: merge_strands = -1
+        else: merge_strands = int(kw['merge_strands'])
+        if kw.get('read_extension') is None: read_extension = -1
+        else: read_extension = int(kw['read_extension'])
         output = [self.temporary_path(fname=b.name+'_density_') for b in bamfiles]
         format = kw.get("format", "sql")
         with execution(None) as ex:
