@@ -44,9 +44,6 @@ Plugins collection
 .. autoclass:: bsPlugins.GenomeGraph.GenomeGraphPlugin
    :members:
 
-.. autoclass:: bsPlugins.GenomeGraph.GenomeGraphPlugin
-   :members:
-
 .. autoclass:: bsPlugins.Intersections.IntersectionsPlugin
    :members:
 
