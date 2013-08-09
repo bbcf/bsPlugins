@@ -1,9 +1,8 @@
-
 from bsPlugins import *
 from bbcflib.gfminer.numeric import feature_matrix
 from bbcflib.gfminer.figure import heatmap, lineplot
-from bbcflib.track import track
-from numpy import vstack, concatenate, array
+from bbcflib.track import track, FeatureStream
+from numpy import vstack, concatenate, array, where
 import os, tarfile
 
 _nbins = 50
@@ -73,6 +72,19 @@ class PlotFeaturesPlugin(BasePlugin):
         }
 
     def __call__(self, **kw):
+
+        def make_X_labels(X,start,end,strand):
+            if strand is None or strand > 0: return start+X*(end-start)
+            else:                            return end+X*(start-end)
+
+        def add_name(_s):
+            """Adds a name field to a stream using 'chr:start-end'."""
+            ci = _s.fields.index('chr')
+            si = _s.fields.index('start')
+            ei = _s.fields.index('end')
+            _f = _s.fields+['name']
+            return FeatureStream((r+("%s:%i-%i"%(_s[ci],_s[si],_s[ei]),) for r in _s), fields=_f)
+
         chrmeta = "guess"
         features = track(kw.get('features'), chrmeta=chrmeta)
         signals = kw.get('SigMulti',{}).get('signals', [])
@@ -96,9 +108,11 @@ class PlotFeaturesPlugin(BasePlugin):
         if kw.get("nbins") is not None: nbins = max(1,int(kw["nbins"]))
         else: nbins = _nbins
         for chrom in features.chrmeta:
-            _l, _d = feature_matrix([s.read(chrom) for s in signals],
-                                    features.read(chrom), segment=True,
-                                    nbins=nbins, upstream=upstr, downstream=downstr)
+            if 'name' in features.fields: _fread = features.read(chrom)
+            else: _fread = add_name(features.read(chrom))
+            _l, _d = feature_matrix([s.read(chrom) for s in signals], _fread,
+                                    segment=True, nbins=nbins, 
+                                    upstream=upstr, downstream=downstr)
             if _d.size == 0:
                 continue
             if data is None:
@@ -122,21 +136,24 @@ class PlotFeaturesPlugin(BasePlugin):
         X = array(range(-upstr[1]+1,nbins+downstr[1]+1))/(1.0*nbins)
         if mode in plot_types[0]: #heatmap
             new = True
+            if 'name' in features.fields: _fread = features.read(fields=['chr','start','end','name'])
+            else: _fread = add_name(features.read(fields=['chr','start','end']))
+            order = [where(labels == feat[3])[0][0] for feat in _fread]
             for n in range(data.shape[-1]-1):
-                heatmap(data[:, :, n], output=pdf, new=new, last=False,
-                        rows=labels, columns=X, main=snames[n],
+                heatmap(data[order, :, n], output=pdf, new=new, last=False,
+                        rows=labels[order], columns=X, main=snames[n],
                         orderRows=True, orderCols=False)
                 new = False
-            heatmap(data[:, :, -1], output=pdf, new=new, last=True,
-                    rows=labels,  columns=X, main=snames[-1],
+            heatmap(data[order, :, -1], output=pdf, new=new, last=True,
+                    rows=labels[order],  columns=X, main=snames[-1],
                     orderRows=True, orderCols=False)
             if outf == 'archive':
                 for n,sn in enumerate(snames):
                     _datf = self.temporary_path(fname=sn+"_data.txt")
                     with open(_datf,"w") as dff:
                         dff.write("\t".join([""]+[str(x) for x in X])+"\n")
-                        for k,l in enumerate(labels):
-                            dff.write("\t".join([l]+[str(x) for x in data[k, :, n]])+"\n")
+                        for k in order:
+                            dff.write("\t".join([labels[k]]+[str(x) for x in data[k, :, n]])+"\n")
                     tarfh.add(_datf,arcname=os.path.basename(_datf))
         elif mode in plot_types[1]: #average lineplot
             Y = data.mean(axis=0)
@@ -152,27 +169,40 @@ class PlotFeaturesPlugin(BasePlugin):
                         dff.write("\t".join([sn]+[str(x) for x in Y[:, n]])+"\n")
                 tarfh.add(_datf,arcname=os.path.basename(_datf))
         elif mode in plot_types[2]: #mosaic
-            new = True
-            mfrow = [4, 3]
+            mfrow = [4,3]
             nplot = min(data.shape[0], max_pages*mfrow[0]*mfrow[1])
             ymin = min([data.min(),0])
             ymax = data.max()
-            for reg in range(nplot-1):
-                lineplot(X, [data[reg, :, n] for n in range(data.shape[-1])],
-                         output=pdf, new=new, last=False, mfrow=mfrow,
-                         main=labels[reg], ylim=(ymin,ymax))
-                new = False
-                mfrow = []
-            lineplot(X, [data[nplot-1, :, n] for n in range(data.shape[-1])],
-                     output=pdf, new=new, last=True, main=labels[-1],
-                     legend=snames, ylim=(ymin,ymax))
+            _f = ['chr','start','end']
+            _si = None
+            if 'strand' in features.fields: 
+                _f.append('strand')
+                _si = 3
+            if 'name' in features.fields: _fread = features.read(fields=_f+['name'])
+            else: _fread = add_name(features.read(fields=_f))
+            order = []
+            for nf,feat in enumerate(_fread):
+                reg = where(labels == feat[-1])[0][0]
+                order.append(reg)
+                X1 = make_X_labels(X, feat[1], feat[2], feat[_si] if _si else None)
+                Y = [data[reg, :, n] for n in range(data.shape[-1])]
+                if nf == 0:
+                    lineplot(X1, Y,  output=pdf, new=True, last=False, mfrow=mfrow,
+                             main=labels[reg], ylim=(ymin,ymax))
+                elif nf < nplot-1:
+                    lineplot(X1, Y, output=pdf, new=False, last=False, 
+                             main=labels[reg], ylim=(ymin,ymax))
+                else:
+                    lineplot(X1, Y, output=pdf, new=False, last=True, legend=snames, 
+                             main=labels[reg], ylim=(ymin,ymax))
+                    break
             if outf == 'archive':
                 for n,sn in enumerate(snames):
                     _datf = self.temporary_path(fname=sn+"_data.txt")
                     with open(_datf,"w") as dff:
                         dff.write("\t".join([""]+[str(x) for x in X])+"\n")
-                        for k,l in enumerate(labels):
-                            dff.write("\t".join([l]+[str(x) for x in data[k, :, n]])+"\n")
+                        for k in order:
+                            dff.write("\t".join([labels[k]]+[str(x) for x in data[k, :, n]])+"\n")
                     tarfh.add(_datf,arcname=os.path.basename(_datf))
         else:
             raise ValueError("Mode not implemented: %s" % mode)
