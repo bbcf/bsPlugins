@@ -82,7 +82,7 @@ each alignment will be considered, default is read length).
             assert os.path.exists(str(control)), "Control file not found: '%s'." % control
             control = os.path.abspath(control)
         if kw.get('normalization') is None: nreads = -1
-        else nreads = int(kw['normalization'])
+        else: nreads = int(kw['normalization'])
         bamfiles = [track(s, format='bam') for s in samples]
         if nreads < 0:
             if control is None:
