@@ -24,6 +24,7 @@ in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': 'SigMulti', 'req
                  {'id': 'upstream', 'type': 'int'},
                  {'id': 'downstream', 'type': 'int'},
                  {'id': 'nbins', 'type': 'int'},
+                 {'id':'noclust', 'type':'boolean', 'required':True},
                  {'id': 'output', 'type': 'list', 'required': True}]
 out_parameters = [{'id': 'plot_features', 'type': 'pdf'},
                   {'id':'data_archive', 'type':'file'}]
@@ -39,9 +40,10 @@ class PlotFeaturesForm(BaseForm):
                                help_text='Select a feature file (e.g. bed)',
                                validator=twb.BsFileFieldValidator())
 
-    mode = twf.SingleSelectField(label='Plot type: ',
-                                 options=plot_types,
-                                 prompt_text=None)
+    child = twd.HidingTableLayout()
+    mode = twd.HidingSingleSelectField(label='Plot type: ',
+                                       options=plot_types, mapping={0:['noclust']},
+                                       prompt_text=None)
     upstream = twf.TextField(label='Upstream flank: ',
                              validator=twc.IntValidator(),
                              value=prom_up_def,
@@ -54,13 +56,18 @@ class PlotFeaturesForm(BaseForm):
                                validator=twc.IntValidator(),
                                value=_nbins,
                                help_text='Number of bins each feature is divided into')
+    noclust = twf.CheckBox(label='Do not cluster features: ',
+                           value=False,
+                           help_text='Keep features in the same order as input')
     output = twf.SingleSelectField(label='Output: ', options=output_list,
                                    prompt_text=None, help_text='Pdf only or data+pdf')
     submit = twf.SubmitButton(id="submit", value="Plot")
 
 
 class PlotFeaturesPlugin(BasePlugin):
-    """Plot signals from a selection of regions."""
+    """Plot several genomic signals on a selection of regions (features). 
+
+`Heatmap` make one heatmap per signal file, `mosaic plot` creates one plot for each feature showing each signal as a separate line on the plot, `average lineplot` calculates the average of those line plots over all features."""
     info = {
         'title': 'Plot signals in genomic regions',
         'description': __doc__,
@@ -73,9 +80,19 @@ class PlotFeaturesPlugin(BasePlugin):
 
     def __call__(self, **kw):
 
-        def make_X_labels(X,start,end,strand):
-            if strand is None or strand > 0: return start+X*(end-start)
-            else:                            return end+X*(start-end)
+        def make_X_labels(X,start,end,strand,down,up):
+            flen = end-start
+            i0 = where(X == 0)[0][0]+1
+            i1 = where(X == 1)[0][0]+1
+            i2 = len(X)-i1
+            istep  = 0.5/(i1-i0)
+            if down < 1: down *= flen
+            if up < 1: up *= flen
+            Xup = (array(range(-i0,0))+.5)*up/i0
+            Xb = (X[i0:i1]+istep)*flen
+            Xdown = flen+(array(range(i2))+.5)*down/i2
+            if strand is None or strand > 0: return start+concatenate([Xup,Xb,Xdown])
+            else:                            return end-concatenate([Xup,Xb,Xdown])
 
         def add_name(_s):
             """Adds a name field to a stream using 'chr:start-end'."""
@@ -107,6 +124,8 @@ class PlotFeaturesPlugin(BasePlugin):
             else: downstr = (0,0)
         if kw.get("nbins") is not None: nbins = max(1,int(kw["nbins"]))
         else: nbins = _nbins
+        if kw.get("noclust") is not None: noclust = str(kw["noclust"]).lower() in ['1','true','t']
+        else: noclust = False
         for chrom in features.chrmeta:
             if 'name' in features.fields: _fread = features.read(chrom)
             else: _fread = add_name(features.read(chrom))
@@ -142,11 +161,11 @@ class PlotFeaturesPlugin(BasePlugin):
             for n in range(data.shape[-1]-1):
                 heatmap(data[order, :, n], output=pdf, new=new, last=False,
                         rows=labels[order], columns=X, main=snames[n],
-                        orderRows=True, orderCols=False)
+                        orderRows=not(noclust), orderCols=False)
                 new = False
             heatmap(data[order, :, -1], output=pdf, new=new, last=True,
                     rows=labels[order],  columns=X, main=snames[-1],
-                    orderRows=True, orderCols=False)
+                    orderRows=not(noclust), orderCols=False)
             if outf == 'archive':
                 for n,sn in enumerate(snames):
                     _datf = self.temporary_path(fname=sn+"_data.txt")
@@ -184,7 +203,7 @@ class PlotFeaturesPlugin(BasePlugin):
             for nf,feat in enumerate(_fread):
                 reg = where(labels == feat[-1])[0][0]
                 order.append(reg)
-                X1 = make_X_labels(X, feat[1], feat[2], feat[_si] if _si else None)
+                X1 = make_X_labels(X, feat[1], feat[2], feat[_si] if _si else None, downstr[0], upstr[0])
                 Y = [data[reg, :, n] for n in range(data.shape[-1])]
                 if nf == 0:
                     lineplot(X1, Y,  output=pdf, new=True, last=False, mfrow=mfrow,
