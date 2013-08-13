@@ -90,8 +90,8 @@ class PlotFeaturesPlugin(BasePlugin):
 
         def make_X_labels(X,start,end,strand,down,up):
             flen = end-start
-            i0 = where(X == 0)[0][0]+1
-            i1 = where(X == 1)[0][0]+1
+            i0 = (list(where(X == 0)[0])+[-1])[0]+1
+            i1 = (list(where(X == 1)[0])+[len(X)-1])[0]+1
             i2 = len(X)-i1
             istep  = 0.5/(i1-i0)
             if down < 1: down *= flen
