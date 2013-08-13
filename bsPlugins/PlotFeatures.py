@@ -108,7 +108,7 @@ class PlotFeaturesPlugin(BasePlugin):
             si = _s.fields.index('start')
             ei = _s.fields.index('end')
             _f = _s.fields+['name']
-            return FeatureStream((r+("%s:%i-%i"%(_s[ci],_s[si],_s[ei]),) for r in _s), fields=_f)
+            return FeatureStream((r+("%s:%i-%i"%(r[ci],r[si],r[ei]),) for r in _s), fields=_f)
 
         chrmeta = "guess"
         features = track(kw.get('features'), chrmeta=chrmeta)
