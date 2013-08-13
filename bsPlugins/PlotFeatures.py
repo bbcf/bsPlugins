@@ -24,7 +24,9 @@ in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': 'SigMulti', 'req
                  {'id': 'upstream', 'type': 'int'},
                  {'id': 'downstream', 'type': 'int'},
                  {'id': 'nbins', 'type': 'int'},
-                 {'id':'noclust', 'type':'boolean', 'required':True},
+                 {'id': 'noclust', 'type':'boolean', 'required':True},
+                 {'id': 'ymin', 'type': 'float'},
+                 {'id': 'ymax', 'type': 'float'},
                  {'id': 'output', 'type': 'list', 'required': True}]
 out_parameters = [{'id': 'plot_features', 'type': 'pdf'},
                   {'id':'data_archive', 'type':'file'}]
@@ -59,6 +61,12 @@ class PlotFeaturesForm(BaseForm):
     noclust = twf.CheckBox(label='Do not cluster features: ',
                            value=False,
                            help_text='Keep features in the same order as input')
+    ymin = twf.TextField(label='Minimal signal value: ', 
+                         validator=twb.FloatValidator(),
+                         help_text='Minimum value displayed in graphs (optional)')
+    ymax = twf.TextField(label='Maximum signal value: ', 
+                         validator=twb.FloatValidator(),
+                         help_text='Maximum value displayed in graphs (optional)')
     output = twf.SingleSelectField(label='Output: ', options=output_list,
                                    prompt_text=None, help_text='Pdf only or data+pdf')
     submit = twf.SubmitButton(id="submit", value="Plot")
@@ -126,6 +134,8 @@ class PlotFeaturesPlugin(BasePlugin):
         else: nbins = _nbins
         if kw.get("noclust") is not None: noclust = str(kw["noclust"]).lower() in ['1','true','t']
         else: noclust = False
+        ymin = kw.get('ymin')
+        ymax = kw.get('ymax')
         for chrom in features.chrmeta:
             if 'name' in features.fields: _fread = features.read(chrom)
             else: _fread = add_name(features.read(chrom))
@@ -161,11 +171,13 @@ class PlotFeaturesPlugin(BasePlugin):
             for n in range(data.shape[-1]-1):
                 heatmap(data[order, :, n], output=pdf, new=new, last=False,
                         rows=labels[order], columns=X, main=snames[n],
-                        orderRows=not(noclust), orderCols=False)
+                        orderRows=not(noclust), orderCols=False, 
+                        ymin=ymin, ymax=ymax)
                 new = False
             heatmap(data[order, :, -1], output=pdf, new=new, last=True,
                     rows=labels[order],  columns=X, main=snames[-1],
-                    orderRows=not(noclust), orderCols=False)
+                    orderRows=not(noclust), orderCols=False, 
+                    ymin=ymin, ymax=ymax)
             if outf == 'archive':
                 for n,sn in enumerate(snames):
                     _datf = self.temporary_path(fname=sn+"_data.txt")
@@ -176,8 +188,8 @@ class PlotFeaturesPlugin(BasePlugin):
                     tarfh.add(_datf,arcname=os.path.basename(_datf))
         elif mode in plot_types[1]: #average lineplot
             Y = data.mean(axis=0)
-            ymin = min([x.min() for x in Y]+[0])
-            ymax = max([x.max() for x in Y])
+            if ymin is None: ymin = min([x.min() for x in Y]+[0])
+            if ymax is None: ymax = max([x.max() for x in Y])
             lineplot(X, [Y[:, n] for n in range(data.shape[-1])],
                      output=pdf, new=True, last=True, legend=snames, ylim=(ymin,ymax))
             if outf == 'archive':
@@ -190,8 +202,8 @@ class PlotFeaturesPlugin(BasePlugin):
         elif mode in plot_types[2]: #mosaic
             mfrow = [4,3]
             nplot = min(data.shape[0], max_pages*mfrow[0]*mfrow[1])
-            ymin = min([data.min(),0])
-            ymax = data.max()
+            if ymin is None: ymin = min([data.min(),0])
+            if ymax is None: ymax = data.max()
             _f = ['chr','start','end']
             _si = None
             if 'strand' in features.fields: 
