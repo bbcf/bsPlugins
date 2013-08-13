@@ -1,5 +1,5 @@
 from bsPlugins import *
-from bbcflib.gfminer import stream as gm_stream
+from bbcflib.gfminer.stream import getNearestFeature
 from bbcflib.track import track
 from bbcflib import genrep
 
@@ -66,16 +66,14 @@ class AnnotatePlugin(BasePlugin):
         if kw.get("UTR") is None: thUTR = utr_def
         else:                     thUTR = int(kw["UTR"])
         output = self.temporary_path(fname=tinput.name+'_annotated.txt')
-        _fields = ['chr', 'start', 'end', 'name', 'strand',
-                   'gene', 'location_type', 'distance']
+        _fields = tinput.fields+['gene', 'location_type', 'distance']
         tout = track(output, format='txt', fields=_fields)
-        mode = 'write'
+        tout.make_header("#"+"\t".join(tout.fields))
         for chrom in assembly.chrnames:
-            tout.write(gm_stream.getNearestFeature(
+            tout.write(getNearestFeature(
                     tinput.read(selection=chrom),
                     assembly.gene_track(chrom),
-                    thPromot, thInter, thUTR), mode=mode)
-            mode = 'append'
+                    thPromot, thInter, thUTR), mode='append')
         tout.close()
         self.new_file(output, 'table')
         return self.display_time()
