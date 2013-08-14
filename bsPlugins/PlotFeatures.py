@@ -73,9 +73,12 @@ class PlotFeaturesForm(BaseForm):
 
 
 class PlotFeaturesPlugin(BasePlugin):
-    """Plot several genomic signals on a selection of regions (features). 
+    """Plot several genomic signals along a selection of regions (features). 
 
-`Heatmap` make one heatmap per signal file, `mosaic plot` creates one plot for each feature showing each signal as a separate line on the plot, `average lineplot` calculates the average of those line plots over all features."""
+* *Heatmap* makes one heatmap per signal file, 
+* *Mosaic plot* creates one plot per feature showing each signal as a separate line, 
+* *Average lineplot* calculates the average of those line plots over all features.
+"""
     info = {
         'title': 'Plot signals in genomic regions',
         'description': __doc__,

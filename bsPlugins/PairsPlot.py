@@ -32,8 +32,8 @@ class PairsPlotForm(BaseForm):
     class SigMulti(twb.BsMultiple):
         label='Signal: '
         signals = twb.BsFileField(label=' ',
-                                help_text='Select signal file (.g. bedgraph)',
-                                validator=twb.BsFileFieldValidator(required=True))
+                                  help_text='Select signal file (.g. bedgraph)',
+                                  validator=twb.BsFileFieldValidator(required=True))
     child = twd.HidingTableLayout()
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
                                                options=ftypes, prompt_text=None,
@@ -62,7 +62,9 @@ class PairsPlotForm(BaseForm):
 
 
 class PairsPlotPlugin(BasePlugin):
-    """Plots pairwise comparisons between signal tracks."""
+    """Plots pairwise comparisons between signal tracks. 
+* For *density plots* each signal track is quantified at the selected features, and this data is represented as two-way scatter plots (above diagonal), histograms (on the diagonal), and quantile plots (below diagonal). 
+* *Correlation* plots show spatial auto- and cross-correlation of signals across the selected features."""
     info = {
         'title': 'Pairwise plots',
         'description': __doc__,
