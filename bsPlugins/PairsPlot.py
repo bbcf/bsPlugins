@@ -62,9 +62,11 @@ class PairsPlotForm(BaseForm):
 
 
 class PairsPlotPlugin(BasePlugin):
-    """Plots pairwise comparisons between signal tracks. 
+    """Plots pairwise comparisons between signal tracks:
+
 * For *density plots* each signal track is quantified at the selected features, and this data is represented as two-way scatter plots (above diagonal), histograms (on the diagonal), and quantile plots (below diagonal). 
-* *Correlation* plots show spatial auto- and cross-correlation of signals across the selected features."""
+* *Correlation* plots show spatial auto- and cross-correlation of signals across the selected features.
+"""
     info = {
         'title': 'Pairwise plots',
         'description': __doc__,

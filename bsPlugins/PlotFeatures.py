@@ -73,7 +73,7 @@ class PlotFeaturesForm(BaseForm):
 
 
 class PlotFeaturesPlugin(BasePlugin):
-    """Plot several genomic signals along a selection of regions (features). 
+    """Plot several genomic signals along a selection of regions (features):
 
 * *Heatmap* makes one heatmap per signal file, 
 * *Mosaic plot* creates one plot per feature showing each signal as a separate line, 
@@ -194,7 +194,8 @@ class PlotFeaturesPlugin(BasePlugin):
             if ymin is None: ymin = min([x.min() for x in Y]+[0])
             if ymax is None: ymax = max([x.max() for x in Y])
             lineplot(X, [Y[:, n] for n in range(data.shape[-1])],
-                     output=pdf, new=True, last=True, legend=snames, ylim=(ymin,ymax))
+                     output=pdf, new=True, last=True, legend=snames, 
+                     ylim=(float(ymin),float(ymax)))
             if outf == 'archive':
                 _datf = self.temporary_path(fname="lineplot_data.txt")
                 with open(_datf,"w") as dff:
@@ -222,13 +223,13 @@ class PlotFeaturesPlugin(BasePlugin):
                 Y = [data[reg, :, n] for n in range(data.shape[-1])]
                 if nf == 0:
                     lineplot(X1, Y,  output=pdf, new=True, last=False, mfrow=mfrow,
-                             main=labels[reg], ylim=(ymin,ymax))
+                             main=labels[reg], ylim=(float(ymin),float(ymax)))
                 elif nf < nplot-1:
                     lineplot(X1, Y, output=pdf, new=False, last=False, 
-                             main=labels[reg], ylim=(ymin,ymax))
+                             main=labels[reg], ylim=(float(ymin),float(ymax)))
                 else:
                     lineplot(X1, Y, output=pdf, new=False, last=True, legend=snames, 
-                             main=labels[reg], ylim=(ymin,ymax))
+                             main=labels[reg], ylim=(float(ymin),float(ymax)))
                     break
             if outf == 'archive':
                 for n,sn in enumerate(snames):
