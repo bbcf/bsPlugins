@@ -142,6 +142,7 @@ class PairsPlotPlugin(BasePlugin):
                 if narr is None: narr = _n
                 else:            narr = vstack((narr, _n))
             set_index = [narr.shape[0]]
+            set_labels = []
             for hitrack in highlights:
                 for chrom in chrmeta:
                     hiread = hitrack.read(chrom)
@@ -152,12 +153,13 @@ class PairsPlotPlugin(BasePlugin):
                     _n, _l = score_array(means, mf)
                     if _n.size == 0: continue
                     narr = vstack((narr, _n))
+                    set_labels.extend(_l)
                 set_index.append(narr.shape[0])
         else:
             raise ValueError("Mode not implemented: %s" % kw['mode'])
         if narr is None:
             raise ValueError("No data")
-        pairs(narr, xarr, labels=snames, output=pdf, highlights=set_index)
+        pairs(narr, xarr, labels=snames, output=pdf, highlights=[set_index,set_labels])
         self.new_file(pdf, 'plot_pairs')
         return self.display_time()
 
