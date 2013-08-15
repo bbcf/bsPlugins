@@ -1,5 +1,5 @@
 from bsPlugins import *
-from bbcflib.gfminer.common import sorted_stream
+from bbcflib.gfminer.common import sorted_stream, add_name_field
 from bbcflib.gfminer.stream import neighborhood, score_by_feature
 from bbcflib.gfminer.numeric import score_array, correlation
 from bbcflib.gfminer.figure import pairs
@@ -18,12 +18,13 @@ meta = {'version': "1.0.0",
         'contact': "webmaster-bbcf@epfl.ch"}
 
 in_parameters = [{'id': 'input_type', 'type': 'radio'},
-                 {'id': 'signals', 'type': 'track', 'required': True, 'multiple':'SigMulti'},
+                 {'id': 'signals', 'type': 'track', 'required': True, 'multiple': 'SigMulti'},
                  {'id': 'feature_type', 'type': 'list'},
                  {'id': 'features', 'type': 'track'},
                  {'id': 'upstream', 'type': 'int', 'required': True},
                  {'id': 'downstream', 'type': 'int', 'required': True},
                  {'id': 'assembly', 'type': 'assembly'},
+                 {'id': 'highlights', 'type': 'track', 'multiple': 'HiMulti'},
                  {'id': 'mode', 'type': 'list', 'required': True}]
 out_parameters = [{'id': 'plot_pairs', 'type': 'pdf'}]
 
@@ -32,7 +33,7 @@ class PairsPlotForm(BaseForm):
     class SigMulti(twb.BsMultiple):
         label='Signal: '
         signals = twb.BsFileField(label=' ',
-                                  help_text='Select signal file (.g. bedgraph)',
+                                  help_text='Select signal file (e.g. bedgraph)',
                                   validator=twb.BsFileFieldValidator(required=True))
     child = twd.HidingTableLayout()
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
@@ -55,6 +56,11 @@ class PairsPlotForm(BaseForm):
     assembly = twf.SingleSelectField(label='Assembly: ',
                                      options=genrep.GenRep().assemblies_available(),
                                      help_text='Reference genome')
+    class HiMulti(twb.BsMultiple):
+        label='Features to highlight: '
+        highlights = twb.BsFileField(label=' ',
+                                     help_text='Select a feature file (e.g. bed)',
+                                     validator=twb.BsFileFieldValidator())
     mode = twf.SingleSelectField(label='Plot type: ',
                                  options=plot_types,
                                  prompt_text=None)
@@ -107,8 +113,14 @@ class PairsPlotPlugin(BasePlugin):
             features = _t.read
         else:
             raise ValueError("Feature type not known: %i" % feature_type)
+        highlights = kw.get('HiMulti',{}).get('highlights', [])
+        if not isinstance(highlights, list): highlights = [highlights]
+        if highlights is not None:
+            highlights = [track(hi, chrmeta=chrmeta) for hi in highlights]
+            hinames = [t.name for t in highlights]
         pdf = self.temporary_path(fname='plot_pairs.pdf')
         narr = None
+        set_index = []
         if int(kw['mode']) == 0: #correl
             xarr = array(range(-cormax, cormax + 1))
             srtdchrom = sorted(chrmeta.keys())
@@ -121,17 +133,31 @@ class PairsPlotPlugin(BasePlugin):
             xarr = None
             for chrom in chrmeta:
                 feat = features(chrom)
+                if 'name' not in feat.fields:
+                    feat = add_name_field(feat)
                 means = score_by_feature([s.read(chrom) for s in signals], feat)
                 mf = means.fields[len(feat.fields):]
                 _n, _l = score_array(means, mf)
                 if _n.size == 0: continue
                 if narr is None: narr = _n
                 else:            narr = vstack((narr, _n))
+            set_index = [narr.shape[0]]
+            for hitrack in highlights:
+                for chrom in chrmeta:
+                    hiread = hitrack.read(chrom)
+                    if 'name' not in hiread.fields:
+                        hiread = add_name_field(hiread)
+                    means = score_by_feature([s.read(chrom) for s in signals], hiread)
+                    mf = means.fields[len(hiread.fields):]
+                    _n, _l = score_array(means, mf)
+                    if _n.size == 0: continue
+                    narr = vstack((narr, _n))
+                set_index.append(narr.shape[0])
         else:
             raise ValueError("Mode not implemented: %s" % kw['mode'])
         if narr is None:
             raise ValueError("No data")
-        pairs(narr, xarr, labels=snames, output=pdf)
+        pairs(narr, xarr, labels=snames, output=pdf, highlights=set_index)
         self.new_file(pdf, 'plot_pairs')
         return self.display_time()
 

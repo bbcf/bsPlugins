@@ -1,4 +1,5 @@
 from bsPlugins import *
+from bbcflib.gfminer.common import add_name_field
 from bbcflib.gfminer.numeric import feature_matrix
 from bbcflib.gfminer.figure import heatmap, lineplot
 from bbcflib.track import track, FeatureStream
@@ -105,14 +106,6 @@ class PlotFeaturesPlugin(BasePlugin):
             if strand is None or strand > 0: return start+concatenate([Xup,Xb,Xdown])
             else:                            return end-concatenate([Xup,Xb,Xdown])
 
-        def add_name(_s):
-            """Adds a name field to a stream using 'chr:start-end'."""
-            ci = _s.fields.index('chr')
-            si = _s.fields.index('start')
-            ei = _s.fields.index('end')
-            _f = _s.fields+['name']
-            return FeatureStream((r+("%s:%i-%i"%(r[ci],r[si],r[ei]),) for r in _s), fields=_f)
-
         chrmeta = "guess"
         features = track(kw.get('features'), chrmeta=chrmeta)
         signals = kw.get('SigMulti',{}).get('signals', [])
@@ -141,7 +134,7 @@ class PlotFeaturesPlugin(BasePlugin):
         ymax = kw.get('ymax')
         for chrom in features.chrmeta:
             if 'name' in features.fields: _fread = features.read(chrom)
-            else: _fread = add_name(features.read(chrom))
+            else: _fread = add_name_field(features.read(chrom))
             _l, _d = feature_matrix([s.read(chrom) for s in signals], _fread,
                                     segment=True, nbins=nbins, 
                                     upstream=upstr, downstream=downstr)
@@ -169,7 +162,7 @@ class PlotFeaturesPlugin(BasePlugin):
         if mode in plot_types[0]: #heatmap
             new = True
             if 'name' in features.fields: _fread = features.read(fields=['chr','start','end','name'])
-            else: _fread = add_name(features.read(fields=['chr','start','end']))
+            else: _fread = add_name_field(features.read(fields=['chr','start','end']))
             order = [where(labels == feat[3])[0][0] for feat in _fread]
             for n in range(data.shape[-1]-1):
                 heatmap(data[order, :, n], output=pdf, new=new, last=False,
@@ -214,7 +207,7 @@ class PlotFeaturesPlugin(BasePlugin):
                 _f.append('strand')
                 _si = 3
             if 'name' in features.fields: _fread = features.read(fields=_f+['name'])
-            else: _fread = add_name(features.read(fields=_f))
+            else: _fread = add_name_field(features.read(fields=_f))
             order = []
             for nf,feat in enumerate(_fread):
                 reg = where(labels == feat[-1])[0][0]
