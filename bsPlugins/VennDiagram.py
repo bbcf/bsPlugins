@@ -14,10 +14,10 @@ meta = {'version': "1.0.0",
 in_parameters = [{'id': 'input_type', 'type': 'radio'},
                  {'id': 'files', 'type':'track', 'multiple':'TrMulti'},
                  {'id': 'type', 'type':' list'},
-                 {'id': 'format', 'type': 'list'},
                  {'id': 'table', 'type': 'track'},
                  {'id': 'id_columns', 'type': 'text'},
-                 {'id': 'filters', 'type': 'text'}]
+                 {'id': 'filters', 'type': 'text'},
+                 {'id': 'format', 'type': 'list'}]
 
 out_parameters = [{'id':'venn_diagram', 'type':'file'},
                   {'id':'venn_summary', 'type':'file'}]
@@ -30,7 +30,7 @@ class VennDiagramForm(BaseForm):
     input_type = twd.HidingRadioButtonList(label='Input from: ',
                                            options=['Table', 'Tracks'],
                                            mapping={'Table': ['table','id_columns','filters'],
-                                                    'Tracks': ['files','type']},
+                                                    'Tracks': ['TrMulti','type']},
                                            value='Table',
                                            help_text='Select input type (Formatted table, or genomic tracks)')
 
@@ -44,11 +44,6 @@ class VennDiagramForm(BaseForm):
                                  prompt_text=None,
                                  options=['intervals','score'],
                                  help_text='Output figure format')
-    format = twf.SingleSelectField(label='Format: ',
-                                   prompt_text=None,
-                                   options=['png','pdf'],
-                                   help_text='Output figure format')
-
     table = twb.BsFileField(label='table: ',
                             help_text='Select table',
                             validator=twb.BsFileFieldValidator(required=True))
@@ -60,6 +55,11 @@ class VennDiagramForm(BaseForm):
                             validator=twc.Validator(required=True),
                             value='',
                             help_text='comma separated list of simple filters which will be applied to each corresponding column id before doing the Venn diagram (e.g. >2,<0.05,>=2 OR <=-2,>=-2 AND <2,==2,!=2) - one filter per column should be given - leave an empty string if no filter should be applied to a given column (e.g., >2,,<0.05)')
+
+    format = twf.SingleSelectField(label='Format: ',
+                                   prompt_text=None,
+                                   options=['png','pdf'],
+                                   help_text='Output figure format')
 
     submit = twf.SubmitButton(id="submit", value="Run")
 
