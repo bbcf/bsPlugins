@@ -50,11 +50,11 @@ class VennDiagramForm(BaseForm):
     id_columns = twf.TextField(label='Column IDs: ',
                                validator=twc.Validator(required=True),
                                value='',
-                               help_text='comma separated list of columns id for which Venn diagram will be generated (e.g. 3,5)')
+                               help_text='comma separated list of columns id  (e.g. 3,5)')
     filters = twf.TextField(label='Filters: ',
                             validator=twc.Validator(required=True),
                             value='',
-                            help_text='comma separated list of simple filters which will be applied to each corresponding column id before doing the Venn diagram (e.g. >2,<0.05,>=2 OR <=-2,>=-2 AND <2,==2,!=2) - one filter per column should be given - leave an empty string if no filter should be applied to a given column (e.g., >2,,<0.05)')
+                            help_text='comma separated list of filtering expressions (e.g. >2,<0.05,>=2 OR <=-2,>=-2 AND <2,==2,!=2)')
 
     format = twf.SingleSelectField(label='Format: ',
                                    prompt_text=None,
@@ -66,13 +66,13 @@ class VennDiagramForm(BaseForm):
 
 class VennDiagramPlugin(BasePlugin):
     """
-Creates a Venn diagram of the proportions of
-total coverage/total score attributed to each of the given tracks.
+For input as a set of tracks, 
+creates a Venn diagram of the proportions of total coverage/total score attributed to each track.
 
 If the parameter 'type' has the value 'intervals', the diagram will show the percent
 of the genome covered by each possible combination of the input tracks. For instance,
-If tracks A and B are given, it will show the portion covered by A only, B only, or
-A and B (where they intersect).
+If tracks A and B are given, it will show the portions covered by A only, B only, or
+A and B.
 
 If it has the value 'score', the diagram will show the percent of the total score
 due to each combination of the input tracks, as above.
@@ -80,7 +80,11 @@ due to each combination of the input tracks, as above.
 The output includes the figure of the Venn diagram and a text summary of the different statistics.
 If more than 4 samples are given, no graph is produced, but the text summary still contains
 all the information.
-"""
+
+For input as a table of numeric value, logical rules will be applied to selected columns, 
+and the Venn diagram will be based on the number of rows passing the rulein each combination of columns.
+Rules (possibly empty) must be specified in the same order as column numbers.
+'"""
 
     info = {
         'title': 'Venn Diagram',
