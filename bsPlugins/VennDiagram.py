@@ -44,14 +44,14 @@ class VennDiagramForm(BaseForm):
                                  prompt_text=None,
                                  options=['intervals','score'],
                                  help_text='Output figure format')
-    table = twb.BsFileField(label='table: ',
+    table = twb.BsFileField(label='Table: ',
                             help_text='Select table',
                             validator=twb.BsFileFieldValidator(required=True))
-    id_columns = twf.TextField(label='columns id: ',
+    id_columns = twf.TextField(label='Column IDs: ',
                                validator=twc.Validator(required=True),
                                value='',
                                help_text='comma separated list of columns id for which Venn diagram will be generated (e.g. 3,5)')
-    filters = twf.TextField(label='filters: ',
+    filters = twf.TextField(label='Filters: ',
                             validator=twc.Validator(required=True),
                             value='',
                             help_text='comma separated list of simple filters which will be applied to each corresponding column id before doing the Venn diagram (e.g. >2,<0.05,>=2 OR <=-2,>=-2 AND <2,==2,!=2) - one filter per column should be given - leave an empty string if no filter should be applied to a given column (e.g., >2,,<0.05)')
@@ -132,13 +132,14 @@ all the information.
                 for c in combn:
                     c1["|".join([tlabels[n] for n,t in enumerate(tests) if t])] += 1
                     c2["|".join(c)] += all([tests[i] for i in indx[c]])
-            tracks = [infile]
+            nsamples = len(col_ind)
             combn = ['|'.join(y) for x in combn for y in x]
         elif intype == "Tracks":
             filenames = kw['TrMulti']['files']
             if not isinstance(filenames,(list,tuple)): filenames = [filenames]
             for f in filenames: assert os.path.exists(f), "File not found: %s ." % f
             tracks = [track(f,chrmeta='guess') for f in filenames]
+            nsamples = len(tracks)
             tlabels = [chr(k+65) for k in range(len(tracks))]
             combn = [combinations(tlabels,k+1) for k in range(len(tlabels))]
             combn = ['|'.join(sorted(y)) for x in combn for y in x]
@@ -184,11 +185,11 @@ all the information.
             raise ValueError("Input type '%s' not supported." %intype)
 
 
-        format = kw.get('format') or 'pdf'
-        output = self.temporary_path(fname='venn_diagram.'+format)
-        if len(tracks) <= 4:
+        if nsamples <= 4:
+            format = kw.get('format') or 'pdf'
+            output = self.temporary_path(fname='venn_diagram.'+format)
             venn(c2,legend=legend,options=venn_options,output=output,format=format)
-        self.new_file(output, 'venn_diagram')
+            self.new_file(output, 'venn_diagram')
 
         # Text summary
         output = self.temporary_path(fname='venn_summary.txt')
