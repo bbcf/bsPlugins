@@ -71,7 +71,7 @@ all the information.
         if not isinstance(filenames,(list,tuple)): filenames = [filenames]
         for f in filenames: assert os.path.exists(f), "File not found: %s ." % f
         tracks = [track(f,chrmeta='guess') for f in filenames]
-        tlabels = [chr(kk+65) for kk in range(len(tracks))]
+        tlabels = [chr(k+65) for k in range(len(tracks))]
         combn = [combinations(tlabels,k+1) for k in range(len(tlabels))]
         combn = ['|'.join(sorted(y)) for x in combn for y in x]
         c1 = dict(zip(combn,[0]*len(combn)))
@@ -110,7 +110,7 @@ all the information.
         venn_options = {} # tune it here
         format = kw.get('format','pdf')
         output = self.temporary_path(fname='venn_diagram.'+format)
-        kw.setdefault('legend', [t.name for t in tracks])
+        legend = [t.name for t in tracks]
         if _scored:
             for c in combn:
                 c2[c] = round(c2[c])
@@ -119,7 +119,7 @@ all the information.
                 c2[c] = round((100*c2[c])/total_cov)
                 c1[c] = (100*c1[c])/total_cov
         if len(tracks) <= 4:
-            venn(c2,options=venn_options,output=output,format=format)
+            venn(c2,legend=legend,options=venn_options,output=output,format=format)
         self.new_file(output, 'venn_diagram')
         # Text summary
         output = self.temporary_path(fname='venn_summary.txt')

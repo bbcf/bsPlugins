@@ -3,7 +3,7 @@ from bbcflib.track import track
 from bbcflib import genrep
 from bbcflib.gfminer.figure import venn
 import rpy2.robjects as robjects
-import os
+import os, re
 
 default_path = "/mnt/common/epfl/share"
 
@@ -52,32 +52,42 @@ class VennDiagramWithFilterPlugin(BasePlugin):
         }
 
     def __call__(self, **kw):
+
+
+        def _clean(string):
+            s = re.sub(r'[^\w\d!=><\. ]','',string)
+            s = "(%f "+re.sub(r' AND ',')and(%f ', re.sub(r' OR ',')or(%f ',s))+")"
+            return s
+
         infile = kw.get('table')
         assert os.path.exists(infile),"File not found: %s ." % infile
         fname = os.path.splitext(os.path.basename(infile))[0]
-        with open(infile,"rb") as f:
-            h = f.readline().split('\t')
         s_cols = kw.get('id_columns','')
         s_filters = kw.get('filters','')
         format = kw.get('format','pdf')
         script_path = kw.get("script_path",default_path)
 
         colnames = []
-        for i in s_cols.split(','):
-            index = int(i)-1
-            if index <= len(h):
-                colnames.append(h[index])
+        col_ind = [int(i)-1 for i in s_cols.split(",")]
+        conds = [_clean(x) for x in s_filters.split(",")]
+        tlabels = [chr(k+65) for k in range(length(col_ind))]
+        conds += ["1"]*(len(col_ind)-len(conds))
+        combn = [x for for k in range(len(tlabels)) for x in combinations(tlabels,k+1)]
+        D = dict(("|".join(sorted(c)),0) for c in combn)
+        indx = dict((c,[tlabels.index(x) for x in c]) for 
 
-        out = robjects.r("""
-            source("%s/filterVenn.R")
-            filterVenn("%s","%s","%s")
-        """ %(script_path,infile,s_cols,s_filters))
-
-        D = {}
-        for x in out[0].split(','): 
-            D[x.split(':')[0]] = int(x.split(':')[1])
+        with open(infile) as f:
+            h = f.readline().split('\t')
+            for i in col_ind:
+                if i < len(h):
+                    colnames.append(h[index])
+            for _r in f:
+                row = _r.strip().split("\t")
+                tests = [eval(c % ((x[col_ind[i]],)*c.count("%f"))) for i,c in enumerate(conds)]
+                for c in combn:
+                    res = "|".join(c)
+                    D[res] += all([tests[i] for i in ])
         output = self.temporary_path(fname='venn_diagram.'+format)
-        print(D)
         venn(D,output=output,legend=colnames,format=format)
         self.new_file(output, 'venn_diagram')
 
