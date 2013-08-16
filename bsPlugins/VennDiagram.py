@@ -110,7 +110,7 @@ all the information.
         venn_options = {} # tune it here
         format = kw.get('format','pdf')
         output = self.temporary_path(fname='venn_diagram.'+format)
-        legend = [t.name for t in tracks]
+        kw.setdefault('legend', [t.name for t in tracks])
         if _scored:
             for c in combn:
                 c2[c] = round(c2[c])
@@ -119,13 +119,13 @@ all the information.
                 c2[c] = round((100*c2[c])/total_cov)
                 c1[c] = (100*c1[c])/total_cov
         if len(tracks) <= 4:
-            venn(c2,legend=legend,options=venn_options,output=output,format=format)
+            venn(c2,options=venn_options,output=output,format=format)
         self.new_file(output, 'venn_diagram')
         # Text summary
         output = self.temporary_path(fname='venn_summary.txt')
         with open(output,'wb') as summary:
             summary.write("%s\t%s\t%s\n" % ("Group","Coverage", "Cumulative coverage"))
-            record = "%s\t%.2f\t%d\n" 
+            record = "%s\t%.2f\t%d\n"
             for c in sorted(combn, key=lambda x:(len(x),x)):
                 summary.write(record%(c,c1[c],c2[c]))
         self.new_file(output, 'venn_summary')
