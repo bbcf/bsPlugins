@@ -4,6 +4,18 @@ from bbcflib.gfminer.numeric import correlation
 from bbcflib.track import track, FeatureStream
 from bbcflib import genrep
 
+meta = {'version': "1.0.0",
+        'author': "BBCF",
+        'contact': "webmaster-bbcf@epfl.ch"}
+
+in_parameters = [{'id': 'forward', 'type': 'track', 'required': True},
+                 {'id': 'reverse', 'type': 'track', 'required': True},
+                 {'id': 'assembly', 'type': 'assembly'},
+                 {'id': 'shift', 'type': 'int', 'required': True},
+                 {'id': 'method', 'type': 'radio'}]
+out_parameters = [{'id': 'density_merged', 'type': 'track'}]
+
+
 
 class MergeTracksForm(BaseForm):
     forward = twb.BsFileField(label='Forward: ',
@@ -21,21 +33,14 @@ class MergeTracksForm(BaseForm):
                           help_text='Enter positive downstream shift ([fragment_size-read_length]/2), \
                                      or a negative value to estimate shift by cross-correlation')
     format = twf.SingleSelectField(label='Output format: ',
-        options=["sql","bed",'bedGraph','wig','sga'],
-        prompt_text=None,
-        help_text='Format of the output file', )
+                                   options=["sql","bed",'bedGraph','wig','sga'],
+                                   prompt_text=None,
+                                   help_text='Format of the output file', )
+    method = twf.RadioButtonList(label='Method: ',
+                                 options=['mean','min','max', 'geometric', 'median'],
+                                 value='mean',
+                                 help_text='Select the score combination method')
     submit = twf.SubmitButton(id="submit", value='Merge tracks')
-
-
-meta = {'version': "1.0.0",
-        'author': "BBCF",
-        'contact': "webmaster-bbcf@epfl.ch"}
-
-in_parameters = [{'id': 'forward', 'type': 'track', 'required': True},
-                 {'id': 'reverse', 'type': 'track', 'required': True},
-                 {'id': 'assembly', 'type': 'assembly'},
-                 {'id': 'shift', 'type': 'int', 'required': True}]
-out_parameters = [{'id': 'density_merged', 'type': 'track'}]
 
 
 class MergeTracksPlugin(BasePlugin):
@@ -93,9 +98,11 @@ The output is the average of all the input signals, position by position.
         tout = track(output, chrmeta=chrmeta,
                            info={'datatype': 'quantitative', 'shift': shiftval})
         mode = 'write'
+        method = kw.get("method","mean")
         for chrom in chrmeta.keys():
             tout.write(merge_scores([_shift(tfwd.read(selection=chrom), shiftval),
-                                     _shift(trev.read(selection=chrom), -shiftval)]),
+                                     _shift(trev.read(selection=chrom), -shiftval)],
+                                    method=method),
                        chrom=chrom, mode=mode, clip=True)
             mode = 'append'
         tout.close()

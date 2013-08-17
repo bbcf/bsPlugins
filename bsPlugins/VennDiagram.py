@@ -50,7 +50,7 @@ class VennDiagramForm(BaseForm):
     id_columns = twf.TextField(label='Column IDs: ',
                                validator=twc.Validator(required=True),
                                value='',
-                               help_text='comma separated list of columns id  (e.g. 3,5)')
+                               help_text='comma separated list of column ids (e.g. 3,5)')
     filters = twf.TextField(label='Filters: ',
                             validator=twc.Validator(required=True),
                             value='',
