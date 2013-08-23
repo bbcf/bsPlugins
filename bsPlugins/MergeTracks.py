@@ -37,7 +37,7 @@ class MergeTracksForm(BaseForm):
                                    prompt_text=None,
                                    help_text='Format of the output file', )
     method = twf.RadioButtonList(label='Method: ',
-                                 options=['mean','min','max', 'geometric', 'median'],
+                                 options=['mean','min','max','geometric','median','sum'],
                                  value='mean',
                                  help_text='Select the score combination method')
     submit = twf.SubmitButton(id="submit", value='Merge tracks')

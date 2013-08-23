@@ -103,8 +103,11 @@ each alignment will be considered, default is read length).
                                      read_extension=read_extension,
                                      sql=True, args=b2wargs ) 
                      for n,s in enumerate(samples)]
+        info = {'datatype': 'quantitative',
+                'read_extension': read_extension}
         if merge_strands >= 0:
             suffixes = ["merged"]
+            info['shift'] = merge_strands
         else:
             suffixes = ["fwd", "rev"]
         chrmeta = bamfiles[0].chrmeta
@@ -124,7 +127,7 @@ each alignment will be considered, default is read length).
             else:
                 x = all_s_files[0]
                 tsql = track( x, format='sql', fields=['start', 'end', 'score'],
-                              chrmeta=chrmeta, info={'datatype': 'quantitative'} )
+                              chrmeta=chrmeta, info=info )
                 tsql.save()
             if format in [None,"sql"]:
                 outname = x

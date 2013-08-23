@@ -17,8 +17,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'input_type', 'type': 'radio'},
-                 {'id': 'signals', 'type': 'track', 'required': True, 'multiple': 'SigMulti'},
+in_parameters = [{'id': 'signals', 'type': 'track', 'required': True, 'multiple': 'SigMulti'},
                  {'id': 'feature_type', 'type': 'list'},
                  {'id': 'features', 'type': 'track'},
                  {'id': 'upstream', 'type': 'int', 'required': True},
@@ -121,6 +120,7 @@ class PairsPlotPlugin(BasePlugin):
         pdf = self.temporary_path(fname='plot_pairs.pdf')
         narr = None
         set_index = []
+        set_labels = []
         if int(kw['mode']) == 0: #correl
             xarr = array(range(-cormax, cormax + 1))
             srtdchrom = sorted(chrmeta.keys())
@@ -142,7 +142,6 @@ class PairsPlotPlugin(BasePlugin):
                 if narr is None: narr = _n
                 else:            narr = vstack((narr, _n))
             set_index = [narr.shape[0]]
-            set_labels = []
             for hitrack in highlights:
                 for chrom in chrmeta:
                     hiread = hitrack.read(chrom)
