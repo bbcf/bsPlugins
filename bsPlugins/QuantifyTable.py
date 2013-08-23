@@ -27,8 +27,8 @@ class QuantifyTableForm(BaseForm):
     class SigMulti(twb.BsMultiple):
         label='Signals: '
         signals = twb.BsFileField(label=' ',
-                                help_text='Select signal files (e.g. bedgraph)',
-                                validator=twb.BsFileFieldValidator(required=True))
+                                  help_text='Select signal files (e.g. bedgraph)',
+                                  validator=twb.BsFileFieldValidator(required=True))
 
     score_op = twf.SingleSelectField(label='Score operation: ',
                                      options=funcs,
@@ -41,25 +41,25 @@ class QuantifyTableForm(BaseForm):
                                                         1: ['upstream', 'downstream']},
                                                help_text='Choose a feature set or upload your own')
     features = twb.BsFileField(label='Custom feature set: ',
-        help_text='Select a feature file (e.g. bed)',
-        validator=twb.BsFileFieldValidator())
+                               help_text='Select a feature file (e.g. bed)',
+                               validator=twb.BsFileFieldValidator())
     upstream = twf.TextField(label='Promoter upstream distance: ',
-        validator=twc.IntValidator(),
-        value=prom_up_def,
-        help_text='Size of promoter upstream of TSS')
+                             validator=twc.IntValidator(),
+                             value=prom_up_def,
+                             help_text='Size of promoter upstream of TSS')
     downstream = twf.TextField(label='Promoter downstream distance: ',
-        validator=twc.IntValidator(),
-        value=prom_down_def,
-        help_text='Size of promoter downstream of TSS')
+                               validator=twc.IntValidator(),
+                               value=prom_down_def,
+                               help_text='Size of promoter downstream of TSS')
     assembly = twf.SingleSelectField(label='Assembly: ',
-        prompt_text=None,
-        options=genrep.GenRep().assemblies_available(),
-        help_text='Reference genome')
+                                     prompt_text=None,
+                                     options=genrep.GenRep().assemblies_available(),
+                                     help_text='Reference genome')
     format = twf.SingleSelectField(label='Output format: ',
-        prompt_text=None,
-        options=["txt", "sql"],
-        validator=twc.Validator(required=True),
-        help_text='Format of the output file')
+                                   prompt_text=None,
+                                   options=["txt", "sql"],
+                                   validator=twc.Validator(required=True),
+                                   help_text='Format of the output file')
     submit = twf.SubmitButton(id="submit", value="Quantify")
 
 

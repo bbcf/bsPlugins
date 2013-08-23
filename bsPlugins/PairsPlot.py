@@ -38,17 +38,13 @@ class PairsPlotForm(BaseForm):
     child = twd.HidingTableLayout()
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
                                                options=ftypes, prompt_text=None,
-                                               mapping={ftypes[-1][0]: ['features','cormax'],
+                                               mapping={ftypes[-1][0]: ['features'],
                                                         1: ['upstream', 'downstream']},
                                                help_text='Choose a feature set or upload your own',
                                                validator=twc.Validator(required=True))
     features = twb.BsFileField(label='Custom feature set: ',
                              help_text='Select a feature file (e.g. bed)',
                              validator=twb.BsFileFieldValidator())
-    cormax = twf.TextField(label='Spatial range for correlation: ',
-                           validator=twc.IntValidator(),
-                           value=_cormax,
-                           help_text='Maximum distance in bp to display correlations')
     upstream = twf.TextField(label='Promoter upstream distance: ',
                              validator=twc.IntValidator(),
                              value=prom_up_def,
@@ -65,9 +61,14 @@ class PairsPlotForm(BaseForm):
         highlights = twb.BsFileField(label=' ',
                                      help_text='Select a feature file (e.g. bed)',
                                      validator=twb.BsFileFieldValidator())
-    mode = twf.SingleSelectField(label='Plot type: ',
-                                 options=plot_types,
-                                 prompt_text=None)
+    mode = twf.HidingSingleSelectField(label='Plot type: ',
+                                       options=plot_types,
+                                       mapping={0: ['cormax']},
+                                       prompt_text=None)
+    cormax = twf.TextField(label='Spatial range for correlation: ',
+                           validator=twc.IntValidator(),
+                           value=_cormax,
+                           help_text='Maximum distance in bp to compute correlations')
     submit = twf.SubmitButton(id="submit", value="Plot")
 
 
@@ -75,7 +76,7 @@ class PairsPlotPlugin(BasePlugin):
     """Plots pairwise comparisons between signal tracks:
 
 * For *density plots* each signal track is quantified at the selected features, and this data is represented as two-way scatter plots (above diagonal), histograms (on the diagonal), and quantile plots (below diagonal). 
-* *Correlation* plots show spatial auto- and cross-correlation of signals across the selected features.
+* *Correlation* plots show spatial auto- and cross-correlation of signals within the selected features.
 """
     info = {
         'title': 'Pairwise plots',
