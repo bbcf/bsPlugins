@@ -11,7 +11,7 @@ ftypes = [(0, 'genes bodies'), (1, 'gene promoters'), (2, 'exons'), (3, 'custom 
 prom_up_def = 1000
 prom_down_def = 100
 plot_types = [(0, 'correlations'), (1, 'density plots')]
-cormax = 500
+_cormax = 500
 
 meta = {'version': "1.0.0",
         'author': "BBCF",
@@ -20,6 +20,7 @@ meta = {'version': "1.0.0",
 in_parameters = [{'id': 'signals', 'type': 'track', 'required': True, 'multiple': 'SigMulti'},
                  {'id': 'feature_type', 'type': 'list'},
                  {'id': 'features', 'type': 'track'},
+                 {'id': 'cormax', 'type': 'int'},
                  {'id': 'upstream', 'type': 'int', 'required': True},
                  {'id': 'downstream', 'type': 'int', 'required': True},
                  {'id': 'assembly', 'type': 'assembly'},
@@ -37,13 +38,17 @@ class PairsPlotForm(BaseForm):
     child = twd.HidingTableLayout()
     feature_type = twd.HidingSingleSelectField(label='Feature type: ',
                                                options=ftypes, prompt_text=None,
-                                               mapping={ftypes[-1][0]: ['features'],
+                                               mapping={ftypes[-1][0]: ['features','cormax'],
                                                         1: ['upstream', 'downstream']},
                                                help_text='Choose a feature set or upload your own',
                                                validator=twc.Validator(required=True))
     features = twb.BsFileField(label='Custom feature set: ',
                              help_text='Select a feature file (e.g. bed)',
                              validator=twb.BsFileFieldValidator())
+    cormax = twf.TextField(label='Spatial range for correlation: ',
+                           validator=twc.IntValidator(),
+                           value=_cormax,
+                           help_text='Maximum distance in bp to display correlations')
     upstream = twf.TextField(label='Promoter upstream distance: ',
                              validator=twc.IntValidator(),
                              value=prom_up_def,
@@ -122,6 +127,7 @@ class PairsPlotPlugin(BasePlugin):
         set_index = []
         set_labels = []
         if int(kw['mode']) == 0: #correl
+            cormax = int(kw.get('cormax') or _cormax)
             xarr = array(range(-cormax, cormax + 1))
             srtdchrom = sorted(chrmeta.keys())
             features = [x[:3] for chrom in srtdchrom
