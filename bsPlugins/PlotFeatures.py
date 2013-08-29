@@ -130,8 +130,8 @@ class PlotFeaturesPlugin(BasePlugin):
         else: nbins = _nbins
         if kw.get("noclust") is not None: noclust = str(kw["noclust"]).lower() in ['1','true','t']
         else: noclust = False
-        ymin = kw.get('ymin')
-        ymax = kw.get('ymax')
+        ymin = str(kw.get('ymin','')) or None
+        ymax = str(kw.get('ymax','')) or None
         for chrom in features.chrmeta:
             if 'name' in features.fields: _fread = features.read(chrom)
             else: _fread = add_name_field(features.read(chrom))
@@ -213,16 +213,17 @@ class PlotFeaturesPlugin(BasePlugin):
                 reg = where(labels == feat[-1])[0][0]
                 order.append(reg)
                 X1 = make_X_labels(X, feat[1], feat[2], feat[_si] if _si else None, downstr[0], upstr[0])
+                xlim = (X1[0],X1[-1])
                 Y = [data[reg, :, n] for n in range(data.shape[-1])]
                 if nf == 0:
                     lineplot(X1, Y,  output=pdf, new=True, last=False, mfrow=mfrow,
-                             main=labels[reg], ylim=(float(ymin),float(ymax)))
+                             main=labels[reg], ylim=(float(ymin),float(ymax)), xlim=xlim)
                 elif nf < nplot-1:
                     lineplot(X1, Y, output=pdf, new=False, last=False, 
-                             main=labels[reg], ylim=(float(ymin),float(ymax)))
+                             main=labels[reg], ylim=(float(ymin),float(ymax)), xlim=xlim)
                 else:
                     lineplot(X1, Y, output=pdf, new=False, last=True, legend=snames, 
-                             main=labels[reg], ylim=(float(ymin),float(ymax)))
+                             main=labels[reg], ylim=(float(ymin),float(ymax)), xlim=xlim)
                     break
             if outf == 'archive':
                 for n,sn in enumerate(snames):
