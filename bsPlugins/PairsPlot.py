@@ -61,7 +61,7 @@ class PairsPlotForm(BaseForm):
         highlights = twb.BsFileField(label=' ',
                                      help_text='Select a feature file (e.g. bed)',
                                      validator=twb.BsFileFieldValidator())
-    mode = twf.HidingSingleSelectField(label='Plot type: ',
+    mode = twd.HidingSingleSelectField(label='Plot type: ',
                                        options=plot_types,
                                        mapping={0: ['cormax']},
                                        prompt_text=None)
