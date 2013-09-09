@@ -123,13 +123,12 @@ Scores can be the sum/mean/median/min/max of the tag count in the interval."""
         tout = track(output, format, fields=['chr','start','end','name']+_f,
                      chrmeta=chrmeta, info={'datatype':'qualitative'})
         with open(tout.path,"w") as tf:
-            header = ['chr','start','end','name']+[s.name for s in signals]
+            header = ['#chr','start','end','name']+[s.name for s in signals]
             tf.write("\t".join(header)+"\n")
         for chrom in chrmeta:
             sread = [sig.read(chrom) for sig in signals]
             tout.write(score_by_feature(sread, features(chrom), method=func),
                        chrom=chrom, clip=True, mode="append")
-        tout.close()
         return output
 
 

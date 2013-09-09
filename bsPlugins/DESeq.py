@@ -16,14 +16,12 @@ __requires__ = ["ryp2", "numpy"]
 
 class DESeqForm(BaseForm):
     child = twd.HidingTableLayout()
-
     input_type = twd.HidingRadioButtonList(label='Input type: ',
                                            options=['Table', 'Signals'],
                                            mapping={'Table': ['table'],
                                                     'Signals': ['Group1','Group2','feature_type','assembly'],},
                                            value='Table',
                                            help_text='Select input type (Formatted table, or signal tracks)')
-
     table = twb.BsFileField(label='Table: ',
         help_text='Select scores table',
         validator=twb.BsFileFieldValidator(required=True))
@@ -70,7 +68,7 @@ in_parameters = [
         {'id': 'input_type', 'type': 'radio'},
         {'id': 'signals1', 'type': 'track', 'required': True, 'multiple': 'Group1'},
         {'id': 'signals2', 'type': 'track', 'required': True, 'multiple': 'Group2'},
-        {'id': 'table', 'type': 'txt', 'required': True, 'multiple': True},
+        {'id': 'table', 'type': 'txt', 'required': True},
         {'id': 'feature_type', 'type': 'int'},
         {'id': 'upstream', 'type': 'int'},
         {'id': 'downstream', 'type': 'int'},
@@ -85,7 +83,6 @@ class DESeqPlugin(BasePlugin):
 for differential analysis within them. It returns a tab-delimited file with the following fields:
 
 Name, MeanA, MeanB, fold change, adjusted p-value.
-
 
 The input can be of two different types:
 
@@ -126,7 +123,7 @@ The input can be of two different types:
                 g.write('-'.join(contrast)+'\n')
                 g.write('\t'.join(['Name',A,B,'foldChange','padj'])+'\n')
                 for line in f:
-                    line = line.split("\t")
+                    line = line.strip().split("\t")
                     if not (line[2]=="0" and line[3]=="0") and not (line[2]=='NA' or line[3]=='NA'):
                         meanA = float(line[2]) or 0.5
                         meanB = float(line[3]) or 0.5
@@ -155,8 +152,8 @@ The input can be of two different types:
             signals2 = kw['Group2']['signals2']
             if not isinstance(signals1,(list,tuple)): signals1 = [signals1]
             if not isinstance(signals2,(list,tuple)): signals2 = [signals2]
-            kw['signals'] = signals1 + signals2
-            signals = kw['signals']
+            kw['SigMulti'] = {'signals': signals1+signals2} # to pass it to QuantifyTable plugin
+            signals = kw['SigMulti']['signals']
             table = QuantifyTablePlugin().quantify(**kw)
             stracks = []
             norm_factors = []
@@ -171,7 +168,8 @@ The input can be of two different types:
                     _nf = 1
                 stracks.append(_t)
                 norm_factors.append(_nf)
-            t = track(table,chrmeta=chrmeta)
+            t = track(table,chrmeta=chrmeta,fields=['chr','start','end','name']+ \
+                                                   ['score%d'%x for x in range(len(signals))])
             _f = [f for f in t.fields if f.startswith('score')]
             de_list = list(t.read(fields=['name']+_f))
             t.close(); os.remove(table)
@@ -204,15 +202,30 @@ The input can be of two different types:
         ### Still need to check that replicates are not identical - lfproc would fail
         groups <- unique(conds)
         couples <- combn(groups,2)
-        if (any(table(conds)>1)){ method = 'normal' # if replicates
+        if (any(table(conds)>1)){ method = 'pooled' # if replicates
         } else { method = 'blind' }
         """)
 
         robjects.r("""
         library(DESeq)
+        if (all(table(conds)>=3)){        # if >3 replicates in all conditions
+            method = 'per-condition'        # for each group estimate the variance from its replicates
+            sharingMode = 'gene-est-only'   # use the per-gene variance estimates only
+        } else if (any(table(conds)>1)){ # if few replicates
+            method = 'pooled'               # use all groups with replicates to estimate the variance
+            sharingMode = 'maximum'         # use the max of the GLM fit and the estimated variance
+        } else {                         # if no replicates
+            method = 'blind'                # pools all groups together to estimate the variance
+            sharingMode='fit-only'          # use only the GLM fit across the pooled variance
+        }
         cds <- newCountDataSet(Mdata, conds)
         cds <- estimateSizeFactors(cds)
-        cds <- estimateVarianceFunctions(cds,method='blind')
+        test = try({
+            cds <- estimateDispersions(cds, method=method, fitType='parametric', sharingMode=sharingMode)
+        })
+        if(class(test) == "try-error") {
+            cds <- estimateDispersions(cds, method=method, fitType='local', sharingMode=sharingMode)
+        }
         """)
 
         groups = list(set(colnames))
