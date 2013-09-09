@@ -77,7 +77,8 @@ class MaplotPlugin(BasePlugin):
     """Creates an MA-plot to compare levels of expression of genomic features
 across two samples.
 
-The input can be of two different types: 
+The input can be of two different types:
+
 * Two 'signal' files, i.e. bedGraph-type text files,
   and a list of genomic features - either from a pre-defined list such as Ensembl genes,
   or a custom bed-like file. The name of each sample is the one given in the track
