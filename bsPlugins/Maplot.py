@@ -75,18 +75,17 @@ out_parameters = [{'id': 'MA-plot', 'type': 'file'}]
 
 class MaplotPlugin(BasePlugin):
     """Creates an MA-plot to compare levels of expression of genomic features
-across two samples. <br /><br />
-The input can be of two different types: <br />
-<ul>
-<li> Two 'signal' files, i.e. bedGraph-type text files,
+across two samples.
+
+The input can be of two different types: 
+* Two 'signal' files, i.e. bedGraph-type text files,
   and a list of genomic features - either from a pre-defined list such as Ensembl genes,
   or a custom bed-like file. The name of each sample is the one given in the track
   definition line ("track name=... description=... etc."), if specified, otherwise the name of
   the file (without extension). </li>
-<li> A tab-delimited table with feature names in the first column, then one column of respective
-  scores per sample. The first line is a header of the type "id  sample1  sample2 ...". </li>
-</ul>
-    """
+* A tab-delimited table with feature names in the first column, then one column of respective
+  scores per sample. The first line is a header of the type "id  sample1  sample2 ...".
+  """
     info = {
         'title': 'MA-plot',
         'description': __doc__,
