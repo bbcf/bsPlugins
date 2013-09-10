@@ -130,8 +130,14 @@ class PlotFeaturesPlugin(BasePlugin):
         else: nbins = _nbins
         if kw.get("noclust") is not None: noclust = str(kw["noclust"]).lower() in ['1','true','t']
         else: noclust = False
-        ymin = str(kw.get('ymin','')) or None
-        ymax = str(kw.get('ymax','')) or None
+        try:
+            ymin = float(kw.get('ymin'))
+        except ValueError:
+            ymin = None
+        try:
+            ymax = float(kw.get('ymax'))
+        except ValueError:
+            ymax = None
         for chrom in features.chrmeta:
             if 'name' in features.fields: _fread = features.read(chrom)
             else: _fread = add_name_field(features.read(chrom))
@@ -188,7 +194,7 @@ class PlotFeaturesPlugin(BasePlugin):
             if ymax is None: ymax = max([x.max() for x in Y])
             lineplot(X, [Y[:, n] for n in range(data.shape[-1])],
                      output=pdf, new=True, last=True, legend=snames, 
-                     ylim=(float(ymin),float(ymax)))
+                     ylim=(ymin,ymax))
             if outf == 'archive':
                 _datf = self.temporary_path(fname="lineplot_data.txt")
                 with open(_datf,"w") as dff:
@@ -217,13 +223,13 @@ class PlotFeaturesPlugin(BasePlugin):
                 Y = [data[reg, :, n] for n in range(data.shape[-1])]
                 if nf == 0:
                     lineplot(X1, Y,  output=pdf, new=True, last=False, mfrow=mfrow,
-                             main=labels[reg], ylim=(float(ymin),float(ymax)), xlim=xlim)
+                             main=labels[reg], ylim=(ymin,ymax), xlim=xlim)
                 elif nf < nplot-1:
                     lineplot(X1, Y, output=pdf, new=False, last=False, 
-                             main=labels[reg], ylim=(float(ymin),float(ymax)), xlim=xlim)
+                             main=labels[reg], ylim=(ymin,ymax), xlim=xlim)
                 else:
                     lineplot(X1, Y, output=pdf, new=False, last=True, legend=snames, 
-                             main=labels[reg], ylim=(float(ymin),float(ymax)), xlim=xlim)
+                             main=labels[reg], ylim=(ymin,ymax), xlim=xlim)
                     break
             if outf == 'archive':
                 for n,sn in enumerate(snames):
