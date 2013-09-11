@@ -31,7 +31,9 @@ class PairedEndForm(BaseForm):
 
 
 class PairedEndPlugin(BasePlugin):
-    """Computes statistics and genome-wide distribution of fragment sizes from mapped paired-end reads."""
+    """Computes statistics and genome-wide distribution of fragment sizes from mapped paired-end reads.
+    The result will consist of a pdf showing the distribution of fragment lengths and of fragment multiplicities, and a genome-wide density (in the format specifiied) with the average fragment size at every position.
+    """
 
     info = {
         'title': 'Analysis of paired-end fragment sizes',
