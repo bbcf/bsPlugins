@@ -59,12 +59,18 @@ class AnnotatePlugin(BasePlugin):
         assembly_id = kw.get('assembly') or None
         assembly = genrep.Assembly(assembly_id)
         tinput = track(kw.get('track'), chrmeta=assembly.chrmeta)
-        if kw.get("promoter") is None: thPromot = prom_def
-        else:                          thPromot = int(kw["promoter"])
-        if kw.get("intergenic") is None: thInter = inter_def
-        else:                            thInter = int(kw["intergenic"])
-        if kw.get("UTR") is None: thUTR = utr_def
-        else:                     thUTR = int(kw["UTR"])
+        try:
+            thPromot = int(kw.get("promoter"))
+        except ValueError:
+            thPromot = prom_def
+        try:
+            thInter = int(kw.get("intergenic"))
+        except ValueError:
+            thInter = inter_def
+        try:
+            thUTR = int(kw.get("UTR"))
+        except ValueError:
+            thUTR = utr_def
         output = self.temporary_path(fname=tinput.name+'_annotated.txt')
         _fields = tinput.fields+['gene', 'location_type', 'distance']
         tout = track(output, format='txt', fields=_fields)
