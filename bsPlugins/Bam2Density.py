@@ -87,9 +87,8 @@ each alignment will be considered, default is read length).
             nreads = -1
         bamfiles = [track(s, format='bam') for s in samples]
         if nreads < 0:
-            if control is None:
-                _nreads = [len(set((t[4] for t in b.read()))) for b in bamfiles]
-            else:
+            _nreads = [0]*len(samples)
+            if control is not None:
                 b2wargs += ["-r"]
         else:
             _nreads = [nreads for s in samples]
