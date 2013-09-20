@@ -61,15 +61,15 @@ class AnnotatePlugin(BasePlugin):
         tinput = track(kw.get('track'), chrmeta=assembly.chrmeta)
         try:
             thPromot = int(kw.get("promoter"))
-        except ValueError:
+        except (ValueError, TypeError):
             thPromot = prom_def
         try:
             thInter = int(kw.get("intergenic"))
-        except ValueError:
+        except (ValueError, TypeError):
             thInter = inter_def
         try:
             thUTR = int(kw.get("UTR"))
-        except ValueError:
+        except (ValueError, TypeError):
             thUTR = utr_def
         output = self.temporary_path(fname=tinput.name+'_annotated.txt')
         _fields = tinput.fields+['gene', 'location_type', 'distance']

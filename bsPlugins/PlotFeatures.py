@@ -132,11 +132,11 @@ class PlotFeaturesPlugin(BasePlugin):
         else: noclust = False
         try:
             ymin = float(kw.get('ymin'))
-        except ValueError:
+        except (ValueError, TypeError):
             ymin = None
         try:
             ymax = float(kw.get('ymax'))
-        except ValueError:
+        except (ValueError, TypeError):
             ymax = None
         for chrom in features.chrmeta:
             if 'name' in features.fields: _fread = features.read(chrom)

@@ -83,7 +83,7 @@ each alignment will be considered, default is read length).
             control = os.path.abspath(control)
         try: 
             nreads = int(kw.get('normalization'))
-        except ValueError:
+        except (ValueError, TypeError):
             nreads = -1
         bamfiles = [track(s, format='bam') for s in samples]
         if nreads < 0:
@@ -94,11 +94,11 @@ each alignment will be considered, default is read length).
             _nreads = [nreads for s in samples]
         try: 
             merge_strands = int(kw.get('merge_strands'))
-        except ValueError:
+        except (ValueError, TypeError):
             merge_strands = -1
         try: 
             read_extension = int(kw.get('read_extension'))
-        except ValueError:
+        except (ValueError, TypeError):
             read_extension = -1
         output = [self.temporary_path(fname=b.name+'_density_') for b in bamfiles]
         format = kw.get("format", "sql")
