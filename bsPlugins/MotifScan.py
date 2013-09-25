@@ -48,7 +48,7 @@ class MotifScanForm(BaseForm):
     motifs = twf.MultipleSelectField(label='Motifs: ', options=available_motifs,
                                      help_text='Select motifs to be scanned')
     customMotif = twb.BsFileField(label='Custom motif: ',
-                                help_text='An optional custom/additional motif to scan (.mat)')
+                                  help_text='An optional custom/additional motif to scan (.mat)')
     threshold = twf.TextField(label='Threshold: ', value='0.0')
     submit = twf.SubmitButton(id="submit", value='Scan sequences')
 

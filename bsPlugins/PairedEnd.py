@@ -114,7 +114,10 @@ title(main=main,outer=T)
                 self._compute_stats(bam.fetch(chrom, 0, cval['length']))
                 trout.write( bam.PE_fragment_size(chrom), fields=_f, chrom=chrom )
             trout.close()
-            self._plot_stats(bam.name)
+            if self.nb_frag > 1:
+                self._plot_stats(bam.name)
+            else:
+                raise ValueError("No paired-end found in %s" %bam.name)
         robjects.r('dev.off()')
         if len(all_tracks)>1:
             tarname = self.temporary_path(fname='PE_fragment_tracks.tgz')
