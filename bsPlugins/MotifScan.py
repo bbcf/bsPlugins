@@ -41,7 +41,6 @@ class MotifScanForm(BaseForm):
                               validator=twb.BsFileFieldValidator())
 
     assembly = twf.SingleSelectField(label='Assembly: ', options=assembly_list,
-                                     prompt_text=None,
                                      help_text='Assembly to fetch sequences from')
     background = twb.BsFileField(label='Background: ',
                                  help_text='File of background frequencies (default: genome-wide frequencies)')
