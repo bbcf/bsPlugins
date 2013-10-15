@@ -70,7 +70,7 @@ class MotifScanPlugin(BasePlugin):
         fasta_file = kw.get('fastafile')
         background = kw.get('background') or None
         assembly_id = kw.get('assembly') or None
-        regions_file = kw.get('regions')
+        regions_file = kw.get('regions') or None
         motifs_list = kw.get('motifs')
         motif_add = kw.get('customMotif')
         threshold = float(kw.get('threshold') or 0)
