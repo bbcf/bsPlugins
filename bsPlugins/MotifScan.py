@@ -106,7 +106,7 @@ class MotifScanPlugin(BasePlugin):
         if len(motifs) == 0:
             raise ValueError("Please give at least one motif to scan for")
 
-        track_output = self.temporary_path(fname='motif_scan', ext="sql")
+        track_output = self.temporary_path(fname='motif_scan', ext="bed")
         with execution(None) as ex:
             _ = save_motif_profile( ex, motifs, assembly, regions_file, fasta_file,
                                     background=background, threshold=threshold,
