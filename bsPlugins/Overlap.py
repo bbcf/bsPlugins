@@ -52,11 +52,9 @@ class OverlapPlugin(BasePlugin):
             assembly = genrep.Assembly(assembly_id)
             chrmeta = assembly.chrmeta
         # Set features track
-        assert os.path.exists(str(kw.get('features'))), "Features file not found: '%s'"%kw.get("features")
         features = track(kw['features'], chrmeta=chrmeta or None )
         chrmeta = features.chrmeta
         # Set filter track
-        assert os.path.exists(str(kw.get('filter'))), "Filter file not found: '%s'"%kw.get("filter")
         filter = track(kw.get('filter'), chrmeta=chrmeta or None)
         # Main
         format = kw.get('format',features.format)
