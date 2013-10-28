@@ -41,19 +41,22 @@ class MotifScanForm(BaseForm):
                               validator=twb.BsFileFieldValidator())
 
     assembly = twf.SingleSelectField(label='Assembly: ', options=assembly_list,
-                                     help_text='Assembly to fetch sequences from')
+                                     help_text='Assembly to fetch sequences and/or compute the background frequencies')
     background = twb.BsFileField(label='Background: ',
                                  help_text='File of background frequencies (default: genome-wide frequencies)')
     motifs = twf.MultipleSelectField(label='Motifs: ', options=available_motifs,
                                      help_text='Select motifs to be scanned')
     customMotif = twb.BsFileField(label='Custom motif: ',
                                   help_text='An optional custom/additional motif to scan (.mat)')
-    threshold = twf.TextField(label='Threshold: ', value='0.0')
+    threshold = twf.TextField(label='Threshold: ', value='0.0',
+                              help_text="In units of log-likelihood ratio to the background")
     submit = twf.SubmitButton(id="submit", value='Scan sequences')
 
 
 class MotifScanPlugin(BasePlugin):
-    """Scan motifs PWM on a set of a sequences"""
+    """Give one or several motifs as  position-weight matrices (PWM) or as a selection from the list, and a set of sequences defined by regions of a genome or as a FASTA file. 
+
+The sequences will be scanned with the PWM and occurrences exceeding the threshold will be reported."""
     info = {
         'title': 'Motif scanner',
         'description': __doc__,
