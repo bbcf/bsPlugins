@@ -15,6 +15,7 @@ meta = {'version': "1.0.0",
 
 in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': 'SigMulti', 'required': True},
                  {'id': 'feature_type', 'type': 'list'},
+                 {'id': 'score_op', 'type': 'list'},
                  {'id': 'features', 'type': 'track'},
                  {'id': 'format', 'type': 'text'},
                  {'id': 'assembly', 'type': 'assembly'},
