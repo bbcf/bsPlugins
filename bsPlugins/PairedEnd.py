@@ -9,7 +9,8 @@ meta = {'version': "1.0.0",
         'contact': "webmaster-bbcf@epfl.ch"}
 
 in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple': 'BamMulti'},
-                 {'id': 'format', 'type': 'text'}]
+                 {'id': 'format', 'type': 'text'},
+                 {'id': 'midpoint', 'type': 'boolean'}]
 
 out_parameters = [{'id': 'statistics_plot', 'type': 'pdf'},
                   {'id': 'fragment_track', 'type': 'track'},
@@ -27,6 +28,9 @@ class PairedEndForm(BaseForm):
                                    options=["sql", "bedGraph", "bigWig"],
                                    prompt_text=None,
                                    help_text='Format of the output file')
+    midpoint = twf.CheckBox(label='At fragment midpoint: ',
+                            value=False,
+                            help_text='Attribute fragment length to its midpoint only (default: all positions in the fragment)')
     submit = twf.SubmitButton(id="submit", value="Analyze")
 
 
@@ -102,6 +106,7 @@ title(main=main,outer=T)
         all_tracks = []
         pdf = self.temporary_path(fname='Paired_end_plots.pdf')
         robjects.r('pdf("%s",paper="a4",height=11,width=8)' %pdf)
+        midpoint = bool(kw.get("midpoint"))
         for bam in bamfiles:
             tname = "%s_frags.%s" %(bam.name, format)
             outname = self.temporary_path(fname=tname)
@@ -112,7 +117,7 @@ title(main=main,outer=T)
             self.nb_frag = 0
             for chrom,cval in bam.chrmeta.iteritems():
                 self._compute_stats(bam.fetch(chrom, 0, cval['length']))
-                trout.write( bam.PE_fragment_size(chrom), fields=_f, chrom=chrom )
+                trout.write( bam.PE_fragment_size(chrom,midpoint=midpoint), fields=_f, chrom=chrom )
             trout.close()
             if self.nb_frag > 1:
                 self._plot_stats(bam.name)
