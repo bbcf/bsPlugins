@@ -96,7 +96,7 @@ The output is the average of all the input signals, position by position.
 
         output = self.temporary_path(fname=tfwd.name+'-'+trev.name+'_merged', ext=kw['format'])
         tout = track(output, chrmeta=chrmeta,
-                           info={'datatype': 'quantitative', 'shift': shiftval})
+                     info={'datatype': 'quantitative', 'shift': shiftval})
         mode = 'write'
         method = kw.get("method","mean")
         for chrom in chrmeta.keys():

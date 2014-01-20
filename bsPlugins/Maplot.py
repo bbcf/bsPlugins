@@ -137,7 +137,7 @@ The input can be of two different types:
             _f = ['score'+str(i) for i in range(nscores)]
             strack = track(table, fields=['name']+_f)
             signal_tracks = [track(s) for s in signals]
-            signames = [s.info.get('name',os.path.splitext(os.path.basename(s.path))[0]) for s in signal_tracks]
+            signames = [s.name for s in signal_tracks]
             strack.write([('Name',signames[0],signames[1])])
             strack.write(qtable.read(fields=strack.fields))
             sample1 = range(len(signals1))

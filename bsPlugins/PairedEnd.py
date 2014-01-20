@@ -111,7 +111,9 @@ title(main=main,outer=T)
             tname = "%s_frags.%s" %(bam.name, format)
             outname = self.temporary_path(fname=tname)
             all_tracks.append(outname)
-            trout = track(outname, fields=_f, chrmeta=bam.chrmeta)
+            trout = track(outname, fields=_f, chrmeta=bam.chrmeta,
+                          info={'datatype': 'quantitative', 
+                                'PE_midpoint': midpoint})
             self.frag_rep = {}
             self.frag_size = {}
             self.nb_frag = 0

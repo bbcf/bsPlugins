@@ -78,7 +78,7 @@ class BasePlugin(object):
 
     def unique_id(self):
         '''
-        It's an unique identifier for your plugin.
+        It's a unique identifier for your plugin.
         Do not override
         '''
         if self.uid is None:

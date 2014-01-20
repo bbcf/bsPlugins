@@ -6,7 +6,7 @@ boolean                      #can be true or false
 text                         #free text
 
 list                         #an item list
-+ assembly                   #a list of assembly
++ assembly                   #a list of assemblies
 
 numeric                      #a numeric value
 + int                        #an integer
@@ -19,14 +19,14 @@ file                         #a simple file
 + + png                      #a png
 + + pdf                      #a pdf
 
-+ track                      #a file describing genomic files
++ track                      #a file describing genomic data
 + + bed                      #a bed file
 + + wig                      #a wig file
 + + bam                      #a BAM file
 + + bw                       #a BigWig file
 + + sql                      #a sql file
 
-+ userfile                   #a file that always need to be inputed by th user
++ userfile                   #a file that always needs to be provided by the user
 assembly                     #a list of assemblies
 """
 
@@ -81,28 +81,17 @@ def is_of_type(obj, oftype):
     """
     Look if obj is of type "oftype":
     """
-    if obj == oftype:
-        return True
-    if oftype not in inclusions:
-        return False
-    types = inclusions.get(oftype)
-    if obj in types:
-        return True
-    for ty in types:
-        if is_of_type(obj, ty):
-            return True
-    return False
+    types = inclusions.get(oftype,[])
+    return (obj == oftype) or any(is_of_type(obj, ty) for ty in types)
 
 
 def parent_type(t):
     """
-    Get the "parent type of t. The parent type is one of the "top types".
+    Get the parent type of t. The parent type is one of the "top types".
     """
-    if t in parent_types:
+    if t in parent_types: 
         return t
     for k, v in inclusions.iteritems():
         if t in v:
-            if k in parent_types:
-                return k
             return parent_type(k)
     raise Exception("No parent found for type %s" % t)

@@ -139,10 +139,9 @@ The input can be of two different types:
             colnames = numpy.asarray(open(filename).readline().split()[1:])
             robjects.r.assign('col_names', numpy2ri.numpy2ri(colnames))
             robjects.r("""
-            Mdata <- read.table('%s',sep='\t',header=T,row.names=1)
-            conds <- unlist(strsplit(col_names,".",fixed=T))
-            conds <- colnames(Mdata)
-            """ % filename)
+Mdata = read.table('%s',sep='\t',header=T,row.names=1)
+conds = unlist(strsplit(col_names,".",fixed=T))
+""" % filename)
         else:
             from QuantifyTable import QuantifyTablePlugin
             assembly = genrep.Assembly(kw.get('assembly'))
@@ -152,8 +151,8 @@ The input can be of two different types:
             signals2 = kw['Group2']['signals2']
             if not isinstance(signals1,(list,tuple)): signals1 = [signals1]
             if not isinstance(signals2,(list,tuple)): signals2 = [signals2]
-            kw['SigMulti'] = {'signals': signals1+signals2} # to pass it to QuantifyTable plugin
-            signals = kw['SigMulti']['signals']
+            signals = signals1+signals2
+            kw['SigMulti'] = {'signals': signals} # to pass it to QuantifyTable plugin
             table = QuantifyTablePlugin().quantify(**kw)
             stracks = []
             norm_factors = []
@@ -177,11 +176,10 @@ The input can be of two different types:
             de_matrix = numpy.asarray([[int(float(s) * norm_factors[k] + .5) for k,s in enumerate(x[1:])]
                                        for x in de_list], dtype=numpy.float)
             rownames = numpy.asarray([x[0] for x in de_list])
-            colnames = numpy.asarray([s.info.get('name',os.path.splitext(os.path.basename(s.path))[0])
-                                      for s in stracks])
+            colnames = numpy.asarray([s.name for s in stracks])
              # if all prefixes are identical within a group, keep this prefix as group identifier.
             if len(list(set( [x.split('.')[0] for x in colnames[:len(signals1)]] ))) == 1 \
-            and len(list(set( [x.split('.')[0] for x in colnames[len(signals1):]] ))) == 1:
+                    and len(list(set( [x.split('.')[0] for x in colnames[len(signals1):]] ))) == 1:
                 group1 = colnames[0].split('.')[0]
                 group2 = colnames[-1].split('.')[0]
             else:
@@ -193,52 +191,42 @@ The input can be of two different types:
             robjects.r.assign('col_names', numpy2ri.numpy2ri(colnames))
             robjects.r.assign('conds', numpy2ri.numpy2ri(conds))
             robjects.r("""
-            Mdata <- as.data.frame(Mdata,row.names=row_names)
-            conds <- unlist(col_names)
-            colnames(Mdata) <- conds
-            """)
+Mdata = as.data.frame(Mdata,row.names=row_names)
+colnames(Mdata) = unlist(col_names)
+""")
 
         robjects.r("""
-        ### Still need to check that replicates are not identical - lfproc would fail
-        groups <- unique(conds)
-        couples <- combn(groups,2)
-        if (any(table(conds)>1)){ method = 'pooled' # if replicates
-        } else { method = 'blind' }
-        """)
+library(DESeq)
+if (all(table(conds)>=3)){        # if >3 replicates in all conditions
+    method = 'per-condition'        # for each group estimate the variance from its replicates
+    sharingMode = 'gene-est-only'   # use the per-gene variance estimates only
+} else if (any(table(conds)>1)){ # if few replicates
+    method = 'pooled'               # use all groups with replicates to estimate the variance
+    sharingMode = 'maximum'         # use the max of the GLM fit and the estimated variance
+} else {                         # if no replicates
+    method = 'blind'                # pools all groups together to estimate the variance
+    sharingMode='fit-only'          # use only the GLM fit across the pooled variance
+}
+cds = newCountDataSet(Mdata, conds)
+cds = estimateSizeFactors(cds)
+test = try({
+    cds = estimateDispersions(cds, method=method, fitType='parametric', sharingMode=sharingMode)
+})
+if(class(test) == "try-error") {
+    cds = estimateDispersions(cds, method=method, fitType='local', sharingMode=sharingMode)
+}
+""")
 
-        robjects.r("""
-        library(DESeq)
-        if (all(table(conds)>=3)){        # if >3 replicates in all conditions
-            method = 'per-condition'        # for each group estimate the variance from its replicates
-            sharingMode = 'gene-est-only'   # use the per-gene variance estimates only
-        } else if (any(table(conds)>1)){ # if few replicates
-            method = 'pooled'               # use all groups with replicates to estimate the variance
-            sharingMode = 'maximum'         # use the max of the GLM fit and the estimated variance
-        } else {                         # if no replicates
-            method = 'blind'                # pools all groups together to estimate the variance
-            sharingMode='fit-only'          # use only the GLM fit across the pooled variance
-        }
-        cds <- newCountDataSet(Mdata, conds)
-        cds <- estimateSizeFactors(cds)
-        test = try({
-            cds <- estimateDispersions(cds, method=method, fitType='parametric', sharingMode=sharingMode)
-        })
-        if(class(test) == "try-error") {
-            cds <- estimateDispersions(cds, method=method, fitType='local', sharingMode=sharingMode)
-        }
-        """)
-
-        groups = list(set(colnames))
+        groups = list(set(conds))
         couples = itertools.combinations(groups, 2)
         output = self.temporary_path(fname='DE')
         for c in couples:
-            out = output + '_' + c[0] + '-' + c[1] + '.txt'
-            r_cmd = """
-            res <- nbinomTest(cds, '%s', '%s')
-            res <- res[order(res[,8]),]
+            out = "%s_%s-%s.txt" %(output,)+tuple(c)
+            robjects.r("""
+            res = nbinomTest(cds, '%s', '%s')
+            res = res[order(res[,8]),]
             write.table(res, '%s', row.names=F, quote=F, sep='\t')
-            """ % (c[0], c[1], out)
-            robjects.r(r_cmd)
+            """ % (c[0], c[1], out))
             if kw.get('complete') is None:
                 clean = self.clean_deseq_output(out,c)
                 shutil.move(clean,out)
