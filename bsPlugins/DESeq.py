@@ -193,6 +193,7 @@ conds = unlist(strsplit(col_names,".",fixed=T))
             robjects.r("""
 Mdata = as.data.frame(Mdata,row.names=row_names)
 colnames(Mdata) = unlist(col_names)
+conds = unlist(conds)
 """)
 
         robjects.r("""
@@ -221,7 +222,7 @@ if(class(test) == "try-error") {
         couples = itertools.combinations(groups, 2)
         output = self.temporary_path(fname='DE')
         for c in couples:
-            out = "%s_%s-%s.txt" %(output,)+tuple(c)
+            out = "%s_%s-%s.txt" %((output,)+tuple(c))
             robjects.r("""
             res = nbinomTest(cds, '%s', '%s')
             res = res[order(res[,8]),]
