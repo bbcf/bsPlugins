@@ -2,10 +2,8 @@ from bsPlugins import *
 from bbcflib.track import track
 from bbcflib import genrep
 import rpy2.robjects as robjects
-import rpy2.robjects.numpy2ri as numpy2ri
-import numpy
-import os,shutil
-import itertools
+from rpy2.robjects.numpy2ri import numpy2ri
+import numpy, os,shutil, itertools, math
 
 ftypes = [(0, 'genes bodies'), (1, 'gene promoters'), (2, 'exons'), (3, 'custom upload')]
 prom_up_def = 1000
@@ -115,20 +113,23 @@ The input can be of two different types:
         before recalculating the fold change, remove row numbers, and keep only the following
         fields: Name, MeanA, MeanB, fold change, adjusted p-value. Return the new file name."""
         filename_clean = self.temporary_path()
-        with open(filename,"rb") as f:
-            with open(filename_clean,"wb") as g:
+        with open(filename,"r") as f:
+            with open(filename_clean,"w") as g:
                 f.readline() # header
                 A = 'Mean.'+contrast[0].strip()
                 B = 'Mean.'+contrast[1].strip()
                 g.write('-'.join(contrast)+'\n')
-                g.write('\t'.join(['Name',A,B,'foldChange','padj'])+'\n')
+                g.write('\t'.join(['Name','baseMean',A,B,'foldChange','log2FoldChange','pval','padj'])+'\n')
                 for line in f:
-                    line = line.strip().split("\t")
+                    line = line.split("\t")
                     if not (line[2]=="0" and line[3]=="0") and not (line[2]=='NA' or line[3]=='NA'):
+                        line[1] = '%.2f'%float(line[1])
                         meanA = float(line[2]) or 0.5
                         meanB = float(line[3]) or 0.5
                         fold = meanB/meanA
-                        line = '\t'.join([line[0],str(meanA),str(meanB),str(fold),line[7]])+'\n'
+                        log2fold = math.log(fold,2)
+                        line[2]='%.2f'%meanA; line[3]='%.2f'%meanB; line[4]='%.2f'%fold; line[5]='%.2f'%log2fold
+                        line = '\t'.join(line)
                         g.write(line)
         return filename_clean
 
@@ -137,7 +138,7 @@ The input can be of two different types:
             filename = kw.get('table')
             assert os.path.exists(str(filename)), "File not found: '%s'" % filename
             colnames = numpy.asarray(open(filename).readline().split()[1:])
-            robjects.r.assign('col_names', numpy2ri.numpy2ri(colnames))
+            robjects.r.assign('col_names', numpy2ri(colnames))
             robjects.r("""
 Mdata = read.table('%s',sep='\t',header=T,row.names=1)
 conds = unlist(strsplit(col_names,".",fixed=T))
@@ -186,10 +187,10 @@ conds = unlist(strsplit(col_names,".",fixed=T))
                 group1 = "Group1"
                 group2 = "Group2"
             conds = [group1]*len(signals1) + [group2]*len(signals2)
-            robjects.r.assign('Mdata', numpy2ri.numpy2ri(de_matrix))
-            robjects.r.assign('row_names', numpy2ri.numpy2ri(rownames))
-            robjects.r.assign('col_names', numpy2ri.numpy2ri(colnames))
-            robjects.r.assign('conds', numpy2ri.numpy2ri(conds))
+            robjects.r.assign('Mdata', numpy2ri(de_matrix))
+            robjects.r.assign('row_names', numpy2ri(rownames))
+            robjects.r.assign('col_names', numpy2ri(colnames))
+            robjects.r.assign('conds', numpy2ri(conds))
             robjects.r("""
 Mdata = as.data.frame(Mdata,row.names=row_names)
 colnames(Mdata) = unlist(col_names)
@@ -224,9 +225,8 @@ if(class(test) == "try-error") {
         for c in couples:
             out = "%s_%s-%s.txt" %((output,)+tuple(c))
             robjects.r("""
-            res = nbinomTest(cds, '%s', '%s')
-            res = res[order(res[,8]),]
-            write.table(res, '%s', row.names=F, quote=F, sep='\t')
+res = nbinomTest(cds, '%s', '%s')
+write.table(res[order(res[,8]),], '%s', row.names=F, quote=F, sep='\t')
             """ % (c[0], c[1], out))
             if kw.get('complete') is None:
                 clean = self.clean_deseq_output(out,c)
