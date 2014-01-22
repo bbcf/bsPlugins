@@ -137,12 +137,11 @@ The input can be of two different types:
         if kw.get('input_type') == 'Table':
             filename = kw.get('table')
             assert os.path.exists(str(filename)), "File not found: '%s'" % filename
-            colnames = numpy.asarray(open(filename).readline().split()[1:])
-            robjects.r.assign('col_names', numpy2ri(colnames))
             robjects.r("""
-Mdata = read.table('%s',sep='\t',header=T,row.names=1)
-conds = sapply(strsplit(col_names,".",fixed=T),"[[",1)
+Mdata = read.delim('%s',row.names=1)
+conds = sapply(strsplit(colnames(Mdata),".",fixed=T),"[[",1)
 """ % filename)
+            conds = robjects.r("conds").rx()
         else:
             from QuantifyTable import QuantifyTablePlugin
             assembly = genrep.Assembly(kw.get('assembly'))
@@ -188,13 +187,12 @@ conds = sapply(strsplit(col_names,".",fixed=T),"[[",1)
                 group2 = "Group2"
             conds = [group1]*len(signals1) + [group2]*len(signals2)
             robjects.r.assign('Mdata', numpy2ri(de_matrix))
-            robjects.r.assign('row_names', numpy2ri(rownames))
-            robjects.r.assign('col_names', numpy2ri(colnames))
-            robjects.r.assign('conds', numpy2ri(conds))
+            robjects.r.assign('row_names', robjects.StrVector(rownames))
+            robjects.r.assign('col_names', robjects.StrVector(colnames))
+            robjects.r.assign('conds', robjects.StrVector(conds))
             robjects.r("""
 Mdata = as.data.frame(Mdata,row.names=row_names)
-colnames(Mdata) = unlist(col_names)
-conds = unlist(conds)
+colnames(Mdata) = col_names
 """)
 
         robjects.r("""
