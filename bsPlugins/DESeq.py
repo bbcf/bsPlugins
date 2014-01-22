@@ -141,7 +141,7 @@ The input can be of two different types:
             robjects.r.assign('col_names', numpy2ri(colnames))
             robjects.r("""
 Mdata = read.table('%s',sep='\t',header=T,row.names=1)
-conds = unlist(strsplit(col_names,".",fixed=T))
+conds = sapply(strsplit(col_names,".",fixed=T),"[[",1)
 """ % filename)
         else:
             from QuantifyTable import QuantifyTablePlugin
