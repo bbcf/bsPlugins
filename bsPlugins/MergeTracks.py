@@ -12,7 +12,7 @@ in_parameters = [{'id': 'forward', 'type': 'track', 'required': True},
                  {'id': 'reverse', 'type': 'track', 'required': True},
                  {'id': 'assembly', 'type': 'assembly'},
                  {'id': 'shift', 'type': 'int', 'required': True},
-                 {'id': 'format', 'type': 'text'},
+                 {'id': 'format', 'type': 'list'},
                  {'id': 'method', 'type': 'radio'}]
 out_parameters = [{'id': 'density_merged', 'type': 'track'}]
 

@@ -58,13 +58,12 @@ and returns a single track with the ratios as new scores."""
         t2 = track(denominator)
         name1 = t1.name
         name2 = t2.name
-        s1 = t1.read()
-        s2 = t2.read()
-        s = merge_scores([s1,s2],method=_divide)
         format = kw.get('format',t1.format)
         output = self.temporary_path(fname='ratios_%s-%s.%s'%(name1,name2,format))
-        with track(output, chrmeta=t1.chrmeta) as tout:
-            tout.write(s)
+        with track(output, chrmeta=t2.chrmeta) as tout:
+            for chrom in t2.chrmeta.keys():
+                s = merge_scores([t1.read(chrom),t2.read(chrom)],method=_divide)
+                tout.write(s, chrom=chrom)
         self.new_file(output, 'ratios')
         return self.display_time()
 
