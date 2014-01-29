@@ -44,7 +44,7 @@ class SmoothingForm(BaseForm):
         help_text='Will count size and step parameters in number of features, not in basepairs')
     format = twf.SingleSelectField(
         label='Output format: ',
-        options=["sql",'bedGraph','wig','sga'],
+        options=['sql','bedGraph','wig','bigWig','sga'],
         prompt_text=None,
         help_text='Format of the output file', )
     submit = twf.SubmitButton(id="submit", value="Submit")

@@ -36,8 +36,7 @@ class RatiosForm(BaseForm):
 
 
 class RatiosPlugin(BasePlugin):
-    """Divides the scores of the first track by the scores of the second,
-and returns a single track with the ratios as new scores."""
+    """Divides the scores of the first track by the scores of the second, and returns a single track with the ratios as new scores. Uses pseudo-counts (1/2) and applies a log transform is `log` is True."""
     info = {
         'title': 'Score ratios',
         'description': __doc__,

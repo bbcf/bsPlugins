@@ -34,7 +34,7 @@ class MergeTracksForm(BaseForm):
                           help_text='Enter positive downstream shift ([fragment_size-read_length]/2), \
                                      or a negative value to estimate shift by cross-correlation')
     format = twf.SingleSelectField(label='Output format: ',
-                                   options=["sql","bed",'bedGraph','wig','sga'],
+                                   options=['sql','bed','bedGraph','wig','bigWig','sga'],
                                    prompt_text=None,
                                    help_text='Format of the output file', )
     method = twf.RadioButtonList(label='Method: ',
@@ -95,7 +95,8 @@ The output is the average of all the input signals, position by position.
             if not shiftval:
                 raise ValueError("Unable to detect shift automatically. Must specify a shift value.")
 
-        output = self.temporary_path(fname=tfwd.name+'-'+trev.name+'_merged', ext=kw['format'])
+        output = self.temporary_path(fname=tfwd.name+'-'+trev.name+'_merged', 
+                                     ext=kw.get('format',tfwd.format))
         tout = track(output, chrmeta=chrmeta,
                      info={'datatype': 'quantitative', 'shift': shiftval})
         mode = 'write'
