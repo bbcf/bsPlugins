@@ -64,6 +64,7 @@ and returns a single track with the ratios as new scores."""
         t1 = track(numerator)
         t2 = track(denominator)
         format = kw.get('format',t1.format)
+        self.log = kw.get('log',False)
         self.pseudo = kw.get('pseudo')
         if self.pseudo is not None:
             self.pseudo = float(self.pseudo)

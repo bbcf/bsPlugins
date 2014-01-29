@@ -50,9 +50,8 @@ class SmoothingForm(BaseForm):
     submit = twf.SubmitButton(id="submit", value="Submit")
 
 class SmoothingPlugin(BasePlugin):
-    """Applies a moving average transformation to smooth the signal of a quantitative
-track. <br /><br />
-    """
+    """Applies a moving average transformation to smooth the signal of a quantitative track. """
+
     info = {
         'title': 'Window smoothing',
         'description': __doc__,
