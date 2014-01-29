@@ -33,7 +33,7 @@ out_parameters = [{'id': 'converted_track_tar', 'type': 'file'},
                   {'id': 'converted_track', 'type': 'track'}]
 
 def log2(x):
-    return math.log(x,2)
+    return log(x,2)
 
 class NumericOperationPlugin(BasePlugin):
     """Apply a numeric transformation to the track scores - such as logarithm or square root."""

@@ -5,6 +5,17 @@ import os
 
 output_list = ['txt','pdf']
 
+meta = {'version': "1.0.0",
+        'author': "BBCF",
+        'contact': "webmaster-bbcf@epfl.ch"}
+
+in_parameters = [
+        {'id':'sample', 'type':'track', 'required':True},
+        {'id':'output', 'type':'list', 'required':True},
+        {'id':'by_chrom', 'type':'boolean', 'required':True}]
+out_parameters = [{'id':'stats', 'type':'file'},
+                  {'id':'pdf', 'type':'file'}]
+
 class FileStatisticsForm(BaseForm):
     child = twd.HidingTableLayout()
     sample = twb.BsFileField(label='Input file: ',
@@ -19,17 +30,6 @@ class FileStatisticsForm(BaseForm):
                             help_text='Split statistics by chromosome (default: whole genome)')
     submit = twf.SubmitButton(id="submit", value="Submit")
 
-
-meta = {'version': "1.0.0",
-        'author': "BBCF",
-        'contact': "webmaster-bbcf@epfl.ch"}
-
-in_parameters = [
-        {'id':'sample', 'type':'track', 'required':True},
-        {'id':'output', 'type':'list', 'required':True},
-        {'id':'by_chrom', 'type':'boolean', 'required':True}]
-out_parameters = [{'id':'stats', 'type':'file'},
-                  {'id':'pdf', 'type':'file'}]
 
 
 class FileStatisticsPlugin(BasePlugin):
