@@ -26,7 +26,7 @@ class RatiosForm(BaseForm):
     format = twf.SingleSelectField(
         label='Output format ',
         prompt_text=None,
-        options=["bedGraph","sql","wig","sga"],
+        options=["bedGraph","sql","wig","bigWig","sga"],
         validator=twc.Validator(required=True),
         help_text='Format of the output file')
     log = twf.CheckBox(label='Log ratios: ',

@@ -94,6 +94,7 @@ The sequences will be scanned with the PWM and occurrences exceeding the thresho
         else:
             if regions_file is not None:
                 raise ValueError("Please specify an assembly if you specify regions.")
+            regions_file = os.path.abspath(regions_file)
             assembly = None
 
         motifs = {}

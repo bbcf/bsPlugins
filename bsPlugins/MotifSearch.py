@@ -81,6 +81,7 @@ class MotifSearchPlugin(BasePlugin):
                 out=fasta, path_to_ref=gRef )
         else:
             raise ValueError("Input type not implemented: %s" %input_type)
+        fasta = os.path.abspath(fasta)
         background = assembly.statistics(self.temporary_path(fname="background"),
                                          frequency=True)
         output = self.temporary_path(fname=name+"_meme.tgz")

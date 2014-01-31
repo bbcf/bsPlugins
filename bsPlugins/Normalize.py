@@ -31,8 +31,7 @@ in_parameters = [
 out_parameters = [{'id': 'normalized', 'type': 'file'}]
 
 class NormalizePlugin(BasePlugin):
-    """ Normalize the columns of a tab-delimited file using a specified method and returns a
-normalized tab-delimited file."""
+    """ Normalize the columns of a tab-delimited file using a specified method and returns a normalized tab-delimited file."""
     info = {
         'title': 'Normalization',
         'description': __doc__,

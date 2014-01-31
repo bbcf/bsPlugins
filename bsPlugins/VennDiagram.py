@@ -40,10 +40,6 @@ class VennDiagramForm(BaseForm):
         files = twb.BsFileField(label=' ',
                                 help_text='Select your track files',
                                 validator=twb.BsFileFieldValidator(required=True))
-    type = twf.SingleSelectField(label='Type: ',
-                                 prompt_text=None,
-                                 options=['intervals','score'],
-                                 help_text='Output figure format')
     table = twb.BsFileField(label='Table: ',
                             help_text='Select table',
                             validator=twb.BsFileFieldValidator(required=True))
@@ -56,6 +52,10 @@ class VennDiagramForm(BaseForm):
                             value='',
                             help_text='comma separated list of filtering expressions (e.g. >2,<0.05,>=2 OR <=-2,>=-2 AND <2,==2,!=2)')
 
+    type = twf.SingleSelectField(label='Type: ',
+                                 prompt_text=None,
+                                 options=['intervals','score'],
+                                 help_text='Type of statistics (distribution of scores or of genomic intervals')
     format = twf.SingleSelectField(label='Format: ',
                                    prompt_text=None,
                                    options=['png','pdf'],
