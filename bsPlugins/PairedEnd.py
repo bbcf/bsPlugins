@@ -52,7 +52,7 @@ class PairedEndPlugin(BasePlugin):
         _plast = -1
         _buff = {}
         for read in bam:
-            if read.is_reverse or not read.is_proper_pair: continue
+            if read.is_reverse or not read.is_proper_pair or read.isize<0: continue
             self.nb_frag += 1
             _p = read.pos
             _s = read.isize

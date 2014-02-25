@@ -1,5 +1,5 @@
 from bsPlugins import *
-from bbcflib.gfminer import stream as gm_stream
+from bbcflib.gfminer.stream import window_smoothing
 from bbcflib.track import track
 from bbcflib import genrep
 
@@ -7,8 +7,8 @@ size_def = 11
 step_def = 1
 
 meta = {'version': "1.0.0",
-            'author': "BBCF",
-            'contact': "webmaster-bbcf@epfl.ch"}
+        'author': "BBCF",
+        'contact': "webmaster-bbcf@epfl.ch"}
 
 in_parameters = [{'id': 'track', 'type': 'track', 'required': True},
                  {'id': 'assembly', 'type': 'assembly'},
@@ -65,8 +65,8 @@ class SmoothingPlugin(BasePlugin):
     def __call__(self, **kw):
         tinput = track(kw.get('track'), chrmeta=kw.get('assembly') or None)
         outformat = kw.get('format',tinput.format)
-        wsize = int(kw.get('window_size', size_def))
-        wstep = int(kw.get('window_step', step_def))
+        wsize = int(kw.get('window_size', size_def) or 10)
+        wstep = int(kw.get('window_step', step_def) or 1)
         featurewise = kw.get('by_feature', False)
         if isinstance(featurewise, basestring):
             featurewise = (featurewise.lower() in ['1', 'true', 't'])
@@ -79,10 +79,10 @@ class SmoothingPlugin(BasePlugin):
             datatype = "quantitative"
         tout = track(output, format=outformat, fields=outfields, chrmeta=tinput.chrmeta, info={'datatype': datatype})
         for chrom in tout.chrmeta.keys():
-            s = gm_stream.window_smoothing(
-                    tinput.read(selection=chrom, fields=outfields),
-                    window_size=wsize, step_size=wstep,
-                    featurewise=featurewise)
+            s = window_smoothing(
+                tinput.read(selection=chrom, fields=outfields),
+                window_size=wsize, step_size=wstep,
+                featurewise=featurewise)
             tout.write(s, chrom=chrom)
         tout.close()
         self.new_file(output, 'smoothed_track')
