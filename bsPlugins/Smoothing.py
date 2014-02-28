@@ -69,7 +69,7 @@ class SmoothingPlugin(BasePlugin):
         wstep = int(kw.get('window_step', step_def) or 1)
         featurewise = kw.get('by_feature', False)
         if isinstance(featurewise, basestring):
-            featurewise = (featurewise.lower() in ['1', 'true', 't'])
+            featurewise = (featurewise.lower() in ['1', 'true', 't','on'])
         output = self.temporary_path(fname=tinput.name+'_smoothed', ext=outformat)
         if featurewise:
             outfields = tinput.fields

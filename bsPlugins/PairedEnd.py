@@ -106,7 +106,9 @@ title(main=main,outer=T)
         all_tracks = []
         pdf = self.temporary_path(fname='Paired_end_plots.pdf')
         robjects.r('pdf("%s",paper="a4",height=11,width=8)' %pdf)
-        midpoint = bool(kw.get("midpoint"))
+        midpoint = kw.get("midpoint",False)
+        if isinstance(midpoint, basestring):
+            midpoint = (midpoint.lower() in ['1', 'true', 't','on'])
         for bam in bamfiles:
             tname = "%s_frags.%s" %(bam.name, format)
             outname = self.temporary_path(fname=tname)

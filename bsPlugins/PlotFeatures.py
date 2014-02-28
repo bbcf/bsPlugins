@@ -128,8 +128,10 @@ class PlotFeaturesPlugin(BasePlugin):
             else: downstr = (0,0)
         if kw.get("nbins") is not None: nbins = max(1,int(kw["nbins"]))
         else: nbins = _nbins
-        if kw.get("noclust") is not None: noclust = str(kw["noclust"]).lower() in ['1','true','t']
-        else: noclust = False
+        if kw.get("noclust") is not None: 
+            noclust = str(kw["noclust"]).lower() in ['1','true','t','on']
+        else: 
+            noclust = False
         try:
             ymin = float(kw.get('ymin'))
         except (ValueError, TypeError):

@@ -101,7 +101,7 @@ points(men,ypos,pch=19,col='blue')
         sample = track(kw['sample'],chrmeta="guess")
         by_chrom = kw.get('by_chrom',False)
         if isinstance(by_chrom, basestring):
-            by_chrom = (by_chrom.lower() in ['1', 'true', 't'])
+            by_chrom = (by_chrom.lower() in ['1', 'true', 't','on'])
         outf = kw.get('output')
         if outf not in output_list:
             outf = output_list[0]

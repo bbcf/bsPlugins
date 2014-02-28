@@ -64,6 +64,8 @@ class RatiosPlugin(BasePlugin):
         t2 = track(denominator)
         format = kw.get('format',t1.format)
         self.log = kw.get('log',False)
+        if isinstance(self.log, basestring):
+            self.log = (self.log.lower() in ['1', 'true', 't','on'])
         self.pseudo = kw.get('pseudo')
         if self.pseudo is not None:
             self.pseudo = float(self.pseudo)
