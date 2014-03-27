@@ -1,12 +1,11 @@
 from bsPlugins import *
-from bbcflib.gfminer.stream import merge_scores
-from bbcflib.gfminer.stream import window_smoothing
-from bbcflib.gfminer.figure import boxplot
+from bbcflib.gfminer.stream import merge_scores, window_smoothing
+from bbcflib.gfminer.figure import density_boxplot
 from bbcflib.gfminer.common import unroll
-from bbcflib.track import track
+from bbcflib.track import track, FeatureStream
 from bbcflib import genrep
 from math import log
-import random
+from numpy.random import poisson
 
 size_def = 1
 pseudo_def = 0.5
@@ -55,10 +54,10 @@ class RatiosForm(BaseForm):
         help_text='Value to be added to both signals (default: 0.5)')
     log = twf.CheckBox(label='Log ratios: ',
         value=False,
-        help_text='Returns the log2 of the ratios')
-    distribution = twf.CheckBox(label='Boxplot: ',
+        help_text='Computes the log2 of the ratios')
+    distribution = twf.CheckBox(label='Plot distribution: ',
         value=False,
-        help_text='Returns the boxplot of log2 of the ratios from a random sample of 10^4 values taken genomewise. If only a few regions are highly differentiated, then one expects the median to be zero')
+        help_text='Creates a graphical representation of the distributions of the ratios based on a sample of genomic regions')
     submit = twf.SubmitButton(id="submit", value="Submit")
 
 
@@ -85,62 +84,71 @@ class RatiosPlugin(BasePlugin):
         return (self.pseudo+x[0])/self.pseudo
 
     def __call__(self,**kw):
-        t1 = track(kw.get('numerator'),chrmeta=kw.get('assembly') or None)
-        t2 = track(kw.get('denominator'),chrmeta=kw.get('assembly') or None)
+        assembly = kw.get('assembly') or 'guess'
+        t1 = track(kw.get('numerator'),chrmeta=assembly)
+        t2 = track(kw.get('denominator'),chrmeta=assembly)
         format = kw.get('format',t1.format)
-        wsize = int(kw.get('window_size', size_def) or size_def)
+        wsize = int(kw.get('window_size') or size_def)
         self.log = kw.get('log',False)
         if isinstance(self.log, basestring):
             self.log = (self.log.lower() in ['1', 'true', 't','on'])
-        self.pseudo = float(kw.get('pseudo', pseudo_def) or pseudo_def)
+        try:
+            self.pseudo = float(kw.get('pseudo'))
+        except ValueError:
+            self.pseudo = pseudo_def
         self.baseline = -log(self.pseudo,2)
-
-        output = self.temporary_path(fname='ratios_%s-%s.%s'%(t1.name,t2.name,format))
-        with track(output, chrmeta=t1.chrmeta, fields=t1.fields, info={'datatype': "qualitative"}) as tout:
-            if wsize > 1:
-                for chrom in t1.chrmeta.keys():
-                    s1 = window_smoothing(t1.read(chrom),window_size=wsize,step_size=1,featurewise=False)
-                    s2 = window_smoothing(t2.read(chrom),window_size=wsize,step_size=1,featurewise=False)
-                    s = merge_scores([s1,s2],method=self._divide)
-                    tout.write(s, chrom=chrom)
-            else:
-                for chrom in t1.chrmeta.keys():
-                    s = merge_scores([t1.read(chrom),t2.read(chrom)],method=self._divide)
-                    tout.write(s, chrom=chrom)
-        self.new_file(output, 'ratios')
-
         self.distribution = kw.get('distribution',False)
         if isinstance(self.distribution, basestring):
             self.distribution = (self.distribution.lower() in ['1', 'true', 't','on'])
         if self.distribution:
-            pdf = self.temporary_path(fname='boxplot.pdf')
-            genome_length = 0
-            for chrom in t1.chrmeta.keys():
-                genome_length += t1.chrmeta[chrom]['length']
-            positions = random.sample(range(genome_length), 10000)
-            self.log = "True"
-            p = -1; ratios = []; labels = []
-            if wsize > 1:
-                for chrom in t1.chrmeta.keys():
+            sample_length = 100
+            sample_num = 1000
+            genome_length = sum((v['length'] for v in t1.chrmeta.values()))
+            shifts = poisson(float(genome_length)/float(sample_num),sample_num)            
+            ratios = []
+        
+        def _sample_stream(stream, limit):
+            start = 0
+            end = limit+1
+            scores = []
+            ist = stream.fields.index('start')
+            ien = stream.fields.index('end')
+            isc = stream.fields.index('score')
+            for x in stream:
+                yield x
+                if start > limit: continue
+                if x[ist] >= end:
+                    ratios.extend(scores)
+                    scores = [0]*sample_length
+                    start += shifts[0]
+                    end = start+sample_length
+                    if end <= limit:
+                        shifts.pop(0)
+                    else:
+                        start = limit+1
+                elif x[ien] > start:
+                    _s = max(0,x[ist]-start)
+                    _e = min(sample_length,x[ien]-start)
+                    scores[_s:_e] = [x[_isc]]*(_e-_s)
+
+        output = self.temporary_path(fname='ratios_%s-%s.%s'%(t1.name,t2.name,format))
+        with track(output, chrmeta=t1.chrmeta, fields=t1.fields) as tout:
+            for chrom,vchr in t1.chrmeta.iteritems():
+                if wsize > 1:
                     s1 = window_smoothing(t1.read(chrom),window_size=wsize,step_size=1,featurewise=False)
                     s2 = window_smoothing(t2.read(chrom),window_size=wsize,step_size=1,featurewise=False)
-                    s = merge_scores([s1,s2],method=self._divide)
-                    for l in unroll(s,regions=(0,t1.chrmeta[chrom]['length']),fields=['score']):
-                        p += 1
-                        if p == positions[0]:
-                            ratios.append(l[0])
-                            labels.append("G")
-                            positions.remove(p)
-            else:
-                for chrom in t1.chrmeta.keys():
-                    s = merge_scores([t1.read(chrom),t2.read(chrom)],method=self._divide)
-                    for l in unroll(s,regions=(0,t1.chrmeta[chrom]['length']),fields=['score']):
-                        p += 1
-                        if p == positions[0]:
-                            ratios.append(l[0])
-                            labels.append("G")
-                            positions.remove(p)
-            boxplot(ratios,labels,output=pdf)
+                else:
+                    s1 = t1.read(chrom)
+                    s2 = t2.read(chrom)
+                s3 = merge_scores([s1,s2],method=self._divide)
+                if self.distribution: 
+                    s3 = FeatureStream(_sample_stream(s3,vchr['length']),fields=s3.fields)
+                tout.write(s3, chrom=chrom)
+        self.new_file(output, 'ratios')
+
+        if self.distribution:
+            pdf = self.temporary_path(fname='%s-%s_ratios_distribution.pdf'%(t1.name,t2.name))
+            density_boxplot(ratios,output=pdf)
             self.new_file(pdf, 'boxplot')
             return self.display_time()
 

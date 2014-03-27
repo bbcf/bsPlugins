@@ -108,8 +108,7 @@ each alignment will be considered, default is read length).
                                      read_extension=read_extension,
                                      sql=True, args=b2wargs ) 
                      for n,s in enumerate(samples)]
-        info = {'datatype': 'quantitative',
-                'read_extension': read_extension}
+        info = {'datatype': 'quantitative', 'read_extension': read_extension}
         if merge_strands >= 0:
             suffixes = ["merged"]
             info['shift'] = merge_strands
