@@ -83,6 +83,31 @@ class RatiosPlugin(BasePlugin):
             return log(self.pseudo+x[0],2)+self.baseline
         return (self.pseudo+x[0])/self.pseudo
 
+    def _sample_stream(self, stream, limit):
+        start = 0
+        end = limit+1
+        scores = []
+        ist = stream.fields.index('start')
+        ien = stream.fields.index('end')
+        isc = stream.fields.index('score')
+        for x in stream:
+            yield x
+            if start > limit: continue
+            if x[ist] >= end:
+                self.ratios.extend(scores)
+                scores = [0]*self.sample_length
+                start += self.shifts[0]
+                end = start+self.sample_length
+                if end <= limit:
+                    self.shifts.pop(0)
+                else:
+                    start = limit+1
+            elif x[ien] > start:
+                _s = max(0,x[ist]-start)
+                _e = min(self.sample_length,x[ien]-start)
+                scores[_s:_e] = [x[isc]]*(_e-_s)
+
+
     def __call__(self,**kw):
         assembly = kw.get('assembly') or 'guess'
         t1 = track(kw['numerator'],chrmeta=assembly)
@@ -97,40 +122,16 @@ class RatiosPlugin(BasePlugin):
         except:
             self.pseudo = pseudo_def
         self.baseline = -log(self.pseudo,2)
-        self.distribution = kw.get('distribution',False)
-        if isinstance(self.distribution, basestring):
-            self.distribution = (self.distribution.lower() in ['1', 'true', 't','on'])
-        if self.distribution:
-            sample_length = 100
+        distribution = kw.get('distribution',False)
+        if isinstance(distribution, basestring):
+            distribution = (distribution.lower() in ['1', 'true', 't','on'])
+        if distribution:
+            self.sample_length = 100
             sample_num = 1000
             genome_length = sum((v['length'] for v in t1.chrmeta.values()))
-            shifts = poisson(float(genome_length)/float(sample_num),sample_num)            
-            ratios = []
+            self.shifts = poisson(float(genome_length)/float(sample_num),sample_num)            
+            self.ratios = []
         
-        def _sample_stream(stream, limit):
-            start = 0
-            end = limit+1
-            scores = []
-            ist = stream.fields.index('start')
-            ien = stream.fields.index('end')
-            isc = stream.fields.index('score')
-            for x in stream:
-                yield x
-                if start > limit: continue
-                if x[ist] >= end:
-                    ratios.extend(scores)
-                    scores = [0]*sample_length
-                    start += shifts[0]
-                    end = start+sample_length
-                    if end <= limit:
-                        shifts.pop(0)
-                    else:
-                        start = limit+1
-                elif x[ien] > start:
-                    _s = max(0,x[ist]-start)
-                    _e = min(sample_length,x[ien]-start)
-                    scores[_s:_e] = [x[isc]]*(_e-_s)
-
         output = self.temporary_path(fname='ratios_%s-%s.%s'%(t1.name,t2.name,format))
         with track(output, chrmeta=t1.chrmeta, fields=t1.fields, 
                    info={'datatype': 'quantitative', 
@@ -144,14 +145,14 @@ class RatiosPlugin(BasePlugin):
                     s1 = t1.read(chrom)
                     s2 = t2.read(chrom)
                 s3 = merge_scores([s1,s2],method=self._divide)
-                if self.distribution: 
-                    s3 = FeatureStream(_sample_stream(s3,vchr['length']),fields=s3.fields)
+                if distribution: 
+                    s3 = FeatureStream(self._sample_stream(s3,vchr['length']),fields=s3.fields)
                 tout.write(s3, chrom=chrom)
         self.new_file(output, 'ratios')
 
-        if self.distribution:
+        if distribution:
             pdf = self.temporary_path(fname='%s-%s_ratios_distribution.pdf'%(t1.name,t2.name))
-            density_boxplot(ratios,output=pdf)
+            density_boxplot(self.ratios,output=pdf)
             self.new_file(pdf, 'boxplot')
-            return self.display_time()
+        return self.display_time()
 
