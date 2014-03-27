@@ -62,7 +62,7 @@ class RatiosForm(BaseForm):
 
 
 class RatiosPlugin(BasePlugin):
-    """Divides the mean scores of the first track by the mean scores of the second over a sliding window, and returns a single track with the ratios as new scores associated to the center of the window. Uses pseudo-counts (1/2), applies a log transform if `log` is True, and makes a boxplot of the log2 of the ratios if `Boxplot` is True."""
+    """Divides the mean scores of the first track by the mean scores of the second over a sliding window, and returns a single track with the ratios as new scores associated to the center of the window. Uses pseudo-counts (1/2), applies a log transform if `Log ratios` is True, and makes a plot of the log2 of the ratios if `Plot distribution` is True."""
     info = {
         'title': 'Score ratios',
         'description': __doc__,
@@ -131,10 +131,10 @@ class RatiosPlugin(BasePlugin):
             genome_length = sum((v['length'] for v in t1.chrmeta.values()))
             self.shifts = poisson(float(genome_length)/float(sample_num),sample_num)            
             self.ratios = []
-        
+
         output = self.temporary_path(fname='ratios_%s-%s.%s'%(t1.name,t2.name,format))
-        with track(output, chrmeta=t1.chrmeta, fields=t1.fields, 
-                   info={'datatype': 'quantitative', 
+        with track(output, chrmeta=t1.chrmeta, fields=t1.fields,
+                   info={'datatype': 'quantitative',
                          'log': self.log,
                          'pseudocounts': self.pseudo}) as tout:
             for chrom,vchr in t1.chrmeta.iteritems():
