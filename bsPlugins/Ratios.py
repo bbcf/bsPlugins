@@ -62,7 +62,7 @@ class RatiosForm(BaseForm):
 
 
 class RatiosPlugin(BasePlugin):
-    """Divides the mean scores of the first track by the mean scores of the second over a sliding window, and returns a single track with the ratios as new scores associated to the center of the window. Uses pseudo-counts (1/2), applies a log transform if `log` is True, and makes a boxplot of the log2 of the ratios if `Boxplot` is True."""
+    """Divides the mean scores of the first track by the mean scores of the second over a sliding window, and returns a single track with the ratios as new scores associated to the center of the window. Uses pseudo-counts (1/2), applies a log transform if `Log ratios` is True, and makes a plot of the log2 of the ratios if `Plot distribution` is True."""
     info = {
         'title': 'Score ratios',
         'description': __doc__,
@@ -104,9 +104,9 @@ class RatiosPlugin(BasePlugin):
             sample_length = 100
             sample_num = 1000
             genome_length = sum((v['length'] for v in t1.chrmeta.values()))
-            shifts = poisson(float(genome_length)/float(sample_num),sample_num)            
+            shifts = poisson(float(genome_length)/float(sample_num),sample_num)
             ratios = []
-        
+
         def _sample_stream(stream, limit):
             start = 0
             end = limit+1
@@ -132,8 +132,8 @@ class RatiosPlugin(BasePlugin):
                     scores[_s:_e] = [x[isc]]*(_e-_s)
 
         output = self.temporary_path(fname='ratios_%s-%s.%s'%(t1.name,t2.name,format))
-        with track(output, chrmeta=t1.chrmeta, fields=t1.fields, 
-                   info={'datatype': 'quantitative', 
+        with track(output, chrmeta=t1.chrmeta, fields=t1.fields,
+                   info={'datatype': 'quantitative',
                          'log': self.log,
                          'pseudocounts': self.pseudo}) as tout:
             for chrom,vchr in t1.chrmeta.iteritems():
@@ -144,7 +144,7 @@ class RatiosPlugin(BasePlugin):
                     s1 = t1.read(chrom)
                     s2 = t2.read(chrom)
                 s3 = merge_scores([s1,s2],method=self._divide)
-                if self.distribution: 
+                if self.distribution:
                     s3 = FeatureStream(_sample_stream(s3,vchr['length']),fields=s3.fields)
                 tout.write(s3, chrom=chrom)
         self.new_file(output, 'ratios')
