@@ -132,7 +132,10 @@ class RatiosPlugin(BasePlugin):
                     scores[_s:_e] = [x[_isc]]*(_e-_s)
 
         output = self.temporary_path(fname='ratios_%s-%s.%s'%(t1.name,t2.name,format))
-        with track(output, chrmeta=t1.chrmeta, fields=t1.fields) as tout:
+        with track(output, chrmeta=t1.chrmeta, fields=t1.fields, 
+                   info={'datatype': 'quantitative', 
+                         'log': self.log,
+                         'pseudocounts': self.pseudo}) as tout:
             for chrom,vchr in t1.chrmeta.iteritems():
                 if wsize > 1:
                     s1 = window_smoothing(t1.read(chrom),window_size=wsize,step_size=1,featurewise=False)

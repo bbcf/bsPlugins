@@ -33,8 +33,8 @@ class PairedEndForm(BaseForm):
                             value=False,
                             help_text='Attribute fragment length to its midpoint only (default: all positions in the fragment)')
     plot_only = twf.CheckBox(label='Only the plot: ',
-                            value=False,
-                            help_text='Compute only the fragment length distribution, and not the density')
+                             value=False,
+                             help_text='Do not compute the density')
     submit = twf.SubmitButton(id="submit", value="Analyze")
 
 
@@ -117,54 +117,34 @@ title(main=main,outer=T)
         if isinstance(plot_only, basestring):
             plot_only = (plot_only.lower() in ['1', 'true', 't','on'])
 
-        if plot_only:
-            bamfiles = kw.get('BamMulti',{}).get('bamfiles',[])
-            if not isinstance(bamfiles, (tuple,list)): bamfiles = [bamfiles]
-            bamfiles = [track(bam) for bam in bamfiles]
-            all_tracks = []
-            pdf = self.temporary_path(fname='Paired_end_plots.pdf')
-            robjects.r('pdf("%s",paper="a4",height=11,width=8)' %pdf)
-            for bam in bamfiles:
-                self.frag_rep = {}
-                self.frag_size = {}
-                self.nb_frag = 0
-                for chrom,cval in bam.chrmeta.iteritems():
-                    self._compute_stats(bam.fetch(chrom, 0, cval['length']))
-                if self.nb_frag > 1:
-                    self._plot_stats(bam.name)
-                else:
-                    raise ValueError("No paired-end found in %s" %bam.name)
-            robjects.r('dev.off()')
-            self.new_file(pdf,'statistics_plot')
-            return self.display_time()
-        else:
-            for bam in bamfiles:
+        for bam in bamfiles:
+            if not plot_only:
                 tname = "%s_frags.%s" %(bam.name, format)
                 outname = self.temporary_path(fname=tname)
                 all_tracks.append(outname)
                 trout = track(outname, fields=_f, chrmeta=bam.chrmeta,
-                            info={'datatype': 'quantitative',
+                              info={'datatype': 'quantitative', 
                                     'PE_midpoint': midpoint})
-                self.frag_rep = {}
-                self.frag_size = {}
-                self.nb_frag = 0
-                for chrom,cval in bam.chrmeta.iteritems():
-                    self._compute_stats(bam.fetch(chrom, 0, cval['length']))
-                    trout.write( bam.PE_fragment_size(chrom,midpoint=midpoint), fields=_f, chrom=chrom )
-                trout.close()
-                if self.nb_frag > 1:
-                    self._plot_stats(bam.name)
-                else:
-                    raise ValueError("No paired-end found in %s" %bam.name)
-            robjects.r('dev.off()')
-            if len(all_tracks)>1:
-                tarname = self.temporary_path(fname='PE_fragment_tracks.tgz')
-                tar_tracks = tarfile.open(tarname, "w:gz")
-                [tar_tracks.add(f,arcname=os.path.basename(f)) for f in all_tracks]
-                tar_tracks.close()
-                self.new_file(tarname, 'fragment_track_tar')
+            self.frag_rep = {}
+            self.frag_size = {}
+            self.nb_frag = 0
+            for chrom,cval in bam.chrmeta.iteritems():
+                self._compute_stats(bam.fetch(chrom, 0, cval['length']))
+                trout.write( bam.PE_fragment_size(chrom,midpoint=midpoint), fields=_f, chrom=chrom )
+            trout.close()
+            if self.nb_frag > 1:
+                self._plot_stats(bam.name)
             else:
-                self.new_file(all_tracks[0], 'fragment_track')
-            self.new_file(pdf,'statistics_plot')
-            return self.display_time()
+                raise ValueError("No paired-end found in %s" %bam.name)
+        robjects.r('dev.off()')
+        if len(all_tracks)>1:
+            tarname = self.temporary_path(fname='PE_fragment_tracks.tgz')
+            tar_tracks = tarfile.open(tarname, "w:gz")
+            [tar_tracks.add(f,arcname=os.path.basename(f)) for f in all_tracks]
+            tar_tracks.close()
+            self.new_file(tarname, 'fragment_track_tar')
+        else:
+            self.new_file(all_tracks[0], 'fragment_track')
+        self.new_file(pdf,'statistics_plot')
+        return self.display_time()
 
