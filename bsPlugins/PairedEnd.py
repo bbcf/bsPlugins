@@ -10,7 +10,8 @@ meta = {'version': "1.0.0",
 
 in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple': 'BamMulti'},
                  {'id': 'format', 'type': 'text'},
-                 {'id': 'midpoint', 'type': 'boolean'}]
+                 {'id': 'midpoint', 'type': 'boolean'},
+                 {'id': 'plot_only', 'type': 'boolean'}]
 
 out_parameters = [{'id': 'statistics_plot', 'type': 'pdf'},
                   {'id': 'fragment_track', 'type': 'track'},
@@ -31,6 +32,9 @@ class PairedEndForm(BaseForm):
     midpoint = twf.CheckBox(label='At fragment midpoint: ',
                             value=False,
                             help_text='Attribute fragment length to its midpoint only (default: all positions in the fragment)')
+    plot_only = twf.CheckBox(label='Only the plot: ',
+                            value=False,
+                            help_text='Compute only the fragment length distribution, and not the density')
     submit = twf.SubmitButton(id="submit", value="Analyze")
 
 
@@ -109,33 +113,58 @@ title(main=main,outer=T)
         midpoint = kw.get("midpoint",False)
         if isinstance(midpoint, basestring):
             midpoint = (midpoint.lower() in ['1', 'true', 't','on'])
-        for bam in bamfiles:
-            tname = "%s_frags.%s" %(bam.name, format)
-            outname = self.temporary_path(fname=tname)
-            all_tracks.append(outname)
-            trout = track(outname, fields=_f, chrmeta=bam.chrmeta,
-                          info={'datatype': 'quantitative', 
-                                'PE_midpoint': midpoint})
-            self.frag_rep = {}
-            self.frag_size = {}
-            self.nb_frag = 0
-            for chrom,cval in bam.chrmeta.iteritems():
-                self._compute_stats(bam.fetch(chrom, 0, cval['length']))
-                trout.write( bam.PE_fragment_size(chrom,midpoint=midpoint), fields=_f, chrom=chrom )
-            trout.close()
-            if self.nb_frag > 1:
-                self._plot_stats(bam.name)
-            else:
-                raise ValueError("No paired-end found in %s" %bam.name)
-        robjects.r('dev.off()')
-        if len(all_tracks)>1:
-            tarname = self.temporary_path(fname='PE_fragment_tracks.tgz')
-            tar_tracks = tarfile.open(tarname, "w:gz")
-            [tar_tracks.add(f,arcname=os.path.basename(f)) for f in all_tracks]
-            tar_tracks.close()
-            self.new_file(tarname, 'fragment_track_tar')
+        plot_only = kw.get("plot_only",False)
+        if isinstance(plot_only, basestring):
+            plot_only = (plot_only.lower() in ['1', 'true', 't','on'])
+
+        if plot_only:
+            bamfiles = kw.get('BamMulti',{}).get('bamfiles',[])
+            if not isinstance(bamfiles, (tuple,list)): bamfiles = [bamfiles]
+            bamfiles = [track(bam) for bam in bamfiles]
+            all_tracks = []
+            pdf = self.temporary_path(fname='Paired_end_plots.pdf')
+            robjects.r('pdf("%s",paper="a4",height=11,width=8)' %pdf)
+            for bam in bamfiles:
+                self.frag_rep = {}
+                self.frag_size = {}
+                self.nb_frag = 0
+                for chrom,cval in bam.chrmeta.iteritems():
+                    self._compute_stats(bam.fetch(chrom, 0, cval['length']))
+                if self.nb_frag > 1:
+                    self._plot_stats(bam.name)
+                else:
+                    raise ValueError("No paired-end found in %s" %bam.name)
+            robjects.r('dev.off()')
+            self.new_file(pdf,'statistics_plot')
+            return self.display_time()
         else:
-            self.new_file(all_tracks[0], 'fragment_track')
-        self.new_file(pdf,'statistics_plot')
-        return self.display_time()
+            for bam in bamfiles:
+                tname = "%s_frags.%s" %(bam.name, format)
+                outname = self.temporary_path(fname=tname)
+                all_tracks.append(outname)
+                trout = track(outname, fields=_f, chrmeta=bam.chrmeta,
+                            info={'datatype': 'quantitative',
+                                    'PE_midpoint': midpoint})
+                self.frag_rep = {}
+                self.frag_size = {}
+                self.nb_frag = 0
+                for chrom,cval in bam.chrmeta.iteritems():
+                    self._compute_stats(bam.fetch(chrom, 0, cval['length']))
+                    trout.write( bam.PE_fragment_size(chrom,midpoint=midpoint), fields=_f, chrom=chrom )
+                trout.close()
+                if self.nb_frag > 1:
+                    self._plot_stats(bam.name)
+                else:
+                    raise ValueError("No paired-end found in %s" %bam.name)
+            robjects.r('dev.off()')
+            if len(all_tracks)>1:
+                tarname = self.temporary_path(fname='PE_fragment_tracks.tgz')
+                tar_tracks = tarfile.open(tarname, "w:gz")
+                [tar_tracks.add(f,arcname=os.path.basename(f)) for f in all_tracks]
+                tar_tracks.close()
+                self.new_file(tarname, 'fragment_track_tar')
+            else:
+                self.new_file(all_tracks[0], 'fragment_track')
+            self.new_file(pdf,'statistics_plot')
+            return self.display_time()
 
