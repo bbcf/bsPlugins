@@ -6,7 +6,6 @@ from bbcflib.gfminer.common import unroll
 from bbcflib.track import track
 from bbcflib import genrep
 from math import log
-from numpy import array
 import random
 
 size_def = 1
