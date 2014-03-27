@@ -85,9 +85,9 @@ class RatiosPlugin(BasePlugin):
 
     def __call__(self,**kw):
         assembly = kw.get('assembly') or 'guess'
-        t1 = track(kw.get('numerator'),chrmeta=assembly)
-        t2 = track(kw.get('denominator'),chrmeta=assembly)
-        format = kw.get('format',t1.format)
+        t1 = track(kw['numerator'],chrmeta=assembly)
+        t2 = track(kw['denominator'],chrmeta=assembly)
+        format = kw.get('format') or t1.format
         wsize = int(kw.get('window_size') or size_def)
         self.log = kw.get('log',False)
         if isinstance(self.log, basestring):
@@ -129,7 +129,7 @@ class RatiosPlugin(BasePlugin):
                 elif x[ien] > start:
                     _s = max(0,x[ist]-start)
                     _e = min(sample_length,x[ien]-start)
-                    scores[_s:_e] = [x[_isc]]*(_e-_s)
+                    scores[_s:_e] = [x[isc]]*(_e-_s)
 
         output = self.temporary_path(fname='ratios_%s-%s.%s'%(t1.name,t2.name,format))
         with track(output, chrmeta=t1.chrmeta, fields=t1.fields, 
