@@ -94,7 +94,7 @@ class RatiosPlugin(BasePlugin):
             self.log = (self.log.lower() in ['1', 'true', 't','on'])
         try:
             self.pseudo = float(kw.get('pseudo'))
-        except ValueError:
+        except:
             self.pseudo = pseudo_def
         self.baseline = -log(self.pseudo,2)
         self.distribution = kw.get('distribution',False)
