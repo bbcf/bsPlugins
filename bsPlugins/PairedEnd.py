@@ -130,21 +130,23 @@ title(main=main,outer=T)
             self.nb_frag = 0
             for chrom,cval in bam.chrmeta.iteritems():
                 self._compute_stats(bam.fetch(chrom, 0, cval['length']))
-                trout.write( bam.PE_fragment_size(chrom,midpoint=midpoint), fields=_f, chrom=chrom )
-            trout.close()
+                if not plot_only:
+                    trout.write( bam.PE_fragment_size(chrom,midpoint=midpoint), fields=_f, chrom=chrom )
+            if not plot_only: trout.close()
             if self.nb_frag > 1:
                 self._plot_stats(bam.name)
             else:
                 raise ValueError("No paired-end found in %s" %bam.name)
         robjects.r('dev.off()')
-        if len(all_tracks)>1:
-            tarname = self.temporary_path(fname='PE_fragment_tracks.tgz')
-            tar_tracks = tarfile.open(tarname, "w:gz")
-            [tar_tracks.add(f,arcname=os.path.basename(f)) for f in all_tracks]
-            tar_tracks.close()
-            self.new_file(tarname, 'fragment_track_tar')
-        else:
-            self.new_file(all_tracks[0], 'fragment_track')
+        if not plot_only:
+            if len(all_tracks)>1:
+                tarname = self.temporary_path(fname='PE_fragment_tracks.tgz')
+                tar_tracks = tarfile.open(tarname, "w:gz")
+                [tar_tracks.add(f,arcname=os.path.basename(f)) for f in all_tracks]
+                tar_tracks.close()
+                self.new_file(tarname, 'fragment_track_tar')
+            else:
+                self.new_file(all_tracks[0], 'fragment_track')
         self.new_file(pdf,'statistics_plot')
         return self.display_time()
 

@@ -27,11 +27,11 @@ out_parameters = [{'id': 'ratios', 'type': 'track'}, {'id': 'boxplot', 'type': '
 
 class RatiosForm(BaseForm):
     numerator = twb.BsFileField(
-        label='File 1: ',
+        label='Numerator: ',
         help_text='Select the track with the numerators',
         validator=twb.BsFileFieldValidator(required=True))
     denominator = twb.BsFileField(
-        label='File 2: ',
+        label='Denominator: ',
         help_text='Select the track with the denominators',
         validator=twb.BsFileFieldValidator(required=True))
     assembly = twf.SingleSelectField(
