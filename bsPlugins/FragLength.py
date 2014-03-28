@@ -1,17 +1,6 @@
 from bsPlugins import *
 import tarfile, os, sys, pysam
 
-class FragLengthForm(BaseForm):
-    class TrackMulti(twb.BsMultiple):
-        label='Paired-end BAM files: '
-        tracks = twb.BsFileField(label=' ',
-                                 validator=twb.BsFileFieldValidator(required=True))
-    minlength = twf.TextField(label='Minimum fragment length: ',
-                              validator=twc.IntValidator(required=False))
-    maxlength = twf.TextField(label='Maximum fragment length: ',
-                              validator=twc.IntValidator(required=False))
-    submit = twf.SubmitButton(id="submit", value="Filter")
-
 meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
@@ -21,6 +10,17 @@ in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple':
                  {'id': 'maxlength', 'type': 'int'}]
 out_parameters = [{'id': 'fragment_track', 'type': 'track'},
                   {'id': 'fragment_track_tar', 'type': 'file'}]
+
+class FragLengthForm(BaseForm):
+    class TrackMulti(twb.BsMultiple):
+        label = 'Paired-end BAM files: '
+        tracks = twb.BsFileField(label=' ',
+                                 validator=twb.BsFileFieldValidator(required=True))
+    minlength = twf.TextField(label='Minimum fragment length: ',
+                              validator=twc.IntValidator(required=False))
+    maxlength = twf.TextField(label='Maximum fragment length: ',
+                              validator=twc.IntValidator(required=False))
+    submit = twf.SubmitButton(id="submit", value="Filter")
 
 class FragLengthPlugin(BasePlugin):
     """Computes BAM files with fragment lengths between minlength and maxlength."""

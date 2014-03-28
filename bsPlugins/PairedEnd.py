@@ -21,7 +21,7 @@ out_parameters = [{'id': 'statistics_plot', 'type': 'pdf'},
 class PairedEndForm(BaseForm):
     child = twd.HidingTableLayout()
     class BamMulti(twb.BsMultiple):
-        label='Paired-end BAM files: '
+        label = 'Paired-end BAM files: '
         bamfiles = twb.BsFileField(label=' ',
                                    help_text='Select bam files',
                                    validator=twb.BsFileFieldValidator(required=True))

@@ -135,7 +135,6 @@ class RatiosPlugin(BasePlugin):
         output = self.temporary_path(fname='ratios_%s-%s.%s'%(t1.name,t2.name,format))
         with track(output, chrmeta=t1.chrmeta, fields=t1.fields,
                    info={'datatype': 'quantitative',
-                         'assembly': assembly,
                          'log': self.log,
                          'pseudocounts': self.pseudo,
                          'window_size': wsize}) as tout:
