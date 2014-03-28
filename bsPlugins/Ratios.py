@@ -129,14 +129,16 @@ class RatiosPlugin(BasePlugin):
             self.sample_length = 100
             sample_num = 1000
             genome_length = sum((v['length'] for v in t1.chrmeta.values()))
-            self.shifts = poisson(float(genome_length)/float(sample_num),sample_num)            
+            self.shifts = poisson(float(genome_length)/float(sample_num),sample_num)
             self.ratios = []
 
         output = self.temporary_path(fname='ratios_%s-%s.%s'%(t1.name,t2.name,format))
         with track(output, chrmeta=t1.chrmeta, fields=t1.fields,
                    info={'datatype': 'quantitative',
+                         'assembly': assembly,
                          'log': self.log,
-                         'pseudocounts': self.pseudo}) as tout:
+                         'pseudocounts': self.pseudo,
+                         'window_size': wsize}) as tout:
             for chrom,vchr in t1.chrmeta.iteritems():
                 if wsize > 1:
                     s1 = window_smoothing(t1.read(chrom),window_size=wsize,step_size=1,featurewise=False)
@@ -145,7 +147,7 @@ class RatiosPlugin(BasePlugin):
                     s1 = t1.read(chrom)
                     s2 = t2.read(chrom)
                 s3 = merge_scores([s1,s2],method=self._divide)
-                if distribution: 
+                if distribution:
                     s3 = FeatureStream(self._sample_stream(s3,vchr['length']),fields=s3.fields)
                 tout.write(s3, chrom=chrom)
         self.new_file(output, 'ratios')
