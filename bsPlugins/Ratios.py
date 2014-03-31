@@ -129,7 +129,7 @@ class RatiosPlugin(BasePlugin):
             self.sample_length = 100
             sample_num = 1000
             genome_length = sum((v['length'] for v in t1.chrmeta.values()))
-            self.shifts = poisson(float(genome_length)/float(sample_num),sample_num)
+            self.shifts = list(poisson(float(genome_length)/float(sample_num),sample_num))
             self.ratios = []
 
         output = self.temporary_path(fname='ratios_%s-%s.%s'%(t1.name,t2.name,format))
