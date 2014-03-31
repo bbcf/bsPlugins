@@ -63,6 +63,10 @@ class RatiosForm(BaseForm):
 
 class RatiosPlugin(BasePlugin):
     """Divides the mean scores of the first track by the mean scores of the second over a sliding window, and returns a single track with the ratios as new scores associated to the center of the window. Uses pseudo-counts (1/2), applies a log transform if `Log ratios` is True, and makes a plot of the log2 of the ratios if `Plot distribution` is True."""
+
+    sample_length = 1000
+    sample_num = 100000
+
     info = {
         'title': 'Score ratios',
         'description': __doc__,
@@ -85,7 +89,7 @@ class RatiosPlugin(BasePlugin):
 
     def _sample_stream(self, stream, limit):
         start = 0
-        end = limit+1
+        end = 1
         scores = []
         ist = stream.fields.index('start')
         ien = stream.fields.index('end')
@@ -126,10 +130,9 @@ class RatiosPlugin(BasePlugin):
         if isinstance(distribution, basestring):
             distribution = (distribution.lower() in ['1', 'true', 't','on'])
         if distribution:
-            self.sample_length = 100
-            sample_num = 1000
             genome_length = sum((v['length'] for v in t1.chrmeta.values()))
-            self.shifts = list(poisson(float(genome_length)/float(sample_num),sample_num))
+            self.shifts = list(poisson(float(genome_length)/float(self.sample_num),
+                                       self.sample_num))
             self.ratios = []
 
         output = self.temporary_path(fname='ratios_%s-%s.%s'%(t1.name,t2.name,format))
