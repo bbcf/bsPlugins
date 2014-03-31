@@ -64,8 +64,8 @@ class RatiosForm(BaseForm):
 class RatiosPlugin(BasePlugin):
     """Divides the mean scores of the first track by the mean scores of the second over a sliding window, and returns a single track with the ratios as new scores associated to the center of the window. Uses pseudo-counts (1/2), applies a log transform if `Log ratios` is True, and makes a plot of the log2 of the ratios if `Plot distribution` is True."""
 
-    sample_length = 1000
-    sample_num = 100000
+    sample_length = 200
+    sample_num = 50000
 
     info = {
         'title': 'Score ratios',
@@ -89,7 +89,7 @@ class RatiosPlugin(BasePlugin):
 
     def _sample_stream(self, stream, limit):
         start = 0
-        end = 1
+        end = -1
         scores = []
         ist = stream.fields.index('start')
         ien = stream.fields.index('end')
