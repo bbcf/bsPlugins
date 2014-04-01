@@ -83,7 +83,7 @@ class SmoothingPlugin(BasePlugin):
                 tinput.read(selection=chrom, fields=outfields),
                 window_size=wsize, step_size=wstep,
                 featurewise=featurewise)
-            tout.write(s, chrom=chrom)
+            tout.write(s, chrom=chrom, clip=True)
         tout.close()
         self.new_file(output, 'smoothed_track')
         return self.display_time()

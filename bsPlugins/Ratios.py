@@ -151,7 +151,7 @@ class RatiosPlugin(BasePlugin):
                 s3 = merge_scores([s1,s2],method=self._divide)
                 if distribution:
                     s3 = FeatureStream(self._sample_stream(s3,vchr['length']),fields=s3.fields)
-                tout.write(s3, chrom=chrom)
+                tout.write(s3, chrom=chrom, clip=True)
         self.new_file(output, 'ratios')
 
         if distribution:
