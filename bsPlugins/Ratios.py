@@ -49,7 +49,7 @@ class RatiosForm(BaseForm):
         value=size_def,
         help_text='Size of the sliding window in bp (default: 1)')
     pseudo = twf.TextField(label='Pseudo-count: ',
-        validator=twc.FloatValidator(),
+        validator=twb.FloatValidator(min=0,max=1000),
         value=pseudo_def,
         help_text='Value to be added to both signals (default: 0.5)')
     log = twf.CheckBox(label='Log ratios: ',
