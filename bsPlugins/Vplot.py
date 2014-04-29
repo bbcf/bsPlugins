@@ -33,7 +33,7 @@ class VplotPlugin(BasePlugin):
     info = {
         'title': 'Make Vplot for a paired-end BAM file in a selection of regions',
         'description': __doc__,
-        'path': ['Graphics', 'Plot features'],
+        'path': ['Graphics', 'Paired-end Vplots'],
         'output': VplotForm,
         'in': in_parameters,
         'out': out_parameters,
