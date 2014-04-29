@@ -73,20 +73,18 @@ class VplotPlugin(BasePlugin):
             xmin = min(X); xmax = max(X); ymax = max(scores)
             if bam_nb == 1:
                 if scale:
-                    Vplot(X,Y,output=pdf,scale=scale,new=True,last=False,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(0,ymax))
+                    Vplot(X,Y,output=pdf,new=True,last=False,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(0,ymax))
                 else:
-                    Vplot(X,Y,output=pdf,scale=scale,new=True,last=False,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(50,ymax),log="y")
+                    Vplot(X,Y,output=pdf,new=True,last=False,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(50,ymax),log="y")
             elif bam_nb < nb_plots:
                 if scale:
-                    Vplot(X,Y,output=pdf,scale=scale,new=False,last=False,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(0,ymax))
+                    Vplot(X,Y,output=pdf,new=False,last=False,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(0,ymax))
                 else:
-                    Vplot(X,Y,output=pdf,scale=scale,new=False,last=False,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(50,ymax),log="y")
+                    Vplot(X,Y,output=pdf,new=False,last=False,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(50,ymax),log="y")
             else:
                 if scale:
-                    Vplot(X,Y,output=pdf,scale=scale,new=False,last=True,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(0,ymax))
+                    Vplot(X,Y,output=pdf,new=False,last=True,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(0,ymax))
                 else:
-                    Vplot(X,Y,output=pdf,scale=scale,new=False,last=True,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(50,ymax),log="y")
+                    Vplot(X,Y,output=pdf,new=False,last=True,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(50,ymax),log="y")
         self.new_file(pdf, 'Vplot')
         return self.display_time()
-
-#
