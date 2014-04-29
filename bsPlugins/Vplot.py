@@ -4,8 +4,6 @@ from bbcflib.gfminer.figure import Vplot
 from bbcflib.track import track
 from math import floor, ceil
 
-dot_size_def = 4
-
 meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
