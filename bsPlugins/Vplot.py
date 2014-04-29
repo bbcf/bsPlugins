@@ -1,8 +1,6 @@
 from bsPlugins import *
-from bbcflib.gfminer.common import unroll
 from bbcflib.gfminer.figure import Vplot
 from bbcflib.track import track
-from math import floor, ceil
 
 meta = {'version': "1.0.0",
         'author': "BBCF",
