@@ -10,7 +10,6 @@ meta = {'version': "1.0.0",
 
 in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple': 'BamMulti'},
                  {'id': 'features', 'type': 'track'},
-                 {'id': 'dot_size', 'type': 'int'},
                  {'id': 'linear', 'type': 'boolean'}]
 out_parameters = [{'id': 'Vplot', 'type': 'pdf'}]
 
@@ -23,10 +22,6 @@ class VplotForm(BaseForm):
     features = twb.BsFileField(label='Features: ',
                                help_text='Select a feature file (e.g. bed) in which all regions have the same length',
                                validator=twb.BsFileFieldValidator(required=True))
-    dot_size = twf.TextField(label='Dot size: ',
-                             validator=twc.IntValidator(required=False),
-                             value=dot_size_def,
-                             help_text='Size of the dots used to draw the Vplot (default: 4)')
     linear = twf.CheckBox(label='Linear scale: ',
                              value=False,
                              help_text='Plot the mean fragment length in linear scale (default: log scale)')
@@ -51,8 +46,6 @@ class VplotPlugin(BasePlugin):
         bamfiles = [track(bam) for bam in bamfiles]
         nb_plots = len(bamfiles)
         features = track(kw.get('features'), chrmeta=bamfiles[0].chrmeta)
-        dot_size = int(kw.get('dot_size') or dot_size_def)
-        if dot_size <= 0: dot_size = dot_size_def
         scale = kw.get('linear')
         pdf = self.temporary_path(fname='Vplot.pdf')
         bam_nb = 0
