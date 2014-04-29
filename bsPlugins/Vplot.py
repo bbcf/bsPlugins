@@ -51,12 +51,15 @@ class VplotPlugin(BasePlugin):
         bamfiles = kw.get('BamMulti',{}).get('bamfiles',[])
         if not isinstance(bamfiles, (tuple,list)): bamfiles = [bamfiles]
         bamfiles = [track(bam) for bam in bamfiles]
+        nb_plots = len(bamfiles)
         features = track(kw.get('features'), chrmeta=bamfiles[0].chrmeta)
         dot_size = int(kw.get('dot_size') or dot_size_def)
         if dot_size <= 0: dot_size = dot_size_def
         scale = kw.get('linear')
         pdf = self.temporary_path(fname='Vplot.pdf')
+        bam_nb = 0
         for bam in bamfiles:
+            bam_nb += 1
             bam_name = bam.name.split(".")[0]
             list_regions = features.read()
             scores = []; nb_regions = 0; X = []
@@ -77,10 +80,21 @@ class VplotPlugin(BasePlugin):
                     X = X+range(xmin,xmax)
             Y = ["NA" if x==0 else x for x in scores]
             xmin = min(X); xmax = max(X); ymax = max(scores)
-            if scale:
-                Vplot(X,Y,output=pdf,scale=scale,new=True,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(0,ymax))
+            if bam_nb == 1:
+                if scale:
+                    Vplot(X,Y,output=pdf,scale=scale,new=True,last=False,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(0,ymax))
+                else:
+                    Vplot(X,Y,output=pdf,scale=scale,new=True,last=False,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(50,ymax),log="y")
+            elif bam_nb < nb_plots:
+                if scale:
+                    Vplot(X,Y,output=pdf,scale=scale,new=False,last=False,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(0,ymax))
+                else:
+                    Vplot(X,Y,output=pdf,scale=scale,new=False,last=False,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(50,ymax),log="y")
             else:
-                Vplot(X,Y,output=pdf,scale=scale,new=True,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(50,ymax),log="y")
+                if scale:
+                    Vplot(X,Y,output=pdf,scale=scale,new=False,last=True,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(0,ymax))
+                else:
+                    Vplot(X,Y,output=pdf,scale=scale,new=False,last=True,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(50,ymax),log="y")
         self.new_file(pdf, 'Vplot')
         return self.display_time()
 
