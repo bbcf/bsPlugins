@@ -1,10 +1,8 @@
 from bsPlugins import *
-from bbcflib.gfminer.common import unroll, add_name_field
-from bbcflib.gfminer.numeric import feature_matrix
-#from bbcflib.gfminer.figure import Vplot, heatmap, lineplot
-from bbcflib.track import track, FeatureStream
-from numpy import vstack, concatenate, array, where
-import os, tarfile, pysam
+from bbcflib.gfminer.common import unroll
+from bbcflib.gfminer.figure import Vplot
+from bbcflib.track import track
+from math import floor, ceil
 
 dot_size_def = 4
 
@@ -54,31 +52,36 @@ class VplotPlugin(BasePlugin):
         if not isinstance(bamfiles, (tuple,list)): bamfiles = [bamfiles]
         bamfiles = [track(bam) for bam in bamfiles]
         features = track(kw.get('features'), chrmeta=bamfiles[0].chrmeta)
-        dot_size = int(kw.get('dot_size'))
-        if dot_size <= 0:
-            dot_size = dot_size_def
+        dot_size = int(kw.get('dot_size') or dot_size_def)
+        if dot_size <= 0: dot_size = dot_size_def
         scale = kw.get('linear')
-        if scale:
-            scale = "linear"
-        else:
-            scale = "log"
         pdf = self.temporary_path(fname='Vplot.pdf')
-        #robjects.r('pdf("%s",paper="a4",height=11,width=8)' %pdf)
         for bam in bamfiles:
             bam_name = bam.name.split(".")[0]
             list_regions = features.read()
-            data = []
+            scores = []; nb_regions = 0; X = []
             for region in list_regions:
-                density = unroll(bam.PE_fragment_size(region,midpoint="midpoint"),regions=(region[1],region[2]),fields=["score"])
-                scores = []
-                print "OK1"
+                density = unroll(bam.PE_fragment_size(region,midpoint="midpoint"),regions=(region[1],region[2]))
                 for score in density:
-                    print "OK2"
-                    scores.append(score[2])
-                data.append(scores)
-                print data
-            # data[i][j] = mean frag length in region i at position j
-            Vplot(data,output=pdf,scale=scale,title=bam_name)
-        #robjects.r('dev.off()')
+                    scores.append(score[0])
+                nb_regions += 1
+                if nb_regions == 1:
+                    interval_length = len(scores)
+                    xmin = -int(floor(interval_length/2.0))
+                    xmax = int(ceil(interval_length/2.0))
+                try:
+                    strand = region[5]
+                    if strand == 1: X = X+range(xmin,xmax)
+                    else: X = X+list(reversed(range(xmin,xmax)))
+                except:
+                    X = X+range(xmin,xmax)
+            Y = ["NA" if x==0 else x for x in scores]
+            xmin = min(X); xmax = max(X); ymax = max(scores)
+            if scale:
+                Vplot(X,Y,output=pdf,scale=scale,new=True,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(0,ymax))
+            else:
+                Vplot(X,Y,output=pdf,scale=scale,new=True,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(50,ymax),log="y")
         self.new_file(pdf, 'Vplot')
         return self.display_time()
+
+#
