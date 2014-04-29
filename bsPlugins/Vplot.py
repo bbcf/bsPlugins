@@ -44,47 +44,47 @@ class VplotPlugin(BasePlugin):
         bamfiles = kw.get('BamMulti',{}).get('bamfiles',[])
         if not isinstance(bamfiles, (tuple,list)): bamfiles = [bamfiles]
         bamfiles = [track(bam) for bam in bamfiles]
-        nb_plots = len(bamfiles)
         features = track(kw.get('features'), chrmeta=bamfiles[0].chrmeta)
-        scale = kw.get('linear')
+        if 'strand' in features.fields:
+            strandi = features.fields.index('strand')
+        else:
+            strandi = -1
+        linscale = kw.get('linear',False)
+        if isinstance(linscale, basestring):
+            linscale = (linscale.lower() in ['1', 'true', 't','on'])
+        if linscale: 
+            ymin = 0
+            log = ''
+        else: 
+            ymin = 50
+            log = 'y'
+        xlab = "Position in window [bp]"
+        ylab = "Fragment size [bp]"
         pdf = self.temporary_path(fname='Vplot.pdf')
-        bam_nb = 0
-        for bam in bamfiles:
-            bam_nb += 1
-            bam_name = bam.name.split(".")[0]
+        new = True
+        last = False
+        for bam_nb, bam in enumerate(bamfiles):
+            if bam_nb == len(bamfiles)-1: last = True
             list_regions = features.read()
-            scores = []; nb_regions = 0; X = []
-            for region in list_regions:
-                density = unroll(bam.PE_fragment_size(region,midpoint="midpoint"),regions=(region[1],region[2]))
-                for score in density:
-                    scores.append(score[0])
-                nb_regions += 1
-                if nb_regions == 1:
-                    interval_length = len(scores)
-                    xmin = -int(floor(interval_length/2.0))
-                    xmax = int(ceil(interval_length/2.0))
-                try:
-                    strand = region[5]
-                    if strand == 1: X = X+range(xmin,xmax)
-                    else: X = X+list(reversed(range(xmin,xmax)))
-                except:
-                    X = X+range(xmin,xmax)
-            Y = ["NA" if x==0 else x for x in scores]
-            xmin = min(X); xmax = max(X); ymax = max(scores)
-            if bam_nb == 1:
-                if scale:
-                    Vplot(X,Y,output=pdf,new=True,last=False,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(0,ymax))
+            Y = []
+            X = []
+            for region_nb, region in enumerate(list_regions):
+                if strandi > -1:
+                    strand = region[strandi]
                 else:
-                    Vplot(X,Y,output=pdf,new=True,last=False,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(50,ymax),log="y")
-            elif bam_nb < nb_plots:
-                if scale:
-                    Vplot(X,Y,output=pdf,new=False,last=False,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(0,ymax))
-                else:
-                    Vplot(X,Y,output=pdf,new=False,last=False,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(50,ymax),log="y")
-            else:
-                if scale:
-                    Vplot(X,Y,output=pdf,new=False,last=True,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(0,ymax))
-                else:
-                    Vplot(X,Y,output=pdf,new=False,last=True,main=bam_name,xlab="Distance to the region centers",ylab="Mean non-zero fragment length",xlim=(xmin,xmax),ylim=(50,ymax),log="y")
+                    strand = 1
+                for _s in bam.PE_fragment_size(region,midpoint="midpoint"):
+                    for pos in range(_s[1],_s[2]):
+                        if pos < region[1]: continue
+                        if pos >= region[2]: break
+                        Y.append(_s[3])
+                        if strand < 0:
+                            X.append(region[2]-pos-1)
+                        else:
+                            X.append(pos-region[1])
+            ymax = max(Y)
+            Vplot( X, Y, output=pdf, new=new, last=last, main=bam.name, 
+                   xlab=xlab, ylab=ylab, ylim=(ymin,ymax), log=log )
+            new = False
         self.new_file(pdf, 'Vplot')
         return self.display_time()
