@@ -13,16 +13,16 @@ out_parameters = [{'id': 'Vplot', 'type': 'pdf'}]
 
 
 class VplotForm(BaseForm):
-    class TrackMulti(twb.BsMultiple):
+    class BamMulti(twb.BsMultiple):
         label='Paired-end BAM files: '
         bamfiles = twb.BsFileField(label=' ',
-                                  validator=twb.BsFileFieldValidator(required=True))
+                                   validator=twb.BsFileFieldValidator(required=True))
     features = twb.BsFileField(label='Features: ',
                                help_text='Select a feature file (e.g. bed) in which all regions have the same length',
                                validator=twb.BsFileFieldValidator(required=True))
     linear = twf.CheckBox(label='Linear scale: ',
-                             value=False,
-                             help_text='Plot the mean fragment length in linear scale (default: log scale)')
+                          value=False,
+                          help_text='Plot the mean fragment length in linear scale (default: log scale)')
     submit = twf.SubmitButton(id="submit", value="Plot")
 
 
@@ -71,7 +71,7 @@ class VplotPlugin(BasePlugin):
                     strand = region[strandi]
                 else:
                     strand = 1
-                for _s in bam.PE_fragment_size(region,midpoint="midpoint"):
+                for _s in bam.PE_fragment_size(region,midpoint=True):
                     for pos in range(_s[1],_s[2]):
                         if pos < region[1]: continue
                         if pos >= region[2]: break
