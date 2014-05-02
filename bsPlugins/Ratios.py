@@ -156,7 +156,7 @@ class RatiosPlugin(BasePlugin):
 
         if distribution:
             pdf = self.temporary_path(fname='%s-%s_ratios_distribution.pdf'%(t1.name,t2.name))
-            density_boxplot(self.ratios,output=pdf)
+            density_boxplot(self.ratios,output=pdf,name=t1.name+"/"+t2.name,)
             self.new_file(pdf, 'boxplot')
         return self.display_time()
 
