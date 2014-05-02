@@ -39,13 +39,13 @@ class VplotForm(BaseForm):
                                 value=nbin_y_def,
                                 help_text='Number of equally spaced grid points for the density estimation (default: 500)')
     bandwidth_x = twf.TextField(label='Smoothing bandwidth along x axis: ',
-                                validator=twc.IntValidator(required=False),
+                                validator=twb.FloatValidator(min=0,max=1000),
                                 value=bandwidth_x_def,
-                                help_text='The default smoothing bandwidth is 0.1')
+                                help_text='The smoothing bandwidth must be between 0 and 1000 (default: 0.1)')
     bandwidth_y = twf.TextField(label='Smoothing bandwidth along y axis: ',
-                                validator=twc.IntValidator(required=False),
+                                validator=twb.FloatValidator(min=0,max=1000),
                                 value=bandwidth_y_def,
-                                help_text='The default smoothing bandwidth is 0.1')
+                                help_text='TThe smoothing bandwidth must be between 0 and 1000 (default: 0.1)')
     submit = twf.SubmitButton(id="submit", value="Plot")
 
 
