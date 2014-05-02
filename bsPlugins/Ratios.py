@@ -6,6 +6,7 @@ from bbcflib.track import track, FeatureStream
 from bbcflib import genrep
 from math import log
 from numpy.random import poisson
+from numpy import median
 
 size_def = 1
 pseudo_def = 0.5
@@ -156,7 +157,6 @@ class RatiosPlugin(BasePlugin):
 
         if distribution:
             pdf = self.temporary_path(fname='%s-%s_ratios_distribution.pdf'%(t1.name,t2.name))
-            density_boxplot(self.ratios,output=pdf,name=t1.name+"/"+t2.name,)
+            density_boxplot(self.ratios,output=pdf,name=t1.name+"/"+t2.name+" (median="+str(round(median(self.ratios),2))+")")
             self.new_file(pdf, 'boxplot')
         return self.display_time()
-
