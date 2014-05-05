@@ -15,7 +15,9 @@ in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple':
                  {'id': 'nbins_x', 'type': 'int'},
                  {'id': 'nbins_y', 'type': 'int'},
                  {'id': 'bandwidth_x', 'type': 'float'},
-                 {'id': 'bandwidth_y', 'type': 'float'}]
+                 {'id': 'bandwidth_y', 'type': 'float'},
+                 {'id': 'ymin', 'type': 'int'},
+                 {'id': 'ymax', 'type': 'int'}]
 out_parameters = [{'id': 'Vplot', 'type': 'pdf'}]
 
 
@@ -45,7 +47,13 @@ class VplotForm(BaseForm):
     bandwidth_y = twf.TextField(label='Smoothing bandwidth along y axis: ',
                                 validator=twb.FloatValidator(min=0,max=1000),
                                 value=bandwidth_y_def,
-                                help_text='TThe smoothing bandwidth must be between 0 and 1000 (default: 0.1)')
+                                help_text='The smoothing bandwidth must be between 0 and 1000 (default: 0.1)')
+    ymin = twf.TextField(label='Minimum y value: ',
+                                validator=twc.IntValidator(required=False),
+                                help_text='The default values: ymin=0 in lin scale and ymin=50 in log scale')
+    ymax = twf.TextField(label='Maximum y value: ',
+                                validator=twc.IntValidator(required=False),
+                                help_text='The default value: ymax=maximum fragment length in the selected regions')
     submit = twf.SubmitButton(id="submit", value="Plot")
 
 
@@ -74,15 +82,16 @@ class VplotPlugin(BasePlugin):
         if isinstance(linscale, basestring):
             linscale = (linscale.lower() in ['1', 'true', 't','on'])
         if linscale:
-            ymin = 0
+            ymin_def = 0
             log = ''
         else:
-            ymin = 50
+            ymin_def = 50
             log = 'y'
         nbin_x = int(kw.get('nbin_x') or nbin_x_def)
         nbin_y = int(kw.get('nbin_y') or nbin_y_def)
         bandwidth_x = float(kw.get('bandwidth_x') or bandwidth_x_def)
         bandwidth_y = float(kw.get('bandwidth_y') or bandwidth_y_def)
+        ymin = int(kw.get('ymin') or ymin_def)
         xlab = "Position in window [bp]"
         ylab = "Fragment size [bp]"
         pdf = self.temporary_path(fname='Vplot.pdf')
@@ -107,7 +116,8 @@ class VplotPlugin(BasePlugin):
                             X.append(region[2]-pos-1)
                         else:
                             X.append(pos-region[1])
-            ymax = max(Y)
+            ymax_def = max(Y)
+            ymax = int(kw.get('ymax') or ymax_def)
             Vplot( X, Y, output=pdf, new=new, last=last, main=bam.name,
                    xlab=xlab, ylab=ylab, ylim=(ymin,ymax), log=log, nbin=(nbin_x,nbin_y), bandwidth=(bandwidth_x,bandwidth_y) )
             new = False
