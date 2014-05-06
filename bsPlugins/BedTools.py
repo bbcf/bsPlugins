@@ -135,24 +135,29 @@ class BedToolsPlugin(BasePlugin):
         }
 
     def __call__(self, **kw):
-        selected_tool = all_tools[int(kw.pop('tool'))]
+        _tool = kw.pop('tool')
+        try:
+            selected_tool = all_tools[int(_tool)]
+        except ValueError:
+            selected_tool = str(_tool)
         kw['outfile'] = self.temporary_path(fname=selected_tool+'.txt')
-        reo = re.search(r'([\w\s\-,.=]+)', kw.pop('useropts') if 'useropts' in kw else '')
-        if reo:
-            key = None
-            for x in reo.groups()[0].split():
-                if x.startswith('-'):
-                    key = x
-                    kw[key] = ''
-                elif key:
-                    kw[key] = str(x)
+        if kw.get('useropts'):
+            reo = re.search(r'([\w\s\-,.=]+)', kw.pop('useropts'))
+            if reo:
+                key = None
+                for x in reo.groups()[0].split():
+                    if x.startswith('-'):
+                        key = x
+                        kw[key] = ''
+                    elif key:
+                        kw[key] = str(x)
         if kw.get('labels'):
             kw['labels'] = kw['labels'].split(",")
         for x in all_params:
             if x[-5:] == "files" and x in kw:
                 kw[x[1:]] = kw.pop(x)[x[1:]]
         for k in kw.keys():
-            if kw[k] in [None,'']:
+            if kw[k] in [None,'',[]]:
                 kw.pop(k)
         with execution(None) as ex:
             output = eval(selected_tool)(ex, **kw)

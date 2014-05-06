@@ -97,7 +97,7 @@ Scores can be the sum/mean/median/min/max of the tag count in the interval."""
             exons = assembly.exon_track
         elif not(feature_type in ftypes[3]):
             raise ValueError("Please specify an assembly")
-        signals = kw['SigMulti']['signals']
+        signals = kw['SigMulti'].get('signals',[])
         if not isinstance(signals, list): signals = [signals]
         signals = [track(sig, chrmeta=chrmeta) for sig in signals]
         if feature_type in ftypes[0]:
