@@ -154,10 +154,10 @@ class BedToolsPlugin(BasePlugin):
         if kw.get('labels'):
             kw['labels'] = kw['labels'].split(",")
         for x in all_params:
-            if x[-5:] == "files" and x in kw:
+            if x[-5:] == "files" and kw.get(x):
                 kw[x[1:]] = kw.pop(x)[x[1:]]
         for k in kw.keys():
-            if kw[k] in [None,'',[]]:
+            if kw[k] in (None,'',[],{}):
                 kw.pop(k)
         with execution(None) as ex:
             output = eval(selected_tool)(ex, **kw)
