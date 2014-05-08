@@ -1,7 +1,6 @@
 from bsPlugins import *
 from bbcflib.gfminer.figure import Vplot
 from bbcflib.track import track
-from numpy import random
 from numpy import array
 
 nbin_x_def = 500; nbin_y_def = 500
