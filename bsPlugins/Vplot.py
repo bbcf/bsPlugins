@@ -1,6 +1,8 @@
 from bsPlugins import *
 from bbcflib.gfminer.figure import Vplot
 from bbcflib.track import track
+from numpy import random
+from numpy import array
 
 nbin_x_def = 500; nbin_y_def = 500
 bandwidth_x_def = 0.1; bandwidth_y_def = 0.1
@@ -111,14 +113,14 @@ class VplotPlugin(BasePlugin):
                     for pos in range(_s[1],_s[2]):
                         if pos < region[1]: continue
                         if pos >= region[2]: break
-                        Y.append(_s[3])
+                        Y.append(int(_s[3]))
                         if strand < 0:
                             X.append(region[2]-pos-1)
                         else:
                             X.append(pos-region[1])
             ymax_def = max(Y)
             ymax = int(kw.get('ymax') or ymax_def)
-            Vplot( X, Y, output=pdf, new=new, last=last, main=bam.name,
+            Vplot( array(X), array(Y), output=pdf, new=new, last=last, main=bam.name,
                    xlab=xlab, ylab=ylab, ylim=(ymin,ymax), log=log, nbin=(nbin_x,nbin_y), bandwidth=(bandwidth_x,bandwidth_y) )
             new = False
         self.new_file(pdf, 'Vplot')
