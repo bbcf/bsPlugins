@@ -109,10 +109,7 @@ class VplotPlugin(BasePlugin):
                     strand = region[strandi]
                 else:
                     strand = 1
-                if region[1] > extra_window:
-                    region_extended = (region[0],)+(region[1]-extra_window,)+region[2:]
-                else:
-                    region_extended = (region[0],)+(0,)+region[2:]
+                region_extended = (region[0],max(0,region[1]-extra_window))+region[2:]
                 for _s in bam.PE_fragment_size(region_extended,midpoint=True):
                     for pos in range(_s[1],_s[2]):
                         if pos < region[1]: continue
