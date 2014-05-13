@@ -98,6 +98,7 @@ class VplotPlugin(BasePlugin):
         pdf = self.temporary_path(fname='Vplot.pdf')
         new = True
         last = False
+        extra_window = 1000
         for bam_nb, bam in enumerate(bamfiles):
             if bam_nb == len(bamfiles)-1: last = True
             list_regions = features.read()
@@ -108,7 +109,11 @@ class VplotPlugin(BasePlugin):
                     strand = region[strandi]
                 else:
                     strand = 1
-                for _s in bam.PE_fragment_size(region,midpoint=True):
+                if region[1] > extra_window:
+                    region_extended = (region[0],)+(region[1]-extra_window,)+region[2:]
+                else:
+                    region_extended = (region[0],)+(0,)+region[2:]
+                for _s in bam.PE_fragment_size(region_extended,midpoint=True):
                     for pos in range(_s[1],_s[2]):
                         if pos < region[1]: continue
                         if pos >= region[2]: break
