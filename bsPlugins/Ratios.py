@@ -10,6 +10,7 @@ from numpy import median
 
 size_def = 1
 pseudo_def = 0.5
+threshold_def = 0
 
 meta = {'version': "1.0.0",
         'author': "BBCF",
@@ -21,6 +22,7 @@ in_parameters = [{'id': 'numerator', 'type': 'track', 'required': True},
                  {'id': 'format', 'type': 'text'},
                  {'id': 'window_size', 'type': 'int'},
                  {'id': 'pseudo', 'type': 'float'},
+                 {'id': 'threshold', 'type': 'float'},
                  {'id': 'log', 'type':'boolean', 'required':True},
                  {'id': 'distribution', 'type':'boolean', 'required':True}]
 out_parameters = [{'id': 'ratios', 'type': 'track'}, {'id': 'boxplot', 'type': 'pdf'}]
@@ -53,6 +55,10 @@ class RatiosForm(BaseForm):
         validator=twb.FloatValidator(min=0,max=1000),
         value=pseudo_def,
         help_text='Value to be added to both signals (default: 0.5)')
+    threshold = twf.TextField(label='Threshold: ',
+        validator=twb.FloatValidator(min=0,max=1000),
+        value=threshold_def,
+        help_text='This sets ratio=1 at each genomic position satisfying numerator value < threshold (default: 0)')
     log = twf.CheckBox(label='Log ratios: ',
         value=False,
         help_text='Computes the log2 of the ratios')
@@ -81,12 +87,24 @@ class RatiosPlugin(BasePlugin):
     def _divide(self,x):
         if len(x) > 1:
             if self.log:
-                return log(self.pseudo+x[0],2)-log(self.pseudo+x[1],2)
+                if x[0] < self.threshold:
+                    return 0
+                else:
+                    return log(self.pseudo+x[0],2)-log(self.pseudo+x[1],2)
             else:
-                return (self.pseudo+x[0])/(self.pseudo+x[1])
+                if x[0] < self.threshold:
+                    return 1
+                else:
+                    return (self.pseudo+x[0])/(self.pseudo+x[1])
         if self.log:
-            return log(self.pseudo+x[0],2)+self.baseline
-        return (self.pseudo+x[0])/self.pseudo
+            if x[0] < self.threshold:
+                return 0
+            else:
+                return log(self.pseudo+x[0],2)+self.baseline
+        if x[0] < self.threshold:
+            return 1
+        else:
+            return (self.pseudo+x[0])/self.pseudo
 
     def _sample_stream(self, stream, limit):
         start = 0
@@ -112,7 +130,6 @@ class RatiosPlugin(BasePlugin):
                 _e = min(self.sample_length,x[ien]-start)
                 scores[_s:_e] = [x[isc]]*(_e-_s)
 
-
     def __call__(self,**kw):
         assembly = kw.get('assembly') or 'guess'
         t1 = track(kw['numerator'],chrmeta=assembly)
@@ -127,13 +144,16 @@ class RatiosPlugin(BasePlugin):
         except:
             self.pseudo = pseudo_def
         self.baseline = -log(self.pseudo,2)
+        try:
+            self.threshold = float(kw.get('threshold'))
+        except:
+            self.threshold = threshold_def
         distribution = kw.get('distribution',False)
         if isinstance(distribution, basestring):
             distribution = (distribution.lower() in ['1', 'true', 't','on'])
         if distribution:
             genome_length = sum((v['length'] for v in t1.chrmeta.values()))
-            self.shifts = list(poisson(float(genome_length)/float(self.sample_num),
-                                       self.sample_num))
+            self.shifts = list(poisson(float(genome_length)/float(self.sample_num),self.sample_num))
             self.ratios = []
 
         output = self.temporary_path(fname='ratios_%s-%s.%s'%(t1.name,t2.name,format))
@@ -141,6 +161,7 @@ class RatiosPlugin(BasePlugin):
                    info={'datatype': 'quantitative',
                          'log': self.log,
                          'pseudocounts': self.pseudo,
+                         'threshold': self.threshold,
                          'window_size': wsize}) as tout:
             for chrom,vchr in t1.chrmeta.iteritems():
                 if wsize > 1:
