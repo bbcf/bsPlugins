@@ -1,7 +1,7 @@
 from bsPlugins import *
-from bbcflib.gfminer.figure import Heatmap
+from bbcflib.gfminer.figure import heatmap
 from bbcflib.track import track
-from numpy import array, log2
+from numpy import array, log2, median, abs
 
 nb_colors_def = 10
 
@@ -35,7 +35,7 @@ class HeatmapForm(BaseForm):
 
 
 class HeatmapPlugin(BasePlugin):
-    """Creates a heatmap of the table using *rows* as row labels and *columns* as column labels."""
+    """Creates a heatmap of the table using *rows* as row labels and *columns* as column labels. The values are assumed to be equal to log2(raw data). If not, you have to select the option *Log*. Selecting the option *List* will print numbers beside the rows in the heatmap and make a file with the corresponding IDs."""
     info = {
         'title': 'Make heatmap of the table',
         'description': __doc__,
@@ -48,19 +48,27 @@ class HeatmapPlugin(BasePlugin):
 
     def __call__(self, **kw):
         table = open(kw.get('table'))
-        data = []
+        names = []; values = []
         for line in table:
-            new_line = line.strip("\n").strip("\r").split("\t")
-            new_line = [new_line[0]]+[float(new_line[i]) for i in range(1,new_line)]
-            data.append(new_line)
+            newline = line.strip("\n").strip("\r").split("\t")
+            name = newline[0]
+            names.append(name)
+            value = [float(newline[i]) for i in range(1,len(newline))]
+            values.append(value)
         logscale = kw.get('log',False)
         if isinstance(logscale, basestring):
             logscale = (linscale.lower() in ['1', 'true', 't','on'])
         if logscale:
-            for i in range(0,len(data)):
-                data[i][1:len(data[i])] = log([x+1 for x in data[i][1:len(data[i])]])
+            for i in range(0,len(values)):
+                values[i] = log2([x+1 for x in values[i]])
+        values = array(values)
+        med = median(values,axis=0)
+        mad = median(abs(values-med),axis=0)
+        values = ((values-med)/mad)
         nb_colors = int(kw.get('nb_colors') or nb_colors_def)
+        #names = ['']*len(data)
+        title = "List of genes"
         pdf = self.temporary_path(fname='Heatmap.pdf')
-        heatmap(data, output=pdf, rows=names, main=title, nb_colors=nb_colors)
+        heatmap(array(values), output=pdf, rows=names, main=title, nb_colors=nb_colors)
         self.new_file(pdf, 'Heatmap')
         return self.display_time()
