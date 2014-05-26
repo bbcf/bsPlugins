@@ -6,9 +6,9 @@ from bbcflib import genrep
 
 class CombineForm(BaseForm):
     child = twd.HidingTableLayout()
-    class SigMulti(twb.BsMultiple):
-        label = 'Signals: '
-        signals = twb.BsFileField(label=' ',
+    class TrackMulti(twb.BsMultiple):
+        label = 'Tracks: '
+        tracks = twb.BsFileField(label=' ',
                                   help_text='Select files to combine',
                                   validator=twb.BsFileFieldValidator(required=True))
     format = twf.SingleSelectField(label='Output format: ',
@@ -26,7 +26,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': 'SigMulti', 'required': True},
+in_parameters = [{'id': 'tracks', 'type': 'track', 'multiple': 'TrackMulti', 'required': True},
                  {'id': 'format', 'type': 'text'},
                  {'id': 'assembly', 'type': 'assembly'},
                 ]
@@ -43,15 +43,16 @@ def _get_chrmeta(**kw):
 
 def _combine(func,output,**kw):
     chrmeta = _get_chrmeta(**kw)
-    format = kw.get('format','sql')
+    format = kw.get('format') or 'sql'
     output += format
-    signals = kw['SigMulti']['signals']
-    if not isinstance(signals, list):
-        signals = [signals]
-    signals = [track(sig, chrmeta=chrmeta) for sig in signals]
+    tracks = kw['TrackMulti']['tracks']
+    if not isinstance(tracks, list):
+        tracks = [tracks]
+    tracks = [track(sig, chrmeta=chrmeta) for sig in tracks]
+    chrmeta = tracks[0].chrmeta
     tout = track(output, chrmeta=chrmeta, info={'datatype': 'qualitative'})
     for chrom in chrmeta:
-        trackList = [sig.read(chrom) for sig in signals]
+        trackList = [sig.read(chrom) for sig in tracks]
         res = combine(trackList, fn=func)
         tout.fields = res.fields
         tout.write(res, chrom=chrom, clip=True)
@@ -130,7 +131,7 @@ class ComplementPlugin(BasePlugin):
     def __call__(self, **kw):
         # Create a track with the whole chromosome
         chrmeta = _get_chrmeta(**kw)
-        sig0 = track(kw['SigMulti']['signals'][0])
+        sig0 = track(kw['TrackMulti']['tracks'][0])
         fields = sig0.fields
         format = sig0.format
         is_chr = 'chr' in fields
@@ -150,7 +151,7 @@ class ComplementPlugin(BasePlugin):
         with track(temp,fields=fields) as wc:
             wc.write(whole_chr)
 
-        kw['SigMulti']['signals'] = [temp] + kw['SigMulti']['signals']
+        kw['TrackMulti']['tracks'] = [temp] + kw['TrackMulti']['tracks']
         output = self.temporary_path(fname='combined.')
         output = _combine(self._func,output,**kw)
         self.new_file(output, 'combined')
