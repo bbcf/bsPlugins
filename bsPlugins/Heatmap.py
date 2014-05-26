@@ -36,9 +36,11 @@ class HeatmapForm(BaseForm):
 
 
 class HeatmapPlugin(BasePlugin):
-    """Creates a heatmap of the table using *rows* as row labels and *columns* as column labels. The values are assumed to be equal to log2(raw data). If not, you have to select the option *Log*. Selecting the option *List* will print numbers beside the rows in the heatmap and make a file with the corresponding IDs."""
+    """Creates a heatmap of the table using *rows* as row labels and *columns* as column labels. 
+The values are assumed to be equal to log2(raw data). If not, you have to select the option *Log*. 
+Selecting the option *List* will print numbers beside the rows in the heatmap and make a file with the corresponding IDs."""
     info = {
-        'title': 'Make heatmap of the table',
+        'title': 'Make a heatmap of a numeric table',
         'description': __doc__,
         'path': ['Graphics', 'Heatmap'],
         'output': HeatmapForm,
@@ -68,7 +70,7 @@ class HeatmapPlugin(BasePlugin):
         values -= median(values,axis=0)
         values /= median(abs(values),axis=0)
         pdf = self.temporary_path(fname='%s.pdf' %title)
-        pdf, roword = heatmap(values, output=pdf, rows=names, main=title, nb_colors=nb_colors)
+        pdf, roword = heatmap(values, output=pdf, rows=names, main=title, nb_colors=nb_colors, return_rowInd=True)
         if make_list:
             List_ID = self.temporary_path(fname='%s_row_order.txt' %title)
             with open(List_ID,"w") as L:
