@@ -54,7 +54,7 @@ class HeatmapPlugin(BasePlugin):
         logscale = kw.get('log',False)
         if isinstance(logscale, basestring):
             logscale = (linscale.lower() in ['1', 'true', 't','on'])
-        make_list = kw.get('list',False)
+        make_list = kw.get('rowids',False)
         if isinstance(make_list, basestring):
             make_list = (make_list.lower() in ['1', 'true', 't','on'])
         names = []
@@ -70,7 +70,7 @@ class HeatmapPlugin(BasePlugin):
         pdf = self.temporary_path(fname='%s.pdf' %title)
         pdf, roword = heatmap(values, output=pdf, rows=names, main=title, nb_colors=nb_colors)
         if make_list:
-            List_ID = self.temporary_path(fname='Row_order.txt')
+            List_ID = self.temporary_path(fname='%s_row_order.txt' %title)
             with open(List_ID,"w") as L:
                 L.write("\n".join(["%i\t%s" %(n,names[n-1]) for n in roword]))
             self.new_file(List_ID, 'List')
