@@ -50,7 +50,7 @@ Selecting the option *List* will print numbers beside the rows in the heatmap an
         }
 
     def __call__(self, **kw):
-        table = open(kw.get('table'))
+        table = kw.get('table')
         title = splitext(basename(table))[0]
         nb_colors = int(kw.get('nb_colors') or nb_colors_def)
         logscale = kw.get('log',False)
@@ -61,11 +61,12 @@ Selecting the option *List* will print numbers beside the rows in the heatmap an
             make_list = (make_list.lower() in ['1', 'true', 't','on'])
         names = []
         values = None
-        for line in table:
-            newline = line.strip("\n\r").split("\t")
-            names.append(newline.pop(0))
-            if values is None: values = array(newline,dtype=float)
-            else: values = vstack([values,array(newline,dtype=float)])
+        with open(table) as _tabl:
+            for line in _tabl:
+                newline = line.strip("\n\r").split("\t")
+                names.append(newline.pop(0))
+                if values is None: values = array(newline,dtype=float)
+                else: values = vstack([values,array(newline,dtype=float)])
         if logscale: values = log2(1+values)
         values -= median(values,axis=0)
         values /= median(abs(values),axis=0)
