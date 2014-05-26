@@ -1,7 +1,7 @@
 from bsPlugins import *
 from bbcflib.gfminer.figure import Vplot
 from bbcflib.track import track
-from numpy import array
+from numpy import asarray, concatenate
 
 nbin_x_def = 500; nbin_y_def = 500
 bandwidth_x_def = 0.1; bandwidth_y_def = 0.1
@@ -88,11 +88,10 @@ class VplotPlugin(BasePlugin):
         else:
             ymin_def = 50
             log = 'y'
-        nbin_x = int(kw.get('nbin_x') or nbin_x_def)
-        nbin_y = int(kw.get('nbin_y') or nbin_y_def)
-        bandwidth_x = float(kw.get('bandwidth_x') or bandwidth_x_def)
-        bandwidth_y = float(kw.get('bandwidth_y') or bandwidth_y_def)
-        ymin = int(kw.get('ymin') or ymin_def)
+        nbin = (int(kw.get('nbin_x') or nbin_x_def),
+                int(kw.get('nbin_y') or nbin_y_def))
+        bandwidth = (float(kw.get('bandwidth_x') or bandwidth_x_def), 
+                     float(kw.get('bandwidth_y') or bandwidth_y_def))
         xlab = "Position in window [bp]"
         ylab = "Fragment size [bp]"
         pdf = self.temporary_path(fname='Vplot.pdf')
@@ -101,28 +100,35 @@ class VplotPlugin(BasePlugin):
         extra_window = 1000
         for bam_nb, bam in enumerate(bamfiles):
             if bam_nb == len(bamfiles)-1: last = True
-            list_regions = features.read()
-            Y = []
-            X = []
-            for region_nb, region in enumerate(list_regions):
+            Y = None
+            X = None
+            for region_nb, region in enumerate(features.read()):
                 if strandi > -1:
                     strand = region[strandi]
                 else:
                     strand = 1
+                _Y = []
+                _X = []
                 region_extended = (region[0],max(0,region[1]-extra_window))+region[2:]
                 for _s in bam.PE_fragment_size(region_extended,midpoint=True):
                     for pos in range(_s[1],_s[2]):
                         if pos < region[1]: continue
                         if pos >= region[2]: break
-                        Y.append(int(_s[3]))
+                        _Y.append(int(_s[3]))
                         if strand < 0:
-                            X.append(region[2]-pos-1)
+                            _X.append(region[2]-pos-1)
                         else:
-                            X.append(pos-region[1])
-            ymax_def = max(Y)
-            ymax = int(kw.get('ymax') or ymax_def)
-            Vplot( array(X), array(Y), output=pdf, new=new, last=last, main=bam.name,
-                   xlab=xlab, ylab=ylab, ylim=(ymin,ymax), log=log, nbin=(nbin_x,nbin_y), bandwidth=(bandwidth_x,bandwidth_y) )
+                            _X.append(pos-region[1])
+                if X is None:
+                    X = asarray(_X)
+                    Y = asarray(_Y)
+                else:
+                    X = concatenate((X,asarray(_X)))
+                    Y = concatenate((Y,asarray(_Y)))
+            ylims = (int(kw.get('ymin') or ymin_def), int(kw.get('ymax') or max(Y)))
+            Vplot( X, Y, output=pdf, new=new, last=last, main=bam.name,
+                   xlab=xlab, ylab=ylab, ylim=ylims, log=log, nbin=nbin, 
+                   bandwidth=bandwidth )
             new = False
         self.new_file(pdf, 'Vplot')
         return self.display_time()
