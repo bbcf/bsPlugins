@@ -62,6 +62,7 @@ Selecting the option *List* will print numbers beside the rows in the heatmap an
         names = []
         values = None
         with open(table) as _tabl:
+            col_labels = _tabl.readline().strip("\n\r").split("\t")[1:]
             for line in _tabl:
                 newline = line.strip("\n\r").split("\t")
                 names.append(newline.pop(0))
@@ -71,7 +72,7 @@ Selecting the option *List* will print numbers beside the rows in the heatmap an
         values -= median(values,axis=0)
         values /= median(abs(values),axis=0)
         pdf = self.temporary_path(fname='%s.pdf' %title)
-        pdf, roword = heatmap(values, output=pdf, rows=names, main=title, nb_colors=nb_colors, return_rowInd=True)
+        pdf, roword = heatmap(values, output=pdf, rows=names, columns=col_labels, main=title, nb_colors=nb_colors, return_rowInd=True)
         if make_list:
             List_ID = self.temporary_path(fname='%s_row_order.txt' %title)
             with open(List_ID,"w") as L:
