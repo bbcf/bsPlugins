@@ -12,6 +12,7 @@ meta = {'version': "1.0.0",
 
 in_parameters = [{'id': 'table', 'type': 'track'},
                  {'id': 'log', 'type': 'boolean'},
+                 {'id': 'cor', 'type': 'boolean'},
                  {'id': 'rowids', 'type': 'boolean'},
                  {'id': 'nb_colors', 'type': 'int'}]
 out_parameters = [{'id': 'Heatmap', 'type': 'pdf'},
@@ -25,6 +26,9 @@ class HeatmapForm(BaseForm):
     log = twf.CheckBox(label='Log: ',
                        value=False,
                        help_text='Take the log2(1+x) of each value x')
+    cor = twf.CheckBox(label='Correlation: ',
+                       value=False,
+                       help_text='Use the correlation as the distance function to build the clusters')
     rowids = twf.CheckBox(label='List: ',
                           value=False,
                           help_text='Number the rows in the heatmap and make a file with the corresponding IDs')
@@ -55,7 +59,12 @@ Selecting the option *List* will print numbers beside the rows in the heatmap an
         nb_colors = int(kw.get('nb_colors') or nb_colors_def)
         logscale = kw.get('log',False)
         if isinstance(logscale, basestring):
-            logscale = (linscale.lower() in ['1', 'true', 't','on'])
+            logscale = (logscale.lower() in ['1', 'true', 't','on'])
+        cor = kw.get('cor',False)
+        if isinstance(cor, basestring):
+            cor = (cor.lower() in ['1', 'true', 't','on'])
+        if cor: cor = True
+        else: cor = False
         make_list = kw.get('rowids',False)
         if isinstance(make_list, basestring):
             make_list = (make_list.lower() in ['1', 'true', 't','on'])
@@ -73,12 +82,13 @@ Selecting the option *List* will print numbers beside the rows in the heatmap an
         values /= median(abs(values),axis=0)
         pdf = self.temporary_path(fname='%s.pdf' %title)
         if make_list:
-            pdf, roword = heatmap(values, output=pdf, rows=names, columns=col_labels, main=title, nb_colors=nb_colors, return_rowInd=True)
+            pdf, roword = heatmap(values, output=pdf, rows=names, columns=col_labels, main=title, nb_colors=nb_colors, return_rowInd=True, cor=cor)
             List_ID = self.temporary_path(fname='%s_row_order.txt' %title)
             with open(List_ID,"w") as L:
-                L.write("\n".join(["%i\t%s" %(n,names[n-1]) for n in roword]))
+                L.write("Row"+"\t"+"ID.number"+"\t"+"ID.name"+"\n")
+                L.write("\n".join(["%i\t%i\t%s" %(i+1,n,names[n-1]) for i, n in enumerate(roword)]))
             self.new_file(List_ID, 'List')
         else:
-            pdf = heatmap(values, output=pdf, rows=names, columns=col_labels, main=title, nb_colors=nb_colors, return_rowInd=False)
+            pdf = heatmap(values, output=pdf, rows=names, columns=col_labels, main=title, nb_colors=nb_colors, return_rowInd=False, cor=cor)
         self.new_file(pdf, 'Heatmap')
         return self.display_time()
