@@ -81,7 +81,7 @@ each alignment will be considered, default is read length).
             b2wargs = ["-c", str(control)]
             assert os.path.exists(str(control)), "Control file not found: '%s'." % control
             control = os.path.abspath(control)
-        try: 
+        try:
             nreads = int(kw.get('normalization'))
         except (ValueError, TypeError):
             nreads = -1
@@ -92,21 +92,21 @@ each alignment will be considered, default is read length).
                 b2wargs += ["-r"]
         else:
             _nreads = [nreads for s in samples]
-        try: 
+        try:
             merge_strands = int(kw.get('merge_strands'))
         except (ValueError, TypeError):
             merge_strands = -1
-        try: 
+        try:
             read_extension = int(kw.get('read_extension'))
         except (ValueError, TypeError):
             read_extension = -1
         output = [self.temporary_path(fname=b.name+'_density_') for b in bamfiles]
         format = kw.get("format", "sql")
         with execution(None) as ex:
-            files = [bam_to_density( ex, s, output[n], nreads=_nreads[n], 
+            files = [bam_to_density( ex, s, output[n], nreads=_nreads[n],
                                      merge=merge_strands,
                                      read_extension=read_extension,
-                                     sql=True, args=b2wargs ) 
+                                     sql=True, args=b2wargs )
                      for n,s in enumerate(samples)]
         info = {'datatype': 'quantitative', 'read_extension': read_extension}
         if merge_strands >= 0:

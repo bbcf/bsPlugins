@@ -14,7 +14,7 @@ out_parameters = [{'id': 'fragment_track', 'type': 'track'},
 class FragLengthForm(BaseForm):
     class TrackMulti(twb.BsMultiple):
         label = 'Paired-end BAM files: '
-        tracks = twb.BsFileField(label=' ',
+        bamfiles = twb.BsFileField(label=' ',
                                  validator=twb.BsFileFieldValidator(required=True))
     minlength = twf.TextField(label='Minimum fragment length: ',
                               validator=twc.IntValidator(required=False))
