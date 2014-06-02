@@ -12,7 +12,7 @@ out_parameters = [{'id': 'fragment_track', 'type': 'track'},
                   {'id': 'fragment_track_tar', 'type': 'file'}]
 
 class FragLengthForm(BaseForm):
-    class TrackMulti(twb.BsMultiple):
+    class BamMulti(twb.BsMultiple):
         label = 'Paired-end BAM files: '
         bamfiles = twb.BsFileField(label=' ',
                                  validator=twb.BsFileFieldValidator(required=True))
