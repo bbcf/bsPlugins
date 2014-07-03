@@ -74,7 +74,7 @@ class MotifSearchPlugin(BasePlugin):
                 raise ValueError("File not found: %s" %regions_file)
             regions = track(regions_file,chrmeta=assembly.chrmeta)
             name = regions.name
-            gRef = assembly.fasta_by_chrom()
+            gRef = assembly.fasta_by_chrom
             fasta = self.temporary_path(fname=regions.name+'.fa')
             (fasta, size) = assembly.fasta_from_regions( 
                 list(regions.read(fields=['chr','start','end'])), 
