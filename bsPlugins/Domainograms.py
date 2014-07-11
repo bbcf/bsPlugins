@@ -1,6 +1,6 @@
 from bsPlugins import *
 from bein import execution
-from bbcflib.track import track
+from bbcflib.track import track, convert
 from bbcflib import genrep, c4seq
 import os, tarfile, re
 
@@ -69,7 +69,11 @@ class DomainogramsPlugin(BasePlugin):
 
         tarname = kw.get('name')+"_domainogram.tar.gz"
         domainograms_tar = tarfile.open(tarname, "w:gz")
-        
+
+        if re.search(r'sql$',str(filename)):
+            convert((str(filename),'sql'),(str(filename)+'.bedGraph','bedGraph'))
+            filename=str(filename)+'.bedGraph'
+
         with execution(None) as ex:
             res = c4seq.runDomainogram(ex,infile=filename,name=kw.get('name'),prefix=None,regCoord=kw.get('region'),wmaxDomainogram=str(kw.get('wmaxDomainogram')),wmax_BRICKS=str(kw.get('wmax_BRICKS')),script_path=script_path)
 
@@ -82,6 +86,6 @@ class DomainogramsPlugin(BasePlugin):
                     elif start and not re.search("RData",s):
                         domainograms_tar.add(s)
         domainograms_tar.close()
-        
+
         self.new_file(tarname, 'domainograms_tar')
         return self.display_time()
