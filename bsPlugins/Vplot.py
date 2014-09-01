@@ -146,7 +146,6 @@ class VplotPlugin(BasePlugin):
                 Vplot2( XL, YL, XR, YR, output=pdf, new=new, last=last, main=bam.name,
                        xlab=xlab, ylab=ylab, ylim=ylims, log=log, nbin=nbin,
                        bandwidth=bandwidth )
-                print mean(YL)-mean(YR)
             else:
                 X = None; Y = None
                 for region_nb, region in enumerate(features.read()):
