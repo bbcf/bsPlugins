@@ -20,7 +20,7 @@ in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple':
                  {'id': 'bandwidth_y', 'type': 'float'},
                  {'id': 'ymin', 'type': 'int'},
                  {'id': 'ymax', 'type': 'int'}]
-out_parameters = [{'id': 'Vplot', 'type': 'pdf'}]
+out_parameters = [{'id': 'Vplot', 'type': 'png'}]
 
 
 class VplotForm(BaseForm):
@@ -101,7 +101,7 @@ class VplotPlugin(BasePlugin):
                      float(kw.get('bandwidth_y') or bandwidth_y_def))
         xlab = "Position in window [bp]"
         ylab = "Fragment size [bp]"
-        pdf = self.temporary_path(fname='Vplot.pdf')
+        png = self.temporary_path(fname='Vplot.png')
         new = True
         last = False
         extra_window = 1000
@@ -143,7 +143,7 @@ class VplotPlugin(BasePlugin):
                     else:
                         XR = concatenate((XR,asarray(_XR))); YR = concatenate((YR,asarray(_YR)))
                 ylims = (int(kw.get('ymin') or ymin_def), int(kw.get('ymax') or max(concatenate((YL,YR)))))
-                Vplot2( XL, YL, XR, YR, output=pdf, new=new, last=last, main=bam.name,
+                Vplot2( XL, YL, XR, YR, output=png, new=new, last=last, main=bam.name,
                        xlab=xlab, ylab=ylab, ylim=ylims, log=log, nbin=nbin,
                        bandwidth=bandwidth )
             else:
@@ -169,9 +169,9 @@ class VplotPlugin(BasePlugin):
                     else:
                         X = concatenate((X,asarray(_X))); Y = concatenate((Y,asarray(_Y)))
                 ylims = (int(kw.get('ymin') or ymin_def), int(kw.get('ymax') or max(Y)))
-                Vplot( X, Y, output=pdf, new=new, last=last, main=bam.name,
+                Vplot( X, Y, output=png, new=new, last=last, main=bam.name,
                        xlab=xlab, ylab=ylab, ylim=ylims, log=log, nbin=nbin,
                        bandwidth=bandwidth )
             new = False
-        self.new_file(pdf, 'Vplot')
+        self.new_file(png, 'Vplot')
         return self.display_time()
