@@ -1,10 +1,12 @@
 from bsPlugins import *
-from bbcflib.gfminer.figure import Vplot, Vplot2
+from bbcflib.gfminer.figure import smoothScatter
 from bbcflib.track import track
 from numpy import asarray, concatenate, mean
 
-nbin_x_def = 500; nbin_y_def = 500
-bandwidth_x_def = 0.1; bandwidth_y_def = 0.1
+nbin_x_def = 500
+nbin_y_def = 500
+bandwidth_x_def = 0.1
+bandwidth_y_def = 0.1
 
 meta = {'version': "1.0.0",
         'author': "BBCF",
@@ -85,10 +87,10 @@ class VplotPlugin(BasePlugin):
             strandi = -1
         left_right = kw.get('left_right',False)
         if isinstance(left_right, basestring):
-            left_right = (left_right.lower() in ['1', 'true', 't','on'])
+            left_right = (left_right.lower() in ['1', 'true', 't', 'on'])
         linscale = kw.get('linear',False)
         if isinstance(linscale, basestring):
-            linscale = (linscale.lower() in ['1', 'true', 't','on'])
+            linscale = (linscale.lower() in ['1', 'true', 't', 'on'])
         if linscale:
             ymin_def = 0
             log = ''
@@ -105,73 +107,49 @@ class VplotPlugin(BasePlugin):
         new = True
         last = False
         extra_window = 1000
+        strand = 1
         for bam_nb, bam in enumerate(bamfiles):
             if bam_nb == len(bamfiles)-1: last = True
+            XL = None; XR = None; Y = None
+            for region_nb, region in enumerate(features.read()):
+                if strandi > -1: strand = region[strandi]
+                chrom,start,end,rname = region[:4]
+                _XL = []; _XR = []; _Y = []
+                for read in bam.fetch(chrom,max(0,start-extra_window),end+extra_window):
+                    if read.is_proper_pair and read.isize>0 and not read.is_reverse:
+                        _rs = read.isize
+                        if strand < 0: rpos = end-read.pos-_rs
+                        else:          rpos = read.pos-start
+                        if rpos < -_rs: continue
+                        if rpos >= end-start+_rs: break
+                        _Y.append(_rs)
+                        if left_right:
+                            _XL.append(rpos)
+                            _XR.append(rpos+_rs)
+                        else:
+                            _XR.append(rpos+_rs/2)
+                if Y is None:
+                    if left_right: XL = asarray(_XL)
+                    XR = asarray(_XR)
+                    Y = asarray(_Y)
+                else:
+                    if left_right: XL = concatenate((XL,asarray(_XL)))
+                    XR = concatenate((XR,asarray(_XR)))
+                    Y = concatenate((Y,asarray(_Y)))
+            ylims = (int(kw.get('ymin') or ymin_def), int(kw.get('ymax') or max(Y)))
+            xlims = (0,end-start)
+            colrs = ["white","blue","red"]
+            mlabel = bam.name
             if left_right:
-                XL = None; YL = None; XR = None; YR = None
-                for region_nb, region in enumerate(features.read()):
-                    if strandi > -1:
-                        strand = region[strandi]
-                    else:
-                        strand = 1
-                    _XL = []; _YL = []; _XR = []; _YR = []
-                    region_extended = (region[0],max(0,region[1]-extra_window))+region[2:]
-                    for _s in bam.PE_fragment_size(region_extended,end="left"):
-                        for pos in range(_s[1],_s[2]):
-                            if pos < region[1]: continue
-                            if pos >= region[2]: break
-                            _YL.append(int(_s[3]))
-                            if strand < 0:
-                                _XL.append(region[2]-pos-1)
-                            else:
-                                _XL.append(pos-region[1])
-                    if XL is None:
-                        XL = asarray(_XL); YL = asarray(_YL)
-                    else:
-                        XL = concatenate((XL,asarray(_XL))); YL = concatenate((YL,asarray(_YL)))
-                    for _s in bam.PE_fragment_size(region_extended,end="right"):
-                        for pos in range(_s[1],_s[2]):
-                            if pos < region[1]: continue
-                            if pos >= region[2]: break
-                            _YR.append(int(_s[3]))
-                            if strand < 0:
-                                _XR.append(region[2]-pos-1)
-                            else:
-                                _XR.append(pos-region[1])
-                    if XR is None:
-                        XR = asarray(_XR); YR = asarray(_YR)
-                    else:
-                        XR = concatenate((XR,asarray(_XR))); YR = concatenate((YR,asarray(_YR)))
-                ylims = (int(kw.get('ymin') or ymin_def), int(kw.get('ymax') or max(concatenate((YL,YR)))))
-                Vplot2( XL, YL, XR, YR, output=png, new=new, last=last, main=bam.name,
-                       xlab=xlab, ylab=ylab, ylim=ylims, log=log, nbin=nbin,
-                       bandwidth=bandwidth )
-            else:
-                X = None; Y = None
-                for region_nb, region in enumerate(features.read()):
-                    if strandi > -1:
-                        strand = region[strandi]
-                    else:
-                        strand = 1
-                    _X = []; _Y = []
-                    region_extended = (region[0],max(0,region[1]-extra_window))+region[2:]
-                    for _s in bam.PE_fragment_size(region_extended,midpoint=True):
-                        for pos in range(_s[1],_s[2]):
-                            if pos < region[1]: continue
-                            if pos >= region[2]: break
-                            _Y.append(int(_s[3]))
-                            if strand < 0:
-                                _X.append(region[2]-pos-1)
-                            else:
-                                _X.append(pos-region[1])
-                    if X is None:
-                        X = asarray(_X); Y = asarray(_Y)
-                    else:
-                        X = concatenate((X,asarray(_X))); Y = concatenate((Y,asarray(_Y)))
-                ylims = (int(kw.get('ymin') or ymin_def), int(kw.get('ymax') or max(Y)))
-                Vplot( X, Y, output=png, new=new, last=last, main=bam.name,
-                       xlab=xlab, ylab=ylab, ylim=ylims, log=log, nbin=nbin,
-                       bandwidth=bandwidth )
+                smoothScatter( XL, Y, output=png, new=new, last=False, main=mlabel+" left fragment end",
+                               xlab=xlab, ylab=ylab, xlim=xlims, ylim=ylims, log=log, color=["white","red"], 
+                               mfrow=[2,1], nbin=nbin, bandwidth=bandwidth )
+                colrs = ["white","blue"]
+                mlabel += " right fragment end"
+                new = False
+            smoothScatter( XR, Y, output=png, new=new, last=last, main=mlabel,
+                           xlab=xlab, ylab=ylab, xlim=xlims, ylim=ylims, log=log, color=colrs,
+                           nbin=nbin, bandwidth=bandwidth )
             new = False
         self.new_file(png, 'Vplot')
         return self.display_time()
