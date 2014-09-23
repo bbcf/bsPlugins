@@ -65,7 +65,7 @@ class PairedEndPlugin(BasePlugin):
             else:
                 for _size,_rep in _buff.iteritems():
                     self.frag_size[_size] = self.frag_size.get(_size,0)+_rep
-                    self.frag_rep[_rep] = self.frag_rep.get(_rep,0)+1
+                    self.frag_rep[_rep] = 1+self.frag_rep.get(_rep,0)
                 _plast = _p
                 _buff = {}
         for _rep in _buff.values():
@@ -123,15 +123,15 @@ title(main=main,outer=T)
                 outname = self.temporary_path(fname=tname)
                 all_tracks.append(outname)
                 trout = track(outname, fields=_f, chrmeta=bam.chrmeta,
-                              info={'datatype': 'quantitative', 
-                                    'PE_midpoint': midpoint})
+                              info={'datatype': 'quantitative', 'PE_midpoint': midpoint})
             self.frag_rep = {}
             self.frag_size = {}
             self.nb_frag = 0
             for chrom,cval in bam.chrmeta.iteritems():
                 self._compute_stats(bam.fetch(chrom, 0, cval['length']))
                 if not plot_only:
-                    trout.write( bam.PE_fragment_size(chrom,midpoint=midpoint), fields=_f, chrom=chrom )
+                    trout.write( bam.PE_fragment_size(chrom,midpoint=midpoint), 
+                                 fields=_f, chrom=chrom )
             if not plot_only: trout.close()
             if self.nb_frag > 1:
                 self._plot_stats(bam.name)

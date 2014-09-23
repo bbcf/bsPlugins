@@ -88,7 +88,7 @@ The sequences will be scanned with the PWM and occurrences exceeding the thresho
                 with execution(None) as ex:
                     stats = fasta_composition(ex,fasta_file,frequency=True)
             with open(background,"w") as bgr:
-                bgr.write(" ".join(["1"]+[str(stats[n]) for n in ['A','C','G','T']]))
+                bgr.write(" ".join(["1"]+[str(stats[n]) for n in 'ACGT']))
         if assembly_id is not None:
             assembly = genrep.Assembly(assembly_id)
         else:
@@ -104,7 +104,7 @@ The sequences will be scanned with the PWM and occurrences exceeding the thresho
         for mot in motifs_list:
             gid, mname = mot.split(' ')
             pwmfile = self.temporary_path()
-            _ = g.get_motif_PWM(int(gid), mname, output=pwmfile)
+            g.get_motif_PWM(int(gid), mname, output=pwmfile)
             motifs[mname] = pwmfile
 
         if len(motifs) == 0:
@@ -112,10 +112,10 @@ The sequences will be scanned with the PWM and occurrences exceeding the thresho
 
         track_output = self.temporary_path(fname='motif_scan', ext="bed")
         with execution(None) as ex:
-            _ = save_motif_profile( ex, motifs, assembly, regions_file, fasta_file,
-                                    background=background, threshold=threshold,
-                                    output = track_output,
-                                    description=None, via='local' )
+            save_motif_profile( ex, motifs, assembly, regions_file, fasta_file,
+                                background=background, threshold=threshold,
+                                output=track_output,
+                                description=None, via='local' )
         self.new_file(track_output, 'motif_track')
         return self.display_time()
 

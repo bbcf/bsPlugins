@@ -25,7 +25,8 @@ in_parameters = [{'id': 'numerator', 'type': 'track', 'required': True},
                  {'id': 'threshold', 'type': 'float'},
                  {'id': 'log', 'type':'boolean', 'required':True},
                  {'id': 'distribution', 'type':'boolean', 'required':True}]
-out_parameters = [{'id': 'ratios', 'type': 'track'}, {'id': 'boxplot', 'type': 'pdf'}]
+out_parameters = [{'id': 'ratios', 'type': 'track'}, 
+                  {'id': 'boxplot', 'type': 'pdf'}]
 
 
 class RatiosForm(BaseForm):
@@ -47,22 +48,27 @@ class RatiosForm(BaseForm):
         options=["bedGraph","sql","wig","bigWig","sga"],
         validator=twc.Validator(required=True),
         help_text='Format of the output file')
-    window_size = twf.TextField(label='Window size: ',
+    window_size = twf.TextField(
+        label='Window size: ',
         validator=twc.IntValidator(),
         value=size_def,
         help_text='Size of the sliding window in bp (default: 1)')
-    pseudo = twf.TextField(label='Pseudo-count: ',
+    pseudo = twf.TextField(
+        label='Pseudo-count: ',
         validator=twb.FloatValidator(min=0,max=1000),
         value=pseudo_def,
         help_text='Value to be added to both signals (default: 0.5)')
-    threshold = twf.TextField(label='Threshold: ',
+    threshold = twf.TextField(
+        label='Threshold: ',
         validator=twb.FloatValidator(min=0,max=1000),
         value=threshold_def,
         help_text='This sets ratio=1 at each genomic position satisfying numerator value < threshold (default: 0)')
-    log = twf.CheckBox(label='Log ratios: ',
+    log = twf.CheckBox(
+        label='Log ratios: ',
         value=False,
         help_text='Computes the log2 of the ratios')
-    distribution = twf.CheckBox(label='Plot distribution: ',
+    distribution = twf.CheckBox(
+        label='Plot distribution: ',
         value=False,
         help_text='Creates a graphical representation of the distributions of the ratios based on a sample of genomic regions')
     submit = twf.SubmitButton(id="submit", value="Submit")
@@ -178,6 +184,7 @@ class RatiosPlugin(BasePlugin):
 
         if distribution:
             pdf = self.temporary_path(fname='%s-%s_ratios_distribution.pdf'%(t1.name,t2.name))
-            density_boxplot(self.ratios,output=pdf,name=t1.name+"/"+t2.name+" (median="+str(round(median(self.ratios),2))+")")
+            density_boxplot(self.ratios,output=pdf,
+                            name="%s/%s (median=%.2f)" %(t1.name,t2.name,median(self.ratios)))
             self.new_file(pdf, 'boxplot')
         return self.display_time()
