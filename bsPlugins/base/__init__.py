@@ -17,9 +17,7 @@ class BasePlugin(object):
 
     def __init__(self):
 
-        if not hasattr(self, 'info'):
-            self.info = {}
-
+        if not hasattr(self, 'info'): self.info = {}
         self.title = self.info.get('title', '')
         self.description = self.info.get('description', '')
         self.path = self.info.get('path', None)
@@ -28,38 +26,22 @@ class BasePlugin(object):
         self.out_parameters = self.info.get('out', [])
         self.meta = self.info.get('meta', '')
         self.deprecated = self.info.get('deprecated', False)
-
         self.uid = None
         self.service = None
         self.output_files = []
         self.tmp_files = []
         self.start_time = 0
         self.end_time = 0
-
         self.is_debug = False
         self.debug_stack = []
 
-    def debug(self, *args, **kw):
-        if self.is_debug:
-            db = "%s : %s - %s" % (type(self).__name__, args, kw)
-            self.debug_stack.append(db)
-            print db
-
+        
     def _start_timer(self):
         self.start_time = time.time()
 
-    def _end_timer(self):
-        self.end_time = time.time()
-
-    def time(self):
-        if self.end_time is None:
-            self._end_timer()
-        return self.end_time - self.start_time
-
     def display_time(self):
-        t = self.time()
-        if t < 0:
-            t = 0.0
+        if self.end_time is None: self.end_time = time.time()
+        t = max(0.0,self.end_time-self.start_time)
         return 'Time elapsed %0.3fs.' % t
 
     def html_doc_link(self):
@@ -83,8 +65,7 @@ class BasePlugin(object):
         '''
         if self.uid is None:
             tohash = str(self.__class__) + str(self.title) + str(self.in_parameters) + str(self.out_parameters)
-            if 'version' in self.meta:
-                tohash += self.meta['version']
+            if 'version' in self.meta: tohash += self.meta['version']
             self.uid = hashlib.sha1(tohash).hexdigest()
         return self.uid
 
@@ -116,14 +97,11 @@ class BasePlugin(object):
         :return: the absolute path to the file.
         """
         tmp_dir = tempfile.mkdtemp(dir=TMP_DIR)
-        if fname is None or fname == '':
-            fname = random_name(6)
+        if fname is None or fname == '': fname = random_name(6)
         if ext is not None:
-            if ext.startswith('.'):
-                fname += ext
-            else:
-                fname = '%s.%s' % (fname, ext)
-
+            if ext.startswith('.'): fname += ext
+            else:                   fname = "%s.%s"%(fname, ext)
+        if hasattr(self, 'outprefix') and self.outprefix: fname = self.outprefix+fname
         fpath = os.path.join(tmp_dir, fname)
         fpath = os.path.abspath(fpath)
         self.tmp_files.append(tmp_dir)
