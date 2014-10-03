@@ -22,7 +22,8 @@ in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple':
                  {'id': 'bandwidth_y', 'type': 'float'},
                  {'id': 'ymin', 'type': 'int'},
                  {'id': 'ymax', 'type': 'int'}]
-out_parameters = [{'id': 'Vplot', 'type': 'png'}]
+out_parameters = [{'id': 'Vplot', 'type': 'png'},
+                  {'id': 'Vplots_archive', 'type': 'file'}]
 
 
 class VplotForm(BaseForm):
@@ -103,13 +104,11 @@ class VplotPlugin(BasePlugin):
                      float(kw.get('bandwidth_y') or bandwidth_y_def))
         xlab = "Position in window [bp]"
         ylab = "Fragment size [bp]"
-        png = self.temporary_path(fname='Vplot.png')
         new = True
-        last = False
         extra_window = 1000
         strand = 1
+        pnglist = []
         for bam_nb, bam in enumerate(bamfiles):
-            if bam_nb == len(bamfiles)-1: last = True
             XL = None; XR = None; Y = None
             for region_nb, region in enumerate(features.read()):
                 if strandi > -1: strand = region[strandi]
@@ -140,16 +139,25 @@ class VplotPlugin(BasePlugin):
             xlims = (0,end-start)
             colrs = ["white","blue","red"]
             mlabel = bam.name
+            png = self.temporary_path(fname='Vplot_%s.png'%mlabel)
             if left_right:
-                smoothScatter( XL, Y, output=png, new=new, last=False, main=mlabel+" left fragment end",
+                smoothScatter( XL, Y, output=png, new=True, last=False, main=mlabel+" left fragment end",
                                xlab=xlab, ylab=ylab, xlim=xlims, ylim=ylims, log=log, color=["white","red"],
                                mfrow=[2,1], nbin=nbin, bandwidth=bandwidth )
                 colrs = ["white","blue"]
                 mlabel += " right fragment end"
                 new = False
-            smoothScatter( XR, Y, output=png, new=new, last=last, main=mlabel,
+            smoothScatter( XR, Y, output=png, new=new, last=True, main=mlabel,
                            xlab=xlab, ylab=ylab, xlim=xlims, ylim=ylims, log=log, color=colrs,
                            nbin=nbin, bandwidth=bandwidth )
-            new = False
-        self.new_file(png, 'Vplot')
+            new = True
+            pnglist.append(png)
+        if len(pnglist) > 1:
+            tar_png_name = self.temporary_path('Vplots.tgz')
+            tar_png = tarfile.open(tar_png_name, "w:gz")
+            [tar_png.add(f,arcname=os.path.basename(f)) for f in pnglist]
+            tar_png.close()
+            self.new_file(tar_png_name, 'Vplots_archive')
+        elif len(pnglist) == 1:
+            self.new_file(pnglist[0], 'Vplot')
         return self.display_time()
