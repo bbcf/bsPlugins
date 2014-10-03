@@ -2,6 +2,7 @@ from bsPlugins import *
 from bbcflib.gfminer.figure import smoothScatter
 from bbcflib.track import track
 from numpy import asarray, concatenate, mean
+import tarfile
 
 nbin_x_def = 500
 nbin_y_def = 500
