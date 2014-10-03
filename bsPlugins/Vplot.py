@@ -113,7 +113,7 @@ class VplotPlugin(BasePlugin):
             XL = None; XR = None; Y = None
             for region_nb, region in enumerate(features.read()):
                 if strandi > -1: strand = region[strandi]
-                chrom,start,end,rname = region[:4]
+                chrom,start,end = region[:3]
                 _XL = []; _XR = []; _Y = []
                 for read in bam.fetch(chrom,max(0,start-extra_window),end+extra_window):
                     if read.is_proper_pair and read.isize>0 and not read.is_reverse:
@@ -142,7 +142,7 @@ class VplotPlugin(BasePlugin):
             mlabel = bam.name
             if left_right:
                 smoothScatter( XL, Y, output=png, new=new, last=False, main=mlabel+" left fragment end",
-                               xlab=xlab, ylab=ylab, xlim=xlims, ylim=ylims, log=log, color=["white","red"], 
+                               xlab=xlab, ylab=ylab, xlim=xlims, ylim=ylims, log=log, color=["white","red"],
                                mfrow=[2,1], nbin=nbin, bandwidth=bandwidth )
                 colrs = ["white","blue"]
                 mlabel += " right fragment end"
