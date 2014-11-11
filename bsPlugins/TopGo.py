@@ -1,9 +1,7 @@
 from bsPlugins import *
 import rpy2.robjects as robjects
 import os, tarfile
-
-mart_map = [("GRCh37.p5",'hg19'), ("NCBIM37",'mm9'), ("EF3","sacCer2"),
-            ("BDGP5.25",'dm3'),("Zv9",'zv9')]
+from bbcflib import genrep
 
 default_path = "/mnt/common/epfl/share"
 
@@ -62,13 +60,10 @@ with a threshold on the p-value.
         }
 
     def __call__(self, **kw):
-        assembly_id = kw.get('assembly') or None
-        for k,v in mart_map:
-            if assembly_id == v:
-                assembly_id = k
-                break
+        assembly_id = kw.get('assembly')
         if assembly_id is None:
             raise ValueError("Please specify an assembly")
+        assembly = genrep.Assembly(assembly_id)
         filename = kw.get('gene_list')
         assert os.path.exists(str(filename)), "File not found: '%s'" %filename
         script_path = kw.get("script_path",default_path)
@@ -80,7 +75,7 @@ with a threshold on the p-value.
         robjects.r("""
 source("%s/TopGo.R")
 out = multi_topGo("%s","%s","%s","%s",%i,%f)
-"""%(script_path,filename,assembly_id,pdf,table,num_terms,pval))
+"""%(script_path,filename,assembly.name,pdf,table,num_terms,pval))
 
         pdf_list = [f[0] for f in robjects.r('out')[0]]
         table_list = [f[0] for f in robjects.r('out')[1]]
