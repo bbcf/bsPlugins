@@ -24,7 +24,7 @@ class TopGoForm(BaseForm):
                               help_text='Provide a list of ensmbl IDs',
                               validator=twb.BsFileFieldValidator(required=True))
     assembly = twf.SingleSelectField(label='Assembly: ',
-                                     options=mart_map,
+                                     options=genrep.GenRep().assemblies_available(),
                                      prompt_text=None,
                                      help_text='Reference genome')
     num_terms = twf.TextField(label='Number of significant terms: ',
