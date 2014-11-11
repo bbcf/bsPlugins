@@ -2,8 +2,11 @@ from bsPlugins import *
 import rpy2.robjects as robjects
 import os, tarfile
 from bbcflib import genrep
+import urllib, json
 
 default_path = "/mnt/common/epfl/share"
+ucsc_embl_map_url = "http://bbcftools.epfl.ch/genrep/nr_assemblies/ucsc_ensembl_mapping.json"
+ucsc_embl_map = json.loads(urllib.urlopen(ucsc_embl_map_url).read())
 
 meta = {'version': "1.0.0",
         'author': "BBCF",
@@ -21,7 +24,7 @@ out_parameters = [{'id': 'TopGO_table_tar', 'type': 'file'},
 
 class TopGoForm(BaseForm):
     gene_list = twb.BsFileField(label='Genes: ',
-                              help_text='Provide a list of ensmbl IDs',
+                              help_text='Provide a list of Ensembl IDs',
                               validator=twb.BsFileFieldValidator(required=True))
     assembly = twf.SingleSelectField(label='Assembly: ',
                                      options=genrep.GenRep().assemblies_available(),
@@ -75,7 +78,7 @@ with a threshold on the p-value.
         robjects.r("""
 source("%s/TopGo.R")
 out = multi_topGo("%s","%s","%s","%s",%i,%f)
-"""%(script_path,filename,assembly.name,pdf,table,num_terms,pval))
+"""%(script_path,filename,ucsc_embl_map.get(assembly.name,assembly.name),pdf,table,num_terms,pval))
 
         pdf_list = [f[0] for f in robjects.r('out')[0]]
         table_list = [f[0] for f in robjects.r('out')[1]]
