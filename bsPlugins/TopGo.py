@@ -2,8 +2,9 @@ from bsPlugins import *
 import rpy2.robjects as robjects
 import os, tarfile
 
-mart_map = [("GRCh37.p5",'hg19'), ("NCBIM37",'mm9'), ("EF3","sacCer2"),
-            ("BDGP5.25",'dm3'),("Zv9",'zv9')]
+mart_map = [("GRCh37.p5",'hg19'), ("GRCh38",'hg38'), 
+            ("NCBIM37",'mm9'), ("GRCm38.p2",'mm10'), 
+            ("EF3","sacCer2"), ("BDGP5.25",'dm3'),("Zv9",'zv9')]
 
 default_path = "/mnt/common/epfl/share"
 
@@ -32,24 +33,24 @@ class TopGoForm(BaseForm):
     num_terms = twf.TextField(label='Number of significant terms: ',
                               validator=twc.IntValidator(required=False),
                               value=10,
-                              help_text='Number of most significant terms to return')
+                              help_text='Maximum number of significant terms to return')
     pval = twf.TextField(label='P-value threshold: ',
                          validator=twb.FloatValidator(min=0,max=1),
                          value=.05,
-                         help_text='Maximum p-value to include in the output')
+                         help_text='p-value threshold for significance')
     submit = twf.SubmitButton(id="submit", value="TopGo analysis")
 
 
 class TopGoPlugin(BasePlugin):
-    """Makes a GO analysis on a list of Ensembl IDs.
+    """Makes a GO analysis on a list of Ensembl Gene IDs.
 
-Given a file with one Ensembl ID on each line, it returns a summary table (.txt)
-and GO networks in a pdf.
+Given a file with one Ensembl Gene ID 
+on each line (these are ids like: 'ENSG00000111640', 'ENSMUSG00000057666', 'ENSDARG00000043457', 'YJL153C', ...), it returns a summary table (.txt) and GO networks in a multi-page pdf.
 
-The first regroups the most significant terms concerning
+The first summarizes the most significant terms concerning
 Biological Processes (BP), Cellular Components (CC) and Molecular Function (MF).
-One can choose the maximum number of each of these terms to include in the output,
-with a threshold on the p-value.
+Users can limit the maximum number of terms per category to be displayed in the output,
+at a given p-value threshold.
     """
     info = {
         'title': 'Gene Ontology analysis (TopGO)',
