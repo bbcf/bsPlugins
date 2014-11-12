@@ -15,7 +15,8 @@ meta = {'version': "1.0.0",
 in_parameters = [{'id': 'gene_list', 'type': 'userfile', 'required': True},
                  {'id': 'assembly', 'type': 'assembly'},
                  {'id': 'num_terms', 'type': 'int'},
-                 {'id': 'pval', 'type': 'float'}]
+                 {'id': 'pval', 'type': 'float'},
+                 {'id': 'txid', 'type':'boolean', 'required': True}]
 out_parameters = [{'id': 'TopGO_table_tar', 'type': 'file'},
                   {'id': 'TopGO_plots_tar', 'type': 'file'},
                   {'id': 'TopGO_table', 'type': 'txt'},
@@ -38,6 +39,9 @@ class TopGoForm(BaseForm):
                          validator=twb.FloatValidator(min=0,max=1),
                          value=.05,
                          help_text='p-value threshold for significance')
+    txid = twf.CheckBox(label='Transcript identifiers: ',
+                        value=False,
+                        help_text='Check if this a list of transcript ids (default is gene ids)')
     submit = twf.SubmitButton(id="submit", value="TopGo analysis")
 
 
@@ -45,7 +49,8 @@ class TopGoPlugin(BasePlugin):
     """Makes a GO analysis on a list of Ensembl Gene IDs.
 
 Given a file with one Ensembl Gene ID 
-on each line (these are ids like: 'ENSG00000111640', 'ENSMUSG00000057666', 'ENSDARG00000043457', 'YJL153C', ...), it returns a summary table (.txt) and GO networks in a multi-page pdf.
+on each line (these are ids like: 'ENSG00000111640', 'ENSMUSG00000057666', 'ENSDARG00000043457', 'YJL153C', ...), it returns a summary table (.txt) and GO networks in a multi-page pdf. 
+Multiple lists can be processed in a single job by separating them in the file with a comment line (starting with a "#").
 
 The first summarizes the most significant terms concerning
 Biological Processes (BP), Cellular Components (CC) and Molecular Function (MF).
@@ -72,6 +77,9 @@ at a given p-value threshold.
             raise ValueError("Please specify an assembly")
         filename = kw.get('gene_list')
         assert os.path.exists(str(filename)), "File not found: '%s'" %filename
+        txid = kw.get('txid',False)
+        if isinstance(txid, basestring): txid = (txid.lower() in ['1', 'true', 't','on'])
+        use_txids = "transcript" if txid else "gene"
         script_path = kw.get("script_path",default_path)
         fname = os.path.splitext(os.path.basename(filename))[0]
         pdf = self.temporary_path(fname='TopGO_plots.pdf')
@@ -80,8 +88,8 @@ at a given p-value threshold.
         pval = float(kw.get('pval') or .05)
         robjects.r("""
 source("%s/TopGo.R")
-out = multi_topGo("%s","%s","%s","%s",%i,%f)
-"""%(script_path,filename,assembly_id,pdf,table,num_terms,pval))
+out = multi_topGo("%s","%s","%s","%s",%i,%f,"%s")
+"""%(script_path,filename,assembly_id,pdf,table,num_terms,pval,use_txids))
 
         pdf_list = [f[0] for f in robjects.r('out')[0]]
         table_list = [f[0] for f in robjects.r('out')[1]]

@@ -23,8 +23,8 @@ class GenomeGraphForm(BaseForm):
     class SigMultiM(twb.BsMultiple):
         label='Negative Signals: '
         signals_minus = twb.BsFileField(label=' ',
-                                       help_text='Signal files (e.g. bedgraph) to plot below the axis',
-                                       validator=twb.BsFileFieldValidator(required=False))
+                                        help_text='Signal files (e.g. bedgraph) to plot below the axis',
+                                        validator=twb.BsFileFieldValidator(required=False))
     class FeatMulti(twb.BsMultiple):
         label='Features: '
         features = twb.BsFileField(label=' ',

@@ -23,8 +23,8 @@ in_parameters = [{'id': 'numerator', 'type': 'track', 'required': True},
                  {'id': 'window_size', 'type': 'int'},
                  {'id': 'pseudo', 'type': 'float'},
                  {'id': 'threshold', 'type': 'float'},
-                 {'id': 'log', 'type':'boolean', 'required':True},
-                 {'id': 'distribution', 'type':'boolean', 'required':True}]
+                 {'id': 'log', 'type':'boolean', 'required': True},
+                 {'id': 'distribution', 'type':'boolean', 'required': True}]
 out_parameters = [{'id': 'ratios', 'type': 'track'}, 
                   {'id': 'boxplot', 'type': 'pdf'}]
 
