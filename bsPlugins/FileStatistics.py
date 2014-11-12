@@ -97,7 +97,6 @@ points(men,ypos,pch=19,col='blue')
         return None
 
     def __call__(self, **kw):
-        self.debug(**kw)
         sample = track(kw['sample'],chrmeta="guess")
         by_chrom = kw.get('by_chrom',False)
         if isinstance(by_chrom, basestring):
