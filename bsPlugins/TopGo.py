@@ -105,8 +105,10 @@ out = multi_topGo("%s","%s","%s","%s",%i,%f,"%s")
             tar_table.close()
             self.new_file(tar_pdf_name, 'TopGO_plots_tar')
             self.new_file(tar_table_name, 'TopGO_table_tar')
-        else:
+        elif len(pdf_list) > 0:
             self.new_file(pdf_list[0],'TopGO_plots')
             self.new_file(table_list[0],'TopGO_table')
+        else:
+            raise ValueError("Gene list is empty")
 
         return self.display_time()
