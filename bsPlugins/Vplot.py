@@ -4,10 +4,10 @@ from bbcflib.track import track
 from numpy import asarray, concatenate, mean
 import tarfile, os
 
-nbin_x_def = 500
-nbin_y_def = 500
-bandwidth_x_def = 0.1
-bandwidth_y_def = 0.1
+#nbin_x_def = 500
+#nbin_y_def = 500
+#bandwidth_x_def = 0.1
+#bandwidth_y_def = 0.1
 
 meta = {'version': "1.0.0",
         'author': "BBCF",
@@ -17,10 +17,10 @@ in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple':
                  {'id': 'features', 'type': 'track'},
                  {'id': 'left_right', 'type': 'boolean'},
                  {'id': 'linear', 'type': 'boolean'},
-                 {'id': 'nbins_x', 'type': 'int'},
-                 {'id': 'nbins_y', 'type': 'int'},
-                 {'id': 'bandwidth_x', 'type': 'float'},
-                 {'id': 'bandwidth_y', 'type': 'float'},
+                 #{'id': 'nbins_x', 'type': 'int'},
+                 #{'id': 'nbins_y', 'type': 'int'},
+                 #{'id': 'bandwidth_x', 'type': 'float'},
+                 #{'id': 'bandwidth_y', 'type': 'float'},
                  {'id': 'ymin', 'type': 'int'},
                  {'id': 'ymax', 'type': 'int'}]
 out_parameters = [{'id': 'Vplot', 'type': 'png'},
@@ -41,22 +41,22 @@ class VplotForm(BaseForm):
     linear = twf.CheckBox(label='Linear scale: ',
                                 value=False,
                                 help_text='Plot the mean fragment length in linear scale (default: log scale)')
-    nbin_x = twf.TextField(label='Number of bins along x axis: ',
-                                validator=twc.IntValidator(required=False),
-                                value=nbin_x_def,
-                                help_text='Number of equally spaced grid points for the density estimation (default: 500)')
-    nbin_y = twf.TextField(label='Number of bins along y axis: ',
-                                validator=twc.IntValidator(required=False),
-                                value=nbin_y_def,
-                                help_text='Number of equally spaced grid points for the density estimation (default: 500)')
-    bandwidth_x = twf.TextField(label='Smoothing bandwidth along x axis: ',
-                                validator=twb.FloatValidator(min=0,max=1000),
-                                value=bandwidth_x_def,
-                                help_text='The smoothing bandwidth must be between 0 and 1000 (default: 0.1)')
-    bandwidth_y = twf.TextField(label='Smoothing bandwidth along y axis: ',
-                                validator=twb.FloatValidator(min=0,max=1000),
-                                value=bandwidth_y_def,
-                                help_text='The smoothing bandwidth must be between 0 and 1000 (default: 0.1)')
+#    nbin_x = twf.TextField(label='Number of bins along x axis: ',
+#                                validator=twc.IntValidator(required=False),
+#                                value=nbin_x_def,
+#                                help_text='Number of equally spaced grid points for the density estimation (default: 500)')
+#    nbin_y = twf.TextField(label='Number of bins along y axis: ',
+#                                validator=twc.IntValidator(required=False),
+#                                value=nbin_y_def,
+#                                help_text='Number of equally spaced grid points for the density estimation (default: 500)')
+#    bandwidth_x = twf.TextField(label='Smoothing bandwidth along x axis: ',
+#                                validator=twb.FloatValidator(min=0,max=1000),
+#                                value=bandwidth_x_def,
+#                                help_text='The smoothing bandwidth must be between 0 and 1000 (default: 0.1)')
+#    bandwidth_y = twf.TextField(label='Smoothing bandwidth along y axis: ',
+#                                validator=twb.FloatValidator(min=0,max=1000),
+#                                value=bandwidth_y_def,
+#                                help_text='The smoothing bandwidth must be between 0 and 1000 (default: 0.1)')
     ymin = twf.TextField(label='Minimum y value: ',
                                 validator=twc.IntValidator(required=False),
                                 help_text='The default values: ymin=0 in lin scale and ymin=50 in log scale')
@@ -99,10 +99,10 @@ class VplotPlugin(BasePlugin):
         else:
             ymin_def = 50
             log = 'y'
-        nbin = (int(kw.get('nbin_x') or nbin_x_def),
-                int(kw.get('nbin_y') or nbin_y_def))
-        bandwidth = (float(kw.get('bandwidth_x') or bandwidth_x_def),
-                     float(kw.get('bandwidth_y') or bandwidth_y_def))
+#        nbin = (int(kw.get('nbin_x') or nbin_x_def),
+#                int(kw.get('nbin_y') or nbin_y_def))
+#        bandwidth = (float(kw.get('bandwidth_x') or bandwidth_x_def),
+#                     float(kw.get('bandwidth_y') or bandwidth_y_def))
         xlab = "Position in window [bp]"
         ylab = "Fragment size [bp]"
         new = True
@@ -138,19 +138,19 @@ class VplotPlugin(BasePlugin):
                     Y = concatenate((Y,asarray(_Y)))
             ylims = (int(kw.get('ymin') or ymin_def), int(kw.get('ymax') or max(Y)))
             xlims = (0,end-start)
-            colrs = ["white","blue","red"]
+            colrs = ["lightgrey","blue","red"]
             mlabel = bam.name
             png = self.temporary_path(fname='Vplot_%s.png'%mlabel)
             if left_right:
                 smoothScatter( XL, Y, output=png, new=True, last=False, main=mlabel+" left fragment end",
                                xlab=xlab, ylab=ylab, xlim=xlims, ylim=ylims, log=log, color=["white","red"],
-                               mfrow=[2,1], nbin=nbin, bandwidth=bandwidth )
+                               mfrow=[2,1] )#, nbin=nbin, bandwidth=bandwidth )
                 colrs = ["white","blue"]
                 mlabel += " right fragment end"
                 new = False
             smoothScatter( XR, Y, output=png, new=new, last=True, main=mlabel,
-                           xlab=xlab, ylab=ylab, xlim=xlims, ylim=ylims, log=log, color=colrs,
-                           nbin=nbin, bandwidth=bandwidth )
+                           xlab=xlab, ylab=ylab, xlim=xlims, ylim=ylims, log=log, color=colrs )
+                           #,nbin=nbin, bandwidth=bandwidth )
             new = True
             pnglist.append(png)
         if len(pnglist) > 1:
