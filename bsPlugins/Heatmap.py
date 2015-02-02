@@ -82,13 +82,13 @@ Selecting the option *List* will print numbers beside the rows in the heatmap an
         values /= median(abs(values),axis=0)
         pdf = self.temporary_path(fname='%s.pdf' %title)
         if make_list:
-            pdf, roword = heatmap(values, output=pdf, rows=names, columns=col_labels, main=title, nb_colors=nb_colors, return_rowInd=True, cor=cor)
+            pdf, roword = heatmap(array(values), output=pdf, rows=array(names), columns=array(col_labels), main=title, nb_colors=nb_colors, return_rowInd=True, cor=cor)
             List_ID = self.temporary_path(fname='%s_row_order.txt' %title)
             with open(List_ID,"w") as L:
                 L.write("Row"+"\t"+"ID.number"+"\t"+"ID.name"+"\n")
                 L.write("\n".join(["%i\t%i\t%s" %(i+1,n,names[n-1]) for i, n in enumerate(roword)]))
             self.new_file(List_ID, 'List')
         else:
-            pdf = heatmap(values, output=pdf, rows=names, columns=col_labels, main=title, nb_colors=nb_colors, return_rowInd=False, cor=cor)
+            pdf = heatmap(array(values), output=pdf, rows=array(names), columns=array(col_labels), main=title, nb_colors=nb_colors, return_rowInd=False, cor=cor)
         self.new_file(pdf, 'Heatmap')
         return self.display_time()
