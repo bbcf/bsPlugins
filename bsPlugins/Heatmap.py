@@ -79,7 +79,8 @@ Selecting the option *List* will print numbers beside the rows in the heatmap an
                 else: values = vstack([values,array(newline,dtype=float)])
         if logscale: values = log2(1+values)
         values -= median(values,axis=0)
-        values /= median(abs(values),axis=0)
+        if 0 not in median(abs(values),axis=0):
+            values /= median(abs(values),axis=0)
         pdf = self.temporary_path(fname='%s.pdf' %title)
         if make_list:
             pdf, roword = heatmap(values, output=pdf, rows=names, columns=col_labels, main=title, nb_colors=nb_colors, return_rowInd=True, cor=cor)
