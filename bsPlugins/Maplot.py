@@ -2,7 +2,7 @@ from bsPlugins import *
 from bbcflib.track import track
 from bbcflib import genrep
 import os, shutil
-from maplot import MAplot
+from bbcflib.maplot import MAplot
 
 __requires__ = ["numpy"]
 
