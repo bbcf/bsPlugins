@@ -12,6 +12,7 @@ prom_up_def = 1000
 prom_down_def = 100
 plot_types = [(0, 'density plots'), (1, 'correlations')]
 _cormax = 500
+_MAX_PLOTS_ = 100
 
 meta = {'version': "1.0.0",
         'author': "BBCF",
@@ -143,16 +144,16 @@ class PairsPlotPlugin(BasePlugin):
             cormax = int(kw.get('cormax') or _cormax)
             xarr = array(range(-cormax, cormax + 1))
             _f = ['chr', 'start', 'end', 'score']
+            features = [x[:3] for chrom in chrmeta
+                        for x in sorted_stream(features(chrom))]
             if individual:
-                for feature in features():
+                for feature in features[:_MAX_PLOT_]:
                     if narr is not None:
                         pairs(narr, xarr, labels=snames, output=pdf, new=_new, last=False)
                         _new = False
                     narr = correlation([s.read(fields=_f) for s in signals],
-                                       [feature[:3]], (-cormax, cormax), True)
+                                       [feature], (-cormax, cormax), True)
             else:
-                features = [x[:3] for chrom in chrmeta
-                            for x in sorted_stream(features(chrom))]
                 narr = correlation([s.read(fields=_f) for s in signals],
                                    features, (-cormax, cormax), True)
         elif int(kw['mode']) == 0: #density
