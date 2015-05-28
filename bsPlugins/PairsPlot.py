@@ -10,7 +10,7 @@ from numpy import vstack, array
 ftypes = [(0, 'genes bodies'), (1, 'gene promoters'), (2, 'exons'), (3, 'custom upload')]
 prom_up_def = 1000
 prom_down_def = 100
-plot_types = [(0, 'correlations'), (1, 'density plots')]
+plot_types = [(0, 'density plots'), (1, 'correlations')]
 _cormax = 500
 
 meta = {'version': "1.0.0",
@@ -65,15 +65,15 @@ class PairsPlotForm(BaseForm):
                                      validator=twb.BsFileFieldValidator())
     mode = twd.HidingSingleSelectField(label='Plot type: ',
                                        options=plot_types,
-                                       mapping={0: ['cormax','individual']},
+                                       mapping={1: ['cormax','individual']},
                                        prompt_text=None)
     cormax = twf.TextField(label='Spatial range for correlation: ',
                            validator=twc.IntValidator(),
                            value=_cormax,
                            help_text='Maximum distance in bp to compute correlations')
     individual = twf.CheckBox(label='Individual: ',
-                           value=False,
-                           help_text='Plot each region individually (default: false)')
+                              value=False,
+                              help_text='Plot each region individually (default: false)')
     submit = twf.SubmitButton(id="submit", value="Plot")
 
 
@@ -98,6 +98,9 @@ class PairsPlotPlugin(BasePlugin):
         individual = kw.get('individual',False)
         if isinstance(individual, basestring):
             individual = (individual.lower() in ['1', 'true', 't', 'on'])
+        if individual and int(kw['mode']) != 1:
+            raise ValueError("Only correlation plots can work with the 'individual' option.")
+
         assembly_id = kw.get('assembly') or None
         chrmeta = "guess"
         if assembly_id:
@@ -132,76 +135,56 @@ class PairsPlotPlugin(BasePlugin):
             highlights = [track(hi, chrmeta=chrmeta) for hi in highlights]
             hinames = [t.name for t in highlights]
         pdf = self.temporary_path(fname='plot_pairs.pdf')
-        srtdchrom = sorted(chrmeta.keys())
-        if not individual:
-            narr = None
-            set_index = []
-            set_labels = []
-            if int(kw['mode']) == 0: #correl
-                cormax = int(kw.get('cormax') or _cormax)
-                xarr = array(range(-cormax, cormax + 1))
-                features = [x[:3] for chrom in srtdchrom
+        narr = None
+        set_index = []
+        set_labels = []
+        _new = True
+        if int(kw['mode']) == 1: #correl
+            cormax = int(kw.get('cormax') or _cormax)
+            xarr = array(range(-cormax, cormax + 1))
+            _f = ['chr', 'start', 'end', 'score']
+            if individual:
+                for feature in features():
+                    if narr is not None:
+                        pairs(narr, xarr, labels=snames, output=pdf, new=_new, last=False)
+                        _new = False
+                    narr = correlation([s.read(fields=_f) for s in signals],
+                                       [feature[:3]], (-cormax, cormax), True)
+            else:
+                features = [x[:3] for chrom in chrmeta
                             for x in sorted_stream(features(chrom))]
-                _f = ['chr', 'start', 'end', 'score']
                 narr = correlation([s.read(fields=_f) for s in signals],
                                    features, (-cormax, cormax), True)
-            elif int(kw['mode']) == 1: #density
-                xarr = None
+        elif int(kw['mode']) == 0: #density
+            xarr = None
+            for chrom in chrmeta:
+                feat = features(chrom)
+                if 'name' not in feat.fields:
+                    feat = add_name_field(feat)
+                means = score_by_feature([s.read(chrom) for s in signals], feat)
+                mf = means.fields[len(feat.fields):]
+                _n, _l = score_array(means, mf)
+                if _n.size == 0: continue
+                if narr is None: narr = _n
+                else:            narr = vstack((narr, _n))
+            set_index = [narr.shape[0]]
+            for hitrack in highlights:
                 for chrom in chrmeta:
-                    feat = features(chrom)
-                    if 'name' not in feat.fields:
-                        feat = add_name_field(feat)
-                    means = score_by_feature([s.read(chrom) for s in signals], feat)
-                    mf = means.fields[len(feat.fields):]
+                    hiread = hitrack.read(chrom)
+                    if 'name' not in hiread.fields:
+                        hiread = add_name_field(hiread)
+                    means = score_by_feature([s.read(chrom) for s in signals], hiread)
+                    mf = means.fields[len(hiread.fields):]
                     _n, _l = score_array(means, mf)
                     if _n.size == 0: continue
-                    if narr is None: narr = _n
-                    else:            narr = vstack((narr, _n))
-                set_index = [narr.shape[0]]
-                for hitrack in highlights:
-                    for chrom in chrmeta:
-                        hiread = hitrack.read(chrom)
-                        if 'name' not in hiread.fields:
-                            hiread = add_name_field(hiread)
-                        means = score_by_feature([s.read(chrom) for s in signals], hiread)
-                        mf = means.fields[len(hiread.fields):]
-                        _n, _l = score_array(means, mf)
-                        if _n.size == 0: continue
-                        narr = vstack((narr, _n))
-                        set_labels.extend(_l)
-                    set_index.append(narr.shape[0])
-            else:
-                raise ValueError("Mode not implemented: %s" % kw['mode'])
-            if narr is None:
-                raise ValueError("No data")
-            pairs(narr, xarr, labels=snames, output=pdf, highlights=[set_index,set_labels])
+                    narr = vstack((narr, _n))
+                    set_labels.extend(_l)
+                set_index.append(narr.shape[0])
         else:
-            nf = 0
-            nplot = 0
-            for region in features():
-                nplot += 1
-            for chrom in srtdchrom:
-                for feature in features(chrom):
-                    nf += 1
-                    narr = None
-                    if int(kw['mode']) == 0: #correl
-                        cormax = int(kw.get('cormax') or _cormax)
-                        xarr = array(range(-cormax, cormax + 1))
-                        _f = ['chr', 'start', 'end', 'score']
-                        narr = correlation([s.read(fields=_f) for s in signals],
-                                           [feature[:3]], (-cormax, cormax), True)
-                    elif int(kw['mode']) == 1: #density
-                        raise ValueError("Density plots do not work with the option individual")
-                    else:
-                        raise ValueError("Mode not implemented: %s" % kw['mode'])
-                    if narr is None:
-                        raise ValueError("No data")
-                    if nf == 1:
-                        pairs(narr, xarr, labels=snames, output=pdf, new=True, last=False)
-                    elif nf <= nplot-1:
-                        pairs(narr, xarr, labels=snames, output=pdf, new=False, last=False)
-                    else:
-                        pairs(narr, xarr, labels=snames, output=pdf, new=False, last=True)
+            raise ValueError("Mode not implemented: %s" % kw['mode'])
+        if narr is None:
+            raise ValueError("No data")
+        pairs(narr, xarr, labels=snames, output=pdf, highlights=[set_index,set_labels], new=_new, last=True)
         self.new_file(pdf, 'plot_pairs')
         return self.display_time()
 
