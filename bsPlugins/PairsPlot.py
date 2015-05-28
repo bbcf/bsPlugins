@@ -68,10 +68,10 @@ class PairsPlotForm(BaseForm):
                                        options=plot_types,
                                        mapping={1: ['cormax','individual']},
                                        prompt_text=None)
-    cormax = twf.TextField(label='Spatial range for correlation: ',
+    cormax = twf.TextField(label='Spatial range: ',
                            validator=twc.IntValidator(),
                            value=_cormax,
-                           help_text='Maximum distance in bp to compute correlations')
+                           help_text='Maximum lag in bp to compute correlations')
     individual = twf.CheckBox(label='Individual: ',
                               value=False,
                               help_text='Plot each region individually (default: false)')
