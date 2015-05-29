@@ -147,7 +147,7 @@ class PairsPlotPlugin(BasePlugin):
             features = [x[:3] for chrom in chrmeta
                         for x in sorted_stream(features(chrom))]
             if individual:
-                for feature in features[:_MAX_PLOT_]:
+                for feature in features[:_MAX_PLOTS_]:
                     if narr is not None:
                         pairs(narr, xarr, labels=snames, output=pdf, new=_new, last=False)
                         _new = False
