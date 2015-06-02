@@ -149,27 +149,23 @@ class PairsPlotPlugin(BasePlugin):
                         for x in sorted_stream(features(chrom))]
             table = self.temporary_path(fname='table.txt')
             with open(table,"w") as t:
-                t.write("chr"+"\t"+"start"+"\t"+"end"+"\t"+"max(correlation)"+"\t"+"lag_max"+"\n")
+                t.write("\t".join(["chr","start","end","max(correlation)","lag_max"])+"\n")
                 if individual:
-                    nplot = 0
-                    for feature in features:
-                        nplot += 1
+                    for nplot,feature in enumerate(features):
                         if (narr is not None and nplot < _MAX_PLOTS_):
                             pairs(narr, xarr, labels=snames, output=pdf, new=_new, last=False)
                             _new = False
-                        narr = correlation([s.read(fields=_f) for s in signals],
-                                           [feature], (-cormax, cormax), True)
+                        narr = correlation([s.read(fields=_f) for s in signals], [feature], (-cormax, cormax), True)
                         list_corr = list(narr[0][0])
                         max_corr = max(list_corr)
-                        lag_max = list_corr.index(max(list_corr))-cormax
-                        t.write("\t".join([str(x) for x in feature[:3]])+"\t"+str(max_corr)+"\t"+str(lag_max)+"\n")
+                        lag_max = list_corr.index(max_corr)-cormax
+                        t.write("\t".join([str(x) for x in feature[:3]+[max_corr,lag_max]])+"\n")
                 else:
-                    narr = correlation([s.read(fields=_f) for s in signals],
-                                       features, (-cormax, cormax), True)
+                    narr = correlation([s.read(fields=_f) for s in signals], features, (-cormax, cormax), True)
                     list_corr = list(narr[0][0])
                     max_corr = max(list_corr)
-                    lag_max = list_corr.index(max(list_corr))-cormax
-                    t.write("\t".join(["-","-","-"])+"\t"+str(max_corr)+"\t"+str(lag_max)+"\n")
+                    lag_max = list_corr.index(max_corr)-cormax
+                    t.write("\t".join(["-","-","-"]+[str(max_corr),str(lag_max)])+"\n")
         elif int(kw['mode']) == 0: #density
             xarr = None
             for chrom in chrmeta:
