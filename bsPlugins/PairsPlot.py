@@ -29,7 +29,8 @@ in_parameters = [{'id': 'signals', 'type': 'track', 'required': True, 'multiple'
                  {'id': 'mode', 'type': 'list', 'required': True},
                  {'id': 'individual', 'type': 'boolean'}]
 
-out_parameters = [{'id': 'plot_pairs', 'type': 'pdf'}]
+out_parameters = [{'id':'table', 'type':'file'},
+                  {'id': 'plot_pairs', 'type': 'pdf'}]
 
 
 class PairsPlotForm(BaseForm):
@@ -82,7 +83,7 @@ class PairsPlotPlugin(BasePlugin):
     """Plots pairwise comparisons between signal tracks:
 
 * For *density plots* each signal track is quantified at the selected features, and this data is represented as two-way scatter plots (above diagonal), histograms (on the diagonal), and quantile plots (below diagonal).
-* *Correlation* plots show spatial auto- and cross-correlation of signals within the selected features.
+* *Correlation* plots show spatial auto- and cross-correlation of signals within the selected features. If the individual option is selected, each region is plotted separately (max 100 plots) and a table containing the maximum correlation values as well as their corresponding lag values is given.
 """
     info = {
         'title': 'Pairwise plots',
@@ -146,16 +147,29 @@ class PairsPlotPlugin(BasePlugin):
             _f = ['chr', 'start', 'end', 'score']
             features = [x[:3] for chrom in chrmeta
                         for x in sorted_stream(features(chrom))]
-            if individual:
-                for feature in features[:_MAX_PLOTS_]:
-                    if narr is not None:
-                        pairs(narr, xarr, labels=snames, output=pdf, new=_new, last=False)
-                        _new = False
+            table = self.temporary_path(fname='table.txt')
+            with open(table,"w") as t:
+                t.write("chr"+"\t"+"start"+"\t"+"end"+"\t"+"max(correlation)"+"\t"+"lag_max"+"\n")
+                if individual:
+                    nplot = 0
+                    for feature in features:
+                        nplot += 1
+                        if (narr is not None and nplot < _MAX_PLOTS_):
+                            pairs(narr, xarr, labels=snames, output=pdf, new=_new, last=False)
+                            _new = False
+                        narr = correlation([s.read(fields=_f) for s in signals],
+                                           [feature], (-cormax, cormax), True)
+                        list_corr = list(narr[0][0])
+                        max_corr = max(list_corr)
+                        lag_max = list_corr.index(max(list_corr))-cormax
+                        t.write("\t".join([str(x) for x in feature[:3]])+"\t"+str(max_corr)+"\t"+str(lag_max)+"\n")
+                else:
                     narr = correlation([s.read(fields=_f) for s in signals],
-                                       [feature], (-cormax, cormax), True)
-            else:
-                narr = correlation([s.read(fields=_f) for s in signals],
-                                   features, (-cormax, cormax), True)
+                                       features, (-cormax, cormax), True)
+                    list_corr = list(narr[0][0])
+                    max_corr = max(list_corr)
+                    lag_max = list_corr.index(max(list_corr))-cormax
+                    t.write("\t".join(["-","-","-"])+"\t"+str(max_corr)+"\t"+str(lag_max)+"\n")
         elif int(kw['mode']) == 0: #density
             xarr = None
             for chrom in chrmeta:
@@ -186,6 +200,7 @@ class PairsPlotPlugin(BasePlugin):
         if narr is None:
             raise ValueError("No data")
         pairs(narr, xarr, labels=snames, output=pdf, highlights=[set_index,set_labels], new=_new, last=True)
+        self.new_file(table, 'table')
         self.new_file(pdf, 'plot_pairs')
         return self.display_time()
 
