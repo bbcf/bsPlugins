@@ -61,11 +61,14 @@ class MotifSearchPlugin(BasePlugin):
     def __call__(self, **kw):
         input_type = kw.get('input_type', 0)
         ass = kw.get('assembly','')
+        fasta = kw.get('fastafile') or ''
+        if fasta: fasta = os.path.abspath(fasta)
+        regions_file = kw.get('regions') or ''
+        if regions_file: regions_file = os.path.abspath(regions_file)
         with execution(None) as ex:
             if str(input_type) in [str(x[0]) for x in input_types]:
                 input_type = int(input_type)
             if input_type in input_types[0]: #fasta
-                fasta = kw.get('fastafile')
                 name = os.path.splitext(os.path.basename(fasta))[0]
                 if ass in [x[0] for x in genrep.GenRep().assemblies_available()]:
                     assembly = genrep.Assembly(ass)
@@ -74,7 +77,6 @@ class MotifSearchPlugin(BasePlugin):
                 size = None
             elif input_type in input_types[1]: #regions
                 assembly = genrep.Assembly(ass)
-                regions_file = kw.get('regions') or ''
                 if not os.path.exists(regions_file):
                     raise ValueError("File not found: %s" %regions_file)
                 regions = track(regions_file,chrmeta=assembly.chrmeta)
