@@ -64,8 +64,14 @@ class MotifSearchPlugin(BasePlugin):
         regions_file = kw.get('regions') or ''
         if regions_file: regions_file = os.path.abspath(regions_file)
         fasta = kw.get('fastafile') or ''
-        if fasta: fasta = os.path.abspath(fasta)
-        else: fasta = os.path.abspath(self.temporary_path(fname=regions.name+'.fa'))
+        if fasta:
+            name = os.path.splitext(os.path.basename(fasta))[0]
+            fasta = os.path.abspath(fasta)
+        else:
+            if not os.path.exists(regions_file):
+                raise ValueError("File not found: %s" %regions_file)
+            name = track(regions_file).name
+            fasta = os.path.abspath(self.temporary_path(fname=name+'.fa'))
         output = self.temporary_path(fname=name+"_meme.tgz")
         outdir = os.path.abspath(os.path.join(os.path.split(fasta)[0],name+"_meme"))
         bfile = self.temporary_path(fname="background")
@@ -73,7 +79,6 @@ class MotifSearchPlugin(BasePlugin):
             if str(input_type) in [str(x[0]) for x in input_types]:
                 input_type = int(input_type)
             if input_type in input_types[0]: #fasta
-                name = os.path.splitext(os.path.basename(fasta))[0]
                 if ass in [x[0] for x in genrep.GenRep().assemblies_available()]:
                     assembly = genrep.Assembly(ass)
                 else:
@@ -81,10 +86,7 @@ class MotifSearchPlugin(BasePlugin):
                 size = None
             elif input_type in input_types[1]: #regions
                 assembly = genrep.Assembly(ass)
-                if not os.path.exists(regions_file):
-                    raise ValueError("File not found: %s" %regions_file)
                 regions = track(regions_file,chrmeta=assembly.chrmeta)
-                name = regions.name
                 gRef = assembly.fasta_by_chrom
                 (fasta, size) = assembly.fasta_from_regions( list(regions.read(fields=['chr','start','end'])), 
                                                              out=fasta, path_to_ref=gRef )
