@@ -95,11 +95,9 @@ class MotifSearchPlugin(BasePlugin):
             background = assembly.statistics(bfile, frequency=True)
             meme_args = kw.get("meme_args",[])
             nmotifs = kw.get('nmotifs') or _nm
-            if not '-nmotifs' in meme_args:
-                meme_args += ['-nmotifs',"%i" %int(nmotifs)]
-            if size is None: size = sum(fasta_length(ex,fasta).values())
-            meme_out = meme( ex, fasta, outdir, background, maxsize=(size*3)/2, 
-                             args=meme_args )
+            if not '-nmotifs' in meme_args: meme_args += ['-nmotifs',"%i" %int(nmotifs)]
+            if size is None: size = sum(x['length'] for x in fasta_length(ex,fasta).values())+1000
+            meme_out = meme( ex, fasta, outdir, background, maxsize=size, args=meme_args )
         tarf = tarfile.open(output, "w:gz")
         tarf.add(outdir,arcname=os.path.basename(outdir))
         tarf.add(fasta,arcname=os.path.basename(fasta))
