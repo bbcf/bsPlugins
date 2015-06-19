@@ -61,11 +61,11 @@ class MotifSearchPlugin(BasePlugin):
     def __call__(self, **kw):
         input_type = kw.get('input_type', 0)
         ass = kw.get('assembly','')
+        regions_file = kw.get('regions') or ''
+        if regions_file: regions_file = os.path.abspath(regions_file)
         fasta = kw.get('fastafile') or ''
         if fasta: fasta = os.path.abspath(fasta)
         else: fasta = os.path.abspath(self.temporary_path(fname=regions.name+'.fa'))
-        regions_file = kw.get('regions') or ''
-        if regions_file: regions_file = os.path.abspath(regions_file)
         output = self.temporary_path(fname=name+"_meme.tgz")
         outdir = os.path.abspath(os.path.join(os.path.split(fasta)[0],name+"_meme"))
         bfile = self.temporary_path(fname="background")
