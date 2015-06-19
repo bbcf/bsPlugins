@@ -63,8 +63,12 @@ class MotifSearchPlugin(BasePlugin):
         ass = kw.get('assembly','')
         fasta = kw.get('fastafile') or ''
         if fasta: fasta = os.path.abspath(fasta)
+        else: fasta = os.path.abspath(self.temporary_path(fname=regions.name+'.fa'))
         regions_file = kw.get('regions') or ''
         if regions_file: regions_file = os.path.abspath(regions_file)
+        output = self.temporary_path(fname=name+"_meme.tgz")
+        outdir = os.path.abspath(os.path.join(os.path.split(fasta)[0],name+"_meme"))
+        bfile = self.temporary_path(fname="background")
         with execution(None) as ex:
             if str(input_type) in [str(x[0]) for x in input_types]:
                 input_type = int(input_type)
@@ -82,17 +86,11 @@ class MotifSearchPlugin(BasePlugin):
                 regions = track(regions_file,chrmeta=assembly.chrmeta)
                 name = regions.name
                 gRef = assembly.fasta_by_chrom
-                fasta = self.temporary_path(fname=regions.name+'.fa')
-                (fasta, size) = assembly.fasta_from_regions( 
-                    list(regions.read(fields=['chr','start','end'])), 
-                    out=fasta, path_to_ref=gRef )
+                (fasta, size) = assembly.fasta_from_regions( list(regions.read(fields=['chr','start','end'])), 
+                                                             out=fasta, path_to_ref=gRef )
             else:
                 raise ValueError("Input type not implemented: %s" %input_type)
-            fasta = os.path.abspath(fasta)
-            background = assembly.statistics(self.temporary_path(fname="background"),
-                                             frequency=True)
-            output = self.temporary_path(fname=name+"_meme.tgz")
-            outdir = os.path.join(os.path.split(fasta)[0],name+"_meme")
+            background = assembly.statistics(bfile, frequency=True)
             meme_args = kw.get("meme_args",[])
             nmotifs = kw.get('nmotifs') or _nm
             if not '-nmotifs' in meme_args:
