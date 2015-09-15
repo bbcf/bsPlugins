@@ -25,10 +25,10 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'filter', 'type': 'userfile', 'required': True},
-                 {'id': 'features', 'type': 'track', 'required': True},
-                 {'id': 'format', 'type': 'text'},
-                 {'id': 'assembly', 'type': 'assembly'}]
+in_parameters = [{'id': 'filter', 'type': 'userfile', 'required': True, 'label': 'Filter file: ', 'help_text': 'Upload your own file'},
+                 {'id': 'features', 'type': 'track', 'required': True, 'label': 'Features file: ', 'help_text': 'Upload your own file'},
+                 {'id': 'format', 'type': 'text', 'label': 'Output format: ', 'help_text': 'Format of the output file','options': ["txt","bed","sql","bedGraph","bigWig"]},
+                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text': 'Reference genome', 'options': genrep.GenRep().assemblies_available()}]
 out_parameters = [{'id': 'filtered', 'type': 'track'}]
 
 
@@ -39,7 +39,7 @@ class OverlapPlugin(BasePlugin):
         'title': 'Overlap',
         'description': __doc__,
         'path': ['Intervals', 'Overlap'],
-        'output': OverlapForm,
+#        'output': OverlapForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,

@@ -8,10 +8,10 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple': 'BamMulti'},
-                 {'id': 'format', 'type': 'text'},
-                 {'id': 'midpoint', 'type': 'boolean'},
-                 {'id': 'plot_only', 'type': 'boolean'}]
+in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple': 'BamMulti', 'label': 'Paired-end BAM files: ', 'help_text': 'Select bam files'},
+                 {'id': 'format', 'type': 'text', 'label': 'Output format: ', 'help_text': 'Format of the output file', 'options': ["sql", "bedGraph", "bigWig"], 'prompt_text':None},
+                 {'id': 'midpoint', 'type': 'boolean', 'label': 'At fragment midpoint: ', 'help_text': 'Attribute fragment length to its midpoint only (default: all positions in the fragment)', 'value': False},
+                 {'id': 'plot_only', 'type': 'boolean', 'label': 'Only the plot: ', 'help_text':'Do not compute the density', 'value': Fasle}]
 
 out_parameters = [{'id': 'statistics_plot', 'type': 'pdf'},
                   {'id': 'fragment_track', 'type': 'track'},
@@ -47,7 +47,7 @@ class PairedEndPlugin(BasePlugin):
         'title': 'Analysis of paired-end fragment sizes',
         'description': __doc__,
         'path': ['Analysis', 'Paired-end analysis'],
-        'output': PairedEndForm,
+#        'output': PairedEndForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta }
