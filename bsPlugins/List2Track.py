@@ -25,12 +25,13 @@ class List2TrackForm(BaseForm):
     submit = twf.SubmitButton(id="submit", value="Submit")
 
 
+out_opts=["sql","bed"],
 meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 in_parameters = [
-        {'id': 'ids_list', 'type': 'txt', 'required': True, 'multiple': True},
-        {'id': 'format', 'type': ''}]
+        {'id': 'ids_list', 'type': 'txt', 'required': True, 'multiple': True, 'label': 'IDs list: ', 'help_text': 'Select the file with the list of IDs'},
+        {'id': 'format', 'type': 'text', 'label': 'Output format: ', 'help_text': 'Format of the output file', 'options': out_opts, 'prompt_text': None}]
 out_parameters = [{'id': 'fulltrack', 'type': 'track'}]
 
 
@@ -42,7 +43,7 @@ Either upload a raw text file with one Ensembl ID on each line, or choose a feat
         'title': 'Genome track from IDs',
         'description': __doc__,
         'path': ['Files', 'List2Track'],
-        'output': List2TrackForm,
+#        'output': List2TrackForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,

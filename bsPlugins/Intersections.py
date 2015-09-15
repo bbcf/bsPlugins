@@ -21,8 +21,8 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'files', 'type': 'track', 'multiple': 'SigMulti', 'required': True},
-                 {'id': 'column', 'type': 'text'}]
+in_parameters = [{'id': 'files', 'type': 'track', 'multiple': 'SigMulti', 'required': True, 'label': 'Files: ', 'help_text': 'Select signal files (e.g. bedgraph)'},
+                 {'id': 'column', 'type': 'text', 'label': 'Column(s): ', 'help_text': 'Column(s) number (1-based).', 'value': 1, 'prompt_text': '1'}]
 out_parameters = [{'id': 'intersections', 'type': 'track'},
                   {'id': 'venn_diagram', 'type': 'file'}]
 
@@ -46,7 +46,7 @@ intersections, i.e. for each intersection one text file with the list of common 
         'title': 'Intersections',
         'description': __doc__,
         'path': ['Analysis', 'Intersections of lists'],
-        'output': IntersectionsForm,
+#        'output': IntersectionsForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,

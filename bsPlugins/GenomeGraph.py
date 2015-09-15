@@ -8,10 +8,10 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'signals_plus', 'type': 'track', 'multiple': 'SigMultiP'},
-                 {'id': 'signals_minus', 'type': 'track', 'multiple': 'SigMultiM'},
-                 {'id': 'features', 'type': 'track', 'multiple': 'FeatMulti'},
-                 {'id': 'assembly', 'type': 'assembly'}]
+in_parameters = [{'id': 'signals_plus', 'type': 'track', 'multiple': 'SigMultiP', 'label': 'Positive signals: ', 'help_text': 'Signal files (e.g. bedgraph) to plot above the axis'},
+                 {'id': 'signals_minus', 'type': 'track', 'multiple': 'SigMultiM', 'label': 'Negative signals: ', 'help_text': 'Signal files (e.g. bedgraph) to plot below the axis'},
+                 {'id': 'features', 'type': 'track', 'multiple': 'FeatMulti', 'label': 'Fetures: ', 'help_text': 'Features files (e.g. bed) to plot as segments on the axis'},
+                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text': 'Reference genome', 'options': genrep.GenRep().assemblies_available()}]
 out_parameters = [{'id': 'genome_graph', 'type': 'pdf'}]
 
 class GenomeGraphForm(BaseForm):
@@ -41,7 +41,7 @@ class GenomeGraphPlugin(BasePlugin):
     info = {'title': 'Genome overview graph',
             'description': __doc__,
             'path': ['Graphics', 'Genome graph'],
-            'output': GenomeGraphForm,
+#            'output': GenomeGraphForm,
             'in': in_parameters,
             'out': out_parameters,
             'meta': meta}
