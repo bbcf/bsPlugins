@@ -6,18 +6,19 @@ from bbcflib.gfminer.stream import merge_scores
 import os
 
 __requires__ = ["pysam"]
+output_opts=["sql", "bedGraph", "bigWig"]
 
 
 meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'sample', 'type': 'bam', 'required': True, 'multiple': 'BamMulti'},
-                 {'id': 'control', 'type': 'bam'},
-                 {'id': 'format', 'type': 'text'},
-                 {'id': 'normalization', 'type': 'int'},
-                 {'id': 'merge_strands', 'type': 'int'},
-                 {'id': 'read_extension', 'type': 'int'}]
+in_parameters = [{'id': 'sample', 'type': 'bam', 'required': True, 'multiple': 'BamMulti', 'label': ' Test BAMs: ', 'help_text': 'Select main bam file(s)'},
+                 {'id': 'control', 'type': 'bam', 'label': 'Control BAM: ', 'help_text': 'Select control bam file to compute enrichment' },
+                 {'id': 'format', 'type': 'text', 'label': 'Output format: ', 'help_text': 'Format of the output file', 'options': output_opts, 'prompt_text': None},
+                 {'id': 'normalization', 'type': 'int', 'label': 'Normalization: ', 'help_text': 'Normalization factor, default is total number of reads'},
+                 {'id': 'merge_strands', 'type': 'int', 'label': 'Shift and merge strands: ', 'help_text': 'Shift value (in bp) if you want to merge strand-specific densities (will not merge if negative)', 'value': -1},
+                 {'id': 'read_extension', 'type': 'int', 'label': 'Read extension: ','help_text': 'Read extension (in bp) to be applied when constructing densities (will use read length if negative)', 'value': -1 }]
 out_parameters = [{'id': 'density_merged', 'type': 'track'},
                   {'id': 'density_fwd', 'type': 'track'},
                   {'id': 'density_rev', 'type': 'track'}]
@@ -64,7 +65,7 @@ each alignment will be considered, default is read length).
         'title': 'Genome-wide reads density from BAM',
         'description': __doc__,
         'path': ['Files', 'Bam2density'],
-        'output': Bam2DensityForm,
+#        'output': Bam2DensityForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
