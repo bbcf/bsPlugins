@@ -26,10 +26,10 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'tracks', 'type': 'track', 'multiple': 'TrackMulti', 'required': True},
-                 {'id': 'format', 'type': 'text'},
-                 {'id': 'assembly', 'type': 'assembly'},
-                ]
+output_opts=["sql","bed","sga"],
+in_parameters = [{'id': 'tracks', 'type': 'track', 'multiple': 'TrackMulti', 'required': True, 'label': 'Tracks: ', 'help_text': 'Select files to combine', },
+                 {'id': 'format', 'type': 'text', 'required': True, 'label': 'Otput format: ', 'help_text': 'Format of the output file', 'options': output_opts, 'prompt_text': None},
+                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text': 'Reference genome', 'options': 'genrep.GenRep().assemblies_available()'}]
 out_parameters = [{'id': 'combined', 'type': 'track'}]
 
 
@@ -65,7 +65,7 @@ class IntersectPlugin(BasePlugin):
         'title': 'Intersection of a set of tracks',
         'description': 'Returns a new track with only regions covered in every input track.',
         'path': ['Intervals', 'Intersect'],
-        'output': CombineForm,
+#        'output': CombineForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
@@ -83,7 +83,7 @@ class UnionPlugin(BasePlugin):
         'title': 'Union of a set of tracks',
         'description': 'Returns a new track with regions covered in at least one of the input tracks.',
         'path': ['Intervals', 'Union'],
-        'output': CombineForm,
+#        'output': CombineForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
@@ -101,7 +101,7 @@ class SubtractPlugin(BasePlugin):
         'title': 'Subtract',
         'description': 'Returns a new track with regions present in the first input track, but not in the others.',
         'path': ['Intervals', 'Subtract'],
-        'output': CombineForm,
+#        'output': CombineForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
@@ -119,7 +119,7 @@ class ComplementPlugin(BasePlugin):
         'title': 'Complement',
         'description': 'Returns a new track with all regions not covered by a set of input tracks.',
         'path': ['Intervals', 'Complement'],
-        'output': CombineForm,
+#        'output': CombineForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,

@@ -25,12 +25,12 @@ class FilteringForm(BaseForm):
 meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
-in_parameters = [{'id': 'tracks', 'type': 'track', 'required': True, 'multiple':'TrackMulti'},
-                 {'id': 'minscore', 'type': 'float'},
-                 {'id': 'maxscore', 'type': 'float'},
-                 {'id': 'minlength', 'type': 'int'},
-                 {'id': 'maxlength', 'type': 'int'},
-                 {'id': 'chrom', 'type': 'text'}]
+in_parameters = [{'id': 'tracks', 'type': 'track', 'required': True, 'multiple':'TrackMulti', 'label': 'Tracks: ', 'help_text': 'Select files (e.g. bedgraph)'},
+                 {'id': 'minscore', 'type': 'float', 'label': 'Minimum score: '},
+                 {'id': 'maxscore', 'type': 'float', 'label': 'Maximum score: '},
+                 {'id': 'minlength', 'type': 'int', 'label': 'Minimum length: '},
+                 {'id': 'maxlength', 'type': 'int', 'label': 'Minimum length: '},
+                 {'id': 'chrom', 'type': 'text', 'label': 'Chromosome: ', 'help_text': 'Comma-separated list of chromosome names'}]
 out_parameters = [{'id': 'output', 'type': 'track'},
                   {'id': 'archive', 'type': 'file'}]
 
@@ -40,7 +40,7 @@ class FilteringPlugin(BasePlugin):
         'title': 'Apply a filter to a track',
         'description': __doc__,
         'path': ['Files', 'Filtering'],
-        'output': FilteringForm,
+#        'output': FilteringForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta}

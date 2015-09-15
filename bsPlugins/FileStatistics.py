@@ -10,9 +10,9 @@ meta = {'version': "1.0.0",
         'contact': "webmaster-bbcf@epfl.ch"}
 
 in_parameters = [
-        {'id':'sample', 'type':'track', 'required':True},
-        {'id':'output', 'type':'list', 'required':True},
-        {'id':'by_chrom', 'type':'boolean', 'required':True}]
+        {'id':'sample', 'type':'track', 'required':True, 'label': 'Input file: ', 'help_text': 'Select the file to examine'},
+        {'id':'output', 'type':'list', 'required':True, 'label': 'Ouput: ', 'help_text': 'Type of report', 'options': output_list, 'prompt_text': None},
+        {'id':'by_chrom', 'type':'boolean', 'required':True, 'label': 'By chromosome: ', 'help_text': 'Split statistics by chromosome (default: whole genome)', 'value': False}]
 out_parameters = [{'id':'stats', 'type':'file'},
                   {'id':'pdf', 'type':'file'}]
 
@@ -39,7 +39,7 @@ class FileStatisticsPlugin(BasePlugin):
         'title': 'Basic track statistics',
         'description': __doc__,
         'path': ['Analysis', 'File Statistics'],
-        'output': FileStatisticsForm,
+#        'output': FileStatisticsForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,

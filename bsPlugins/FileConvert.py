@@ -4,7 +4,8 @@ from bbcflib import genrep
 import os
 
 format_list = ['bedgraph', 'wig', 'bed', 'sql', 'gff', 'sga', 'bigwig']
-
+to_map = {'sql': ['dtype', 'assembly'], 'bigwig': ['assembly']}
+dtype_opts = ['quantitative', 'qualitative']
 
 class FileConvertForm(BaseForm):
     hover_help = True
@@ -34,10 +35,10 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'infile', 'type': 'track', 'required': True},
-                 {'id': 'to', 'type': 'list'},
-                 {'id': 'dtype', 'type': 'list'},
-                 {'id': 'assembly', 'type': 'assembly'}]
+in_parameters = [{'id': 'infile', 'type': 'track', 'required': True, 'label': 'File: ', 'help_text': 'Select file'},
+                 {'id': 'to', 'type': 'list', 'required': True, 'label': 'Output format: ', 'help_text': 'Select the format of your result', 'options': format_list, 'mapping': to_map, 'prompt_text': None },
+                 {'id': 'dtype', 'type': 'list', 'label': 'Output datatype: ', 'help_text':'Choose sql data type attribute', 'options': dtype_opts, 'prompt_text':None},
+                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text': 'Reference genome', 'options': genrep.GenRep().assemblies_available()}]
 
 out_parameters = [{'id': 'converted_file', 'type': 'track'}]
 
@@ -49,7 +50,7 @@ class FileConvertPlugin(BasePlugin):
         'title': 'File format conversion',
         'description': __doc__,
         'path': ['Files', 'Convert'],
-        'output': FileConvertForm,
+#        'output': FileConvertForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
