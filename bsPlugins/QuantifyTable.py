@@ -21,7 +21,7 @@ in_parameters = [{'id': 'signals', 'type': 'track', 'required': True, 'multiple'
                  {'id': 'format', 'type': 'text', 'required': True, 'label': 'Output format: ', 'help_text':'Format of the output file', 'options': ['txt', 'sql'], 'prompt_text': None},
                  {'id': 'upstream', 'type': 'int', 'required': True, 'label':'Promoter upstream distance: ', 'help_text':'Size of promoter upstream of TSS', 'value':prom_up_def},
                  {'id': 'downstream', 'type': 'int', 'required': True, 'label':'Promoter downstream distance: ', 'help_text':'Size of promoter downstream of TSS', 'value':prom_down_def},
-                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text':'Reference genome','options':genrep.GenRep().assemblies_available()},
+                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text':'Reference genome','options':genrep.GenRep().assemblies_available()}]
 out_parameters = [{'id': 'features_quantification', 'type': 'track'}]
 
 class QuantifyTableForm(BaseForm):
