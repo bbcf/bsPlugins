@@ -10,14 +10,17 @@ import os, re, sys
 meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
+inmap = {'Table': ['table','id_columns','filters'],
+        'Tracks': ['TrMulti','type']},
 
-in_parameters = [{'id': 'input_type', 'type': 'radio'},
-                 {'id': 'files', 'type':'track', 'multiple':'TrMulti'},
-                 {'id': 'type', 'type':' list'},
-                 {'id': 'table', 'type': 'track'},
-                 {'id': 'id_columns', 'type': 'text'},
-                 {'id': 'filters', 'type': 'text'},
-                 {'id': 'format', 'type': 'list'}]
+in_parameters = [{'id': 'input_type', 'type': 'radio', 'label': 'Input from: ', 'help_text': 'Select input type (Formatted table, or genomic tracks)', 'options': ['Table', 'Tracks'], 'mapping': inmap, 'value': 'Table'},
+                {'id': 'files', 'type':'track', 'multiple':'TrMulti', 'required': True, 'label': 'Files: ', 'help_text': 'Select your track files'},
+                {'id': 'type', 'type':' list', 'label': 'Type: ','prompt_text': None, 'options': ['intervals','score'],'help_text':'Type of statistics (distribution of scores or of genomic intervals'},
+                {'id': 'table', 'type': 'txt', 'required': True, 'label': 'Table: ', 'help_text': 'Select table'},
+                {'id': 'id_columns', 'type': 'text', 'required': True, 'label': 'Column id: ', 'help_text':'Comma separated list of columns id (e.g. 3,5)'},
+                {'id': 'filters', 'type': 'text', 'required': True, 'label': 'Filters: ', 'help_text': 'comma separated list of filtering expressions (e.g. >2,<0.05,>=2 OR <=-2,>=-2 AND <2,==2,!=2)'},
+                {'id': 'format', 'type': 'format', 'label': 'Format: ', 'help_text': 'Output figure format', 'options' :["png","pdf"], 'prompt_text': None}
+                ]
 
 out_parameters = [{'id':'venn_diagram', 'type':'file'},
                   {'id':'venn_summary', 'type':'file'}]
@@ -90,7 +93,7 @@ Rules (possibly empty) must be specified in the same order as column numbers.
         'title': 'Venn Diagram',
         'description': __doc__,
         'path': ['Graphics', 'Venn Diagram'],
-        'output': VennDiagramForm,
+#        'output': VennDiagramForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,

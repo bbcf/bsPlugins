@@ -13,16 +13,16 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple': 'BamMulti'},
-                 {'id': 'features', 'type': 'track'},
-                 {'id': 'left_right', 'type': 'boolean'},
-                 {'id': 'linear', 'type': 'boolean'},
+in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple': 'BamMulti', 'label': 'Paired-end BAM files: '},
+                 {'id': 'features', 'type': 'track', 'required': True, 'label': 'Feaures', 'help_text': 'Select a feature file (e.g. bed) in which all regions have the same length'},
+                 {'id': 'left_right', 'type': 'boolean', 'label': 'Left-right: ', 'help_text': 'Plot the mean fragment length associated to left and right fragment ends (default: false)', 'value': False},
+                 {'id': 'linear', 'type': 'boolean', 'label': 'Linear scale: ', 'help_text': 'Plot the mean fragment length in linear scale (default: log scale)', 'value': False},
                  #{'id': 'nbins_x', 'type': 'int'},
                  #{'id': 'nbins_y', 'type': 'int'},
                  #{'id': 'bandwidth_x', 'type': 'float'},
                  #{'id': 'bandwidth_y', 'type': 'float'},
-                 {'id': 'ymin', 'type': 'int'},
-                 {'id': 'ymax', 'type': 'int'}]
+                 {'id': 'ymin', 'type': 'int', 'label': 'Minimum y value: ', 'help_text': 'The default values: ymin=0 in lin scale and ymin=50 in log scale'},
+                 {'id': 'ymax', 'type': 'int', 'label': 'Maximum y value: ', 'help_text': 'The default value: ymax=maximum fragment length in the selected regions'}]
 out_parameters = [{'id': 'Vplot', 'type': 'png'},
                   {'id': 'Vplots_archive', 'type': 'file'}]
 
@@ -72,7 +72,7 @@ class VplotPlugin(BasePlugin):
         'title': 'Make Vplot for a paired-end BAM file in a selection of regions',
         'description': __doc__,
         'path': ['Graphics', 'Paired-end Vplots'],
-        'output': VplotForm,
+#        'output': VplotForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,

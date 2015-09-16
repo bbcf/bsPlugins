@@ -10,12 +10,12 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'track', 'type': 'track', 'required': True},
-                 {'id': 'assembly', 'type': 'assembly'},
-                 {'id': 'window_size', 'type': 'int', 'required': True},
-                 {'id': 'window_step', 'type': 'int', 'required': True},
-                 {'id': 'by_feature', 'type': 'boolean'},
-                 {'id': 'format', 'type': 'list'}]
+in_parameters = [{'id': 'track', 'type': 'track', 'required': True, 'label': 'Signal: ', 'help_text': 'Select signal file (e.g. bedgraph)'},
+                 {'id': 'assembly', 'type': 'assembly' ,'label': 'Assembly: ', 'help_text': 'Reference genome' ,'options': genrep.GenRep().assemblies_available()},
+                 {'id': 'window_size', 'type': 'int', 'required': True, 'label': 'Window size: ', 'help_text': 'Size of the sliding window', 'value': size_def},
+                 {'id': 'window_step', 'type': 'int', 'required': True, 'label': 'Window step: ', 'help_text': 'Size of steps between windows', 'value': step_def },
+                 {'id': 'by_feature', 'type': 'boolean', 'label': 'Window size in features (not basepairs): ', 'help_text': 'Will count size and step parameters in number of features, not in basepairs', 'value':False},
+                 {'id': 'format', 'type': 'list', 'label': 'Output format: ', 'help_text': 'Format of the output file', 'options':['sql','bedGraph','wig','bigWig','sga'], 'prompt_text': None}]
 out_parameters = [{'id': 'smoothed_track', 'type': 'track'}]
 
 
@@ -56,7 +56,7 @@ class SmoothingPlugin(BasePlugin):
         'title': 'Window smoothing',
         'description': __doc__,
         'path': ['Signal', 'Smoothing'],
-        'output': SmoothingForm,
+#        'output': SmoothingForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,

@@ -72,11 +72,10 @@ in_parameters = [
         {'id': 'feature_type', 'type': 'int', 'required': True, 'label': 'Feature type: ', 'help_text': 'Choose a feature set or upload your own', 'options': ftypes, 'prompt_text': None, 'mapping': f_map},
         {'id': 'upstream', 'type': 'int', 'required': True, 'label': 'Promoter upstream distance: ', 'help_text': 'Size of promoter upstream of TSS', 'value': prom_up_def},
         {'id': 'downstream', 'type': 'int', 'required': True, 'label': 'Promoter downstream distance: ', 'help_text': 'Size of promoter downstream of TSS', 'value': prom_down_def},
-        {'id': 'assembly', 'type': 'assembly', 'required': True, 'label': 'Assembly: ', 'help_text': 'Reference genome', 'options': genrep.GenRep().assemblies_available()},
-        {'id': 'features', 'type': 'track', 'required': True, 'label': 'Custom feature set: ', 'help_text': 'Select a feature file (e.g. bed)'},
-]
+        {'id': 'assembly', 'type': 'assembly', 'required': True, 'label': 'Assembly: ', 'help_text': 'Reference genome','options': genrep.GenRep().assemblies_available()},
+        {'id': 'features', 'type': 'track', 'required': True, 'label': 'Custom feature set: ', 'help_text': 'Select a feature file (e.g. bed)'}]
 
-ut_parameters = [{'id': 'MA-plot', 'type': 'file'}]
+out_parameters = [{'id': 'MA-plot', 'type': 'file'}]
 
 
 class MaplotPlugin(BasePlugin):

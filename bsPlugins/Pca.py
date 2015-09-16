@@ -6,8 +6,8 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'table', 'type': 'txt', 'required': True},
-                 {'id': 'columns', 'type': 'text', 'required': True},]
+in_parameters = [{'id': 'table', 'type': 'txt', 'required': True, 'label': 'Table: ', 'help_text':'Select scores table'},
+                 {'id': 'columns', 'type': 'text', 'required': True, 'label': 'Columns selection: ', 'help_text':'Which columns? "all"/"1,3,5,6"', 'value': 'all'}]
 out_parameters = [{'id': 'pca_biplot', 'type': 'pdf'}]
 
 class PcaForm(BaseForm):
@@ -41,7 +41,7 @@ class PcaPlugin(BasePlugin):
     info = {'title': 'PCA',
             'description': __doc__,
             'path': ['Graphics', 'PCA'],
-            'output': PcaForm,
+#            'output': PcaForm,
             'in': in_parameters,
             'out': out_parameters,
             'meta': meta}

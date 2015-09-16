@@ -12,11 +12,11 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'gene_list', 'type': 'userfile', 'required': True},
-                 {'id': 'assembly', 'type': 'assembly'},
-                 {'id': 'num_terms', 'type': 'int'},
-                 {'id': 'pval', 'type': 'float'},
-                 {'id': 'txid', 'type':'boolean', 'required': True}]
+in_parameters = [{'id': 'gene_list', 'type': 'userfile', 'required': True, 'label': 'Genes: ', 'help_text': 'Provide a list of Ensembl IDs'},
+                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text': 'Reference genome', 'options': mart_map, 'prompt_text': None},
+                 {'id': 'num_terms', 'type': 'int', 'label': 'Number of significant terms: ', 'help_text': 'Maximum number of significant terms to return', 'value': 10},
+                 {'id': 'pval', 'type': 'float', 'label': 'P-value threshold: ', ' help_text': 'p-value threshold for significance', 'value': 0.05},
+                 {'id': 'txid', 'type':'boolean', 'required': True, 'label': 'Transcript identifiers: ', 'help_text': 'Check if this a list of transcript ids (default is gene ids)', 'value': False}]
 out_parameters = [{'id': 'TopGO_table_tar', 'type': 'file'},
                   {'id': 'TopGO_plots_tar', 'type': 'file'},
                   {'id': 'TopGO_table', 'type': 'txt'},
@@ -61,7 +61,7 @@ at a given p-value threshold.
         'title': 'Gene Ontology analysis (TopGO)',
         'description': __doc__,
         'path': ['Analysis', 'TopGo'],
-        'output': TopGoForm,
+#        'output': TopGoForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
