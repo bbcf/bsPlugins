@@ -21,14 +21,14 @@ meta = {'version': "1.0.0",
 fmap = {ftypes[-1][0]: ['features'], 1: ['upstream', 'downstream']},
 
 in_parameters = [{'id': 'signals', 'type': 'track', 'required': True, 'multiple': 'SigMulti', 'label': 'Signal: ', 'help_text': 'Select signal file (e.g. bedgraph)'},
-                 {'id': 'feature_type', 'type': 'list', 'required': True, 'label': 'Feature type: ', 'help_text': 'Choose a feature set or upload your own', 'options': ftypes, 'mapping': fmap, 'prompt_text': None},
+                 {'id': 'feature_type', 'type': 'list', 'required': True, 'label': 'Feature type: ', 'help_text': 'Choose a feature set or upload your own', 'options': ftypes, 'mapping': {ftypes[-1][0]: ['features'], 1: ['upstream', 'downstream']}, 'prompt_text': None},
                  {'id': 'features', 'type': 'track', 'label':'Custom feature set: ', 'help_text':'Select a feature file (e.g. bed)'},
-                 {'id': 'cormax', 'type': 'int', 'label':'Spatial range: ', 'help_text':'Maximum lag in bp to compute correlations', 'value': _cormax},
                  {'id': 'upstream', 'type': 'int', 'required': True, 'label':'Promoter upstream distance: ', 'help_text':'Size of promoter upstream of TSS', 'value':prom_up_def},
                  {'id': 'downstream', 'type': 'int', 'required': True, 'label':'Promoter downstream distance: ', 'help_text':'Size of promoter downstream of TSS', 'value':prom_down_def},
                  {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text':'Reference genome','options':genrep.GenRep().assemblies_available()},
                  {'id': 'highlights', 'type': 'track', 'multiple': 'HiMulti', 'label':'features to highlight: ', 'help_text':'Select a feature file (e.g. bed)'},
                  {'id': 'mode', 'type': 'list', 'required': True, 'label': 'Plot type: ', 'options': plot_types, 'mapping':{1: ['cormax','individual']},'prompt_text':None},
+                 {'id': 'cormax', 'type': 'int', 'label':'Spatial range: ', 'help_text':'Maximum lag in bp to compute correlations', 'value': _cormax},
                  {'id': 'individual', 'type': 'boolean', 'label': 'Individual: ','help_text':'Plot each region individually (default: false)', 'value':False }]
 
 out_parameters = [{'id':'table', 'type':'file'},

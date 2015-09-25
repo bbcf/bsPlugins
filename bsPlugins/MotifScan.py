@@ -20,9 +20,9 @@ meta = {'version': "1.0.0",
 
 in_parameters = [{'id': 'input_type', 'type': 'radio', 'label': 'Sequence source: ', 'options': input_types, 'mapping': input_map, 'value': 0},
                  {'id': 'fastafile', 'type': 'userfile', 'label': 'Fasta file: ', 'help_text': 'Sequence to scan'},
-                 {'id': 'background', 'type': 'txt', 'label': 'Background: ', 'help_text':'File of background frequencies (default: genome-wide frequencies)'},
-                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text':'Assembly to fetch sequences and/or compute the background frequencies', 'options': assembly_list},
                  {'id': 'regions', 'type': 'track', 'label': 'Regions: ', 'help_text': 'Genomic regions to scan (e.g. bed)'},
+                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text':'Assembly to fetch sequences and/or compute the background frequencies', 'options': assembly_list},
+                 {'id': 'background', 'type': 'txt', 'label': 'Background: ', 'help_text':'File of background frequencies (default: genome-wide frequencies)'},
                  {'id': 'motifs', 'type': 'list', 'label': 'Motifs: ', 'help_text':'Select motifs to be scanned', 'options': available_motifs},
                  {'id': 'customMotif', 'type': 'txt', 'label': 'Custom motif: ', 'help_text': 'An optional custom/additional motif to scan (.mat)' },
                  {'id': 'threshold', 'type': 'float', 'required': True, 'label': 'Threshold: ', 'help_text': "In units of log-likelihood ratio to the background", 'value': '0.0' }]

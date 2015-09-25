@@ -71,7 +71,7 @@ in_parameters = [
         {'id': 'signals1', 'type': 'track', 'required': True, 'multiple': 'Group1', 'label': 'Signals group 1: ', 'help_text': 'Select signal files (position and score, e.g. bedgraph)'},
         {'id': 'signals2', 'type': 'track', 'required': True, 'multiple': 'Group2', 'label': 'Signals group 2: ', 'help_text': 'Select signal files (position and score, e.g. bedgraph)'},
         {'id': 'table', 'type': 'txt', 'required': True, 'lable': 'Table: ', 'help_text': 'Select scores table'},
-        {'id': 'feature_type', 'type': 'int', 'required': True, 'label': 'Feature type: ', 'help_text': 'Choose a feature set or upload your own', 'options': ftypes, 'prompt_text': None, 'mapping': f_map},
+        {'id': 'feature_type', 'type': 'list', 'required': True, 'label': 'Feature type: ', 'help_text': 'Choose a feature set or upload your own', 'options': ftypes, 'prompt_text': None, 'mapping': f_map},
         {'id': 'upstream', 'type': 'int', 'required': True, 'label': 'Promoter upstream distance: ', 'help_text': 'Size of promoter upstream of TSS', 'value': prom_up_def},
         {'id': 'downstream', 'type': 'int', 'required': True, 'label': 'Promoter downstream distance: ', 'help_text': 'Size of promoter downstream of TSS', 'value': prom_down_def},
         {'id': 'assembly', 'type': 'assembly', 'required': True, 'label': 'Assembly: ', 'help_text': 'Reference genome', 'options': genrep.GenRep().assemblies_available()},

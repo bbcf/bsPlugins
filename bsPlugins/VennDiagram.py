@@ -11,7 +11,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 inmap = {'Table': ['table','id_columns','filters'],
-        'Tracks': ['TrMulti','type']},
+        'Tracks': ['TrMulti','type']}
 
 in_parameters = [{'id': 'input_type', 'type': 'radio', 'label': 'Input from: ', 'help_text': 'Select input type (Formatted table, or genomic tracks)', 'options': ['Table', 'Tracks'], 'mapping': inmap, 'value': 'Table'},
                 {'id': 'files', 'type':'track', 'multiple':'TrMulti', 'required': True, 'label': 'Files: ', 'help_text': 'Select your track files'},

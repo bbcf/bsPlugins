@@ -29,7 +29,7 @@ meta = {'version': "1.0.0",
 output_opts=["sql","bed","sga"],
 in_parameters = [{'id': 'tracks', 'type': 'track', 'multiple': 'TrackMulti', 'required': True, 'label': 'Tracks: ', 'help_text': 'Select files to combine', },
                  {'id': 'format', 'type': 'text', 'required': True, 'label': 'Otput format: ', 'help_text': 'Format of the output file', 'options': output_opts, 'prompt_text': None},
-                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text': 'Reference genome', 'options': 'genrep.GenRep().assemblies_available()'}]
+                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text': 'Reference genome', 'options': genrep.GenRep().assemblies_available()}]
 out_parameters = [{'id': 'combined', 'type': 'track'}]
 
 

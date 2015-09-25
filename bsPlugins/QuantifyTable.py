@@ -18,10 +18,10 @@ in_parameters = [{'id': 'signals', 'type': 'track', 'required': True, 'multiple'
                  {'id': 'feature_type', 'type': 'list', 'required': True, 'label': 'Feature type: ', 'help_text': 'Choose a feature set or upload your own', 'options': ftypes, 'mapping': fmap, 'prompt_text': None},
                  {'id': 'features', 'type': 'track', 'label':'Custom feature set: ', 'help_text':'Select a feature file (e.g. bed)'},
                  {'id': 'score_op', 'type': 'list', 'label': 'Score operation: ', 'help_text': 'Operation performed on scores within each feature', 'options': funcs, 'prompt_text':None},
-                 {'id': 'format', 'type': 'text', 'required': True, 'label': 'Output format: ', 'help_text':'Format of the output file', 'options': ['txt', 'sql'], 'prompt_text': None},
                  {'id': 'upstream', 'type': 'int', 'required': True, 'label':'Promoter upstream distance: ', 'help_text':'Size of promoter upstream of TSS', 'value':prom_up_def},
                  {'id': 'downstream', 'type': 'int', 'required': True, 'label':'Promoter downstream distance: ', 'help_text':'Size of promoter downstream of TSS', 'value':prom_down_def},
-                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text':'Reference genome','options':genrep.GenRep().assemblies_available()}]
+                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text':'Reference genome','options':genrep.GenRep().assemblies_available()},
+                 {'id': 'format', 'type': 'text', 'required': True, 'label': 'Output format: ', 'help_text':'Format of the output file', 'options': ['txt', 'sql'], 'prompt_text': None}]
 out_parameters = [{'id': 'features_quantification', 'type': 'track'}]
 
 class QuantifyTableForm(BaseForm):
