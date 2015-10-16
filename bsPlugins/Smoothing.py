@@ -15,7 +15,7 @@ in_parameters = [{'id': 'track', 'type': 'track', 'required': True, 'label': 'Si
                  {'id': 'window_size', 'type': 'int', 'required': True, 'label': 'Window size: ', 'help_text': 'Size of the sliding window', 'value': size_def},
                  {'id': 'window_step', 'type': 'int', 'required': True, 'label': 'Window step: ', 'help_text': 'Size of steps between windows', 'value': step_def },
                  {'id': 'by_feature', 'type': 'boolean', 'label': 'Window size in features (not basepairs): ', 'help_text': 'Will count size and step parameters in number of features, not in basepairs', 'value':False},
-                 {'id': 'format', 'type': 'list', 'label': 'Output format: ', 'help_text': 'Format of the output file', 'options':['sql','bedGraph','wig','bigWig','sga'], 'prompt_text': None}]
+                 {'id': 'output', 'type': 'listing', 'label': 'Output format: ', 'help_text': 'Format of the output file', 'options':['sql','bedGraph','wig','bigWig','sga'], 'prompt_text': None}]
 out_parameters = [{'id': 'smoothed_track', 'type': 'track'}]
 
 

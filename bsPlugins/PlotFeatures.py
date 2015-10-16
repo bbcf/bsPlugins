@@ -28,7 +28,7 @@ in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': 'SigMulti', 'req
                  {'id': 'noclust', 'type':'boolean', 'required':True, 'label': 'do not cluster features: ', 'help_text':'Keep features in the same order as input', 'value':False},
                  {'id': 'ymin', 'type': 'float', 'label':'Minimal signal value: ','help_text':'Minimum value displayed in graphs (optional)'},
                  {'id': 'ymax', 'type': 'float', 'label':'Maximal signal value: ','help_text':'Maximum value displayed in graphs (optional)'},
-                 {'id': 'output', 'type': 'list', 'required': True, 'label':'Output: ', 'help_text':'Pdf only or data+pdf','options':output_list, 'prompt_text':None}]
+                 {'id': 'output', 'type': 'listing', 'required': True, 'label':'Output: ', 'help_text':'Pdf only or data+pdf','options':output_list, 'prompt_text':None}]
 out_parameters = [{'id': 'plot_features', 'type': 'pdf'},
                   {'id':'data_archive', 'type':'file'}]
 

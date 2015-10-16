@@ -29,7 +29,7 @@ meta = {'version': "1.0.0",
 in_parameters = [{'id': 'table', 'type': 'txt', 'required': True, 'label': 'Table: ', 'help_text': 'Select table'},
                 {'id': 'id_columns', 'type': 'text', 'required': True, 'label': 'Column id: ', 'help_text':'Comma separated list of columns id for which signal tracks will be generated (e.g. 3,5)'},
                 {'id': 'assembly', 'type': 'assembly', 'required': True, 'label': 'Assembly: ', 'help_text': 'Reference genome', 'options': genrep.GenRep().assemblies_available()},
-                {'id': 'format', 'type': 'format', 'label': 'Output format: ', 'help_text': 'Output file(s) format (default: bedGraph)', 'options' :["sql","bedgraph","bigwig","wig"]}
+                {'id': 'output', 'type': 'listing', 'label': 'Output format: ', 'help_text': 'Output file(s) format (default: bedGraph)', 'options' :["sql","bedgraph","bigwig","wig"]}
                 ]
 
 out_parameters = [{'id': 'output_tar', 'type': 'file'},

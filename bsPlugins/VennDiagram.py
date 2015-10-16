@@ -19,7 +19,7 @@ in_parameters = [{'id': 'input_type', 'type': 'radio', 'label': 'Input from: ', 
                 {'id': 'table', 'type': 'txt', 'required': True, 'label': 'Table: ', 'help_text': 'Select table'},
                 {'id': 'id_columns', 'type': 'text', 'required': True, 'label': 'Column id: ', 'help_text':'Comma separated list of columns id (e.g. 3,5)'},
                 {'id': 'filters', 'type': 'text', 'required': True, 'label': 'Filters: ', 'help_text': 'comma separated list of filtering expressions (e.g. >2,<0.05,>=2 OR <=-2,>=-2 AND <2,==2,!=2)'},
-                {'id': 'format', 'type': 'format', 'label': 'Format: ', 'help_text': 'Output figure format', 'options' :["png","pdf"], 'prompt_text': None}
+                {'id': 'output', 'type': 'listing', 'label': 'Format: ', 'help_text': 'Output figure format', 'options' :["png","pdf"], 'prompt_text': None}
                 ]
 
 out_parameters = [{'id':'venn_diagram', 'type':'file'},

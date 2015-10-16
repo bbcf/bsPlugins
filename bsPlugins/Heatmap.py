@@ -10,7 +10,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'table', 'type': 'file', 'required': True, 'label': 'Table: ', 'help_text': 'Enter a table in which the first column contains the IDs and the others the values'},
+in_parameters = [{'id': 'table', 'type': 'txt', 'required': True, 'label': 'Table: ', 'help_text': 'Enter a table in which the first column contains the IDs and the others the values'},
                  {'id': 'log', 'type': 'boolean', 'label': 'Log: ', 'help_text': 'Take the log2(1+x) of each value x', 'value': False},
                  {'id': 'cor', 'type': 'boolean', 'label': 'Correlation: ', 'help_text': 'Use the correlation as the distance function to build the clusters', 'value': False},
                  {'id': 'rowids', 'type': 'boolean', 'label': 'List: ', 'help_text': 'Number the rows in the heatmap and make a file with the corresponding IDs', 'value': False},

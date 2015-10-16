@@ -15,7 +15,7 @@ meta = {'version': "1.0.0",
 
 in_parameters = [{'id': 'sample', 'type': 'bam', 'required': True, 'multiple': 'BamMulti', 'label': ' Test BAMs: ', 'help_text': 'Select main bam file(s)'},
                  {'id': 'control', 'type': 'bam', 'label': 'Control BAM: ', 'help_text': 'Select control bam file to compute enrichment' },
-                 {'id': 'format', 'type': 'text', 'label': 'Output format: ', 'help_text': 'Format of the output file', 'options': output_opts, 'prompt_text': None},
+                 {'id': 'output', 'type': 'listing', 'label': 'Output format: ', 'help_text': 'Format of the output file', 'options': output_opts, 'prompt_text': None},
                  {'id': 'normalization', 'type': 'int', 'label': 'Normalization: ', 'help_text': 'Normalization factor, default is total number of reads'},
                  {'id': 'merge_strands', 'type': 'int', 'label': 'Shift and merge strands: ', 'help_text': 'Shift value (in bp) if you want to merge strand-specific densities (will not merge if negative)', 'value': -1},
                  {'id': 'read_extension', 'type': 'int', 'label': 'Read extension: ','help_text': 'Read extension (in bp) to be applied when constructing densities (will use read length if negative)', 'value': -1 }]
