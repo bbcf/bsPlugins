@@ -74,7 +74,8 @@ each alignment will be considered, default is read length).
     def __call__(self, **kw):
         b2wargs = []
         control = None
-        samples = kw.get('BamMulti',{}).get('sample', [])
+        #samples = kw.get('BamMulti',{}).get('sample', [])
+        samples = kw.get('sample', [])
         if not isinstance(samples, list): samples = [samples]
         samples = [os.path.abspath(s) for s in samples if os.path.exists(s)]
         if kw.get('control'):
@@ -102,7 +103,7 @@ each alignment will be considered, default is read length).
         except (ValueError, TypeError):
             read_extension = -1
         output = [self.temporary_path(fname=b.name+'_density_') for b in bamfiles]
-        format = kw.get("format", "sql")
+        format = kw.get('output', 'sql')
         with execution(None) as ex:
             files = [bam_to_density( ex, s, output[n], nreads=_nreads[n],
                                      merge=merge_strands,

@@ -103,8 +103,9 @@ title(main=main,outer=T)
 
     def __call__(self, **kw):
         _f = ['start','end','score']
-        format = kw.get("format") or "sql"
-        bamfiles = kw.get('BamMulti',{}).get('bamfiles',[])
+        format = kw.get('output') or "sql"
+        #bamfiles = kw.get('BamMulti',{}).get('bamfiles',[])
+        bamfiles = kw.get('bamfiles',[])
         if not isinstance(bamfiles, (tuple,list)): bamfiles = [bamfiles]
         bamfiles = [track(bam) for bam in bamfiles]
         all_tracks = []

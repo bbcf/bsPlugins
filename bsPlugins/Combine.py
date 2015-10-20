@@ -43,9 +43,10 @@ def _get_chrmeta(**kw):
 
 def _combine(func,output,**kw):
     chrmeta = _get_chrmeta(**kw)
-    format = kw.get('format') or 'sql'
+    format = kw.get('output') or 'sql'
     output += format
-    tracks = kw['TrackMulti']['tracks']
+    #tracks = kw['TrackMulti']['tracks']
+    tracks = kw['tracks']
     if not isinstance(tracks, list):
         tracks = [tracks]
     tracks = [track(sig, chrmeta=chrmeta) for sig in tracks]
@@ -131,7 +132,8 @@ class ComplementPlugin(BasePlugin):
     def __call__(self, **kw):
         # Create a track with the whole chromosome
         chrmeta = _get_chrmeta(**kw)
-        sig0 = track(kw['TrackMulti']['tracks'][0])
+        #sig0 = track(kw['TrackMulti']['tracks'][0])
+        sig0 = track(kw['tracks'][0])
         fields = sig0.fields
         format = sig0.format
         is_chr = 'chr' in fields
@@ -151,7 +153,8 @@ class ComplementPlugin(BasePlugin):
         with track(temp,fields=fields) as wc:
             wc.write(whole_chr)
 
-        kw['TrackMulti']['tracks'] = [temp] + kw['TrackMulti']['tracks']
+        #kw['TrackMulti']['tracks'] = [temp] + kw['TrackMulti']['tracks']
+        kw['tracks'] = [temp] + kw['tracks']
         output = self.temporary_path(fname='combined.')
         output = _combine(self._func,output,**kw)
         self.new_file(output, 'combined')

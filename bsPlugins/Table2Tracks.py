@@ -66,7 +66,7 @@ class Table2TracksPlugin(BasePlugin):
 
         outfiles=[]
         for _f in colnames:
-            output_name = self.temporary_path(fname=shortname+'_'+_f,ext=kw.get('format',"bedGraph"))
+            output_name = self.temporary_path(fname=shortname+'_'+_f,ext=kw.get('output',"bedGraph"))
             out_track = track(output_name,chrmeta=chrmeta)
             s = t.read(fields=['chr','start','end',_f])
             s.fields[3] = "score"

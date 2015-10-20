@@ -140,7 +140,7 @@ class RatiosPlugin(BasePlugin):
         assembly = kw.get('assembly') or 'guess'
         t1 = track(kw['numerator'],chrmeta=assembly)
         t2 = track(kw['denominator'],chrmeta=assembly)
-        format = kw.get('format') or t1.format
+        format = kw.get('output') or t1.format
         wsize = int(kw.get('window_size') or size_def)
         self.log = kw.get('log',False)
         if isinstance(self.log, basestring):

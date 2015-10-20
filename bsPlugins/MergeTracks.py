@@ -100,7 +100,7 @@ The output is the average of all the input signals, position by position.
                 raise ValueError("Unable to detect shift automatically. Must specify a shift value.")
 
         output = self.temporary_path(fname=tfwd.name+'-'+trev.name+'_merged', 
-                                     ext=kw.get('format',tfwd.format))
+                                     ext=kw.get('output',tfwd.format))
         tout = track(output, chrmeta=chrmeta,
                      info={'datatype': 'quantitative', 'shift': shiftval})
         mode = 'write'

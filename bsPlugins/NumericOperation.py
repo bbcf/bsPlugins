@@ -49,13 +49,14 @@ class NumericOperationPlugin(BasePlugin):
 
     def __call__(self, **kw):
         func = kw.get('function',"log2")
-        l_track = kw.get('SigMulti', {}).get('track',[])
+        #l_track = kw.get('SigMulti', {}).get('track',[])
+        l_track = kw.get('track',[])
         if not isinstance(l_track, list): l_track = [l_track]
         outall = []
         for tname in l_track :
             tinput = track(tname)
             if 'score' not in tinput.fields: continue
-            format = kw.get('format',tinput.format)
+            format = kw.get('output',tinput.format)
             out_name = tinput.name+'_'+func+'.'+format
             outtemp = self.temporary_path(out_name)
             out_track = track(outtemp,chrmeta=tinput.chrmeta)

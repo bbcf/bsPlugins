@@ -79,7 +79,8 @@ class VplotPlugin(BasePlugin):
         }
 
     def __call__(self, **kw):
-        bamfiles = kw.get('BamMulti',{}).get('bamfiles',[])
+        #bamfiles = kw.get('BamMulti',{}).get('bamfiles',[])
+        bamfiles = kw.get.get('bamfiles',[])
         if not isinstance(bamfiles, (tuple,list)): bamfiles = [bamfiles]
         bamfiles = [track(bam) for bam in bamfiles]
         features = track(kw.get('features'), chrmeta=bamfiles[0].chrmeta)

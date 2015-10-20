@@ -64,7 +64,7 @@ class SmoothingPlugin(BasePlugin):
 
     def __call__(self, **kw):
         tinput = track(kw.get('track'), chrmeta=kw.get('assembly') or None)
-        outformat = kw.get('format',tinput.format)
+        outformat = kw.get('output',tinput.format)
         wsize = int(kw.get('window_size', size_def) or 10)
         wstep = int(kw.get('window_step', step_def) or 1)
         featurewise = kw.get('by_feature', False)

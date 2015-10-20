@@ -98,7 +98,8 @@ intersections, i.e. for each intersection one text file with the list of common 
         return counts, legend
 
     def __call__(self,**kw):
-        files_list = kw['SigMulti']['files']
+        #files_list = kw['SigMulti']['files']
+        files_list = kw['files']
         column = int(kw['column'])-1
         output = self.temporary_path(fname='intersections.')
         counts,legend = self.compare(files_list, output, column)

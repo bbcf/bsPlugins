@@ -34,7 +34,8 @@ class FragLengthPlugin(BasePlugin):
         'meta': meta}
 
     def __call__(self, **kw):
-        bamfiles = kw.get('BamMulti',{}).get('bamfiles',[])
+        #bamfiles = kw.get('BamMulti',{}).get('bamfiles',[])
+        bamfiles = kw.get('bamfiles',[])
         if not isinstance(bamfiles, (tuple,list)): bamfiles = [bamfiles]
         bamfiles = [pysam.Samfile(bam) for bam in bamfiles]
         minlength = kw.get('minlength')

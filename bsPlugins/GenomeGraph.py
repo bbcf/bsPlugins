@@ -48,11 +48,14 @@ class GenomeGraphPlugin(BasePlugin):
 
     def __call__(self, **kw):
         assembly = kw.get('assembly') or 'guess'
-        signals_plus = kw.get('SigMultiP',{}).get('signals_plus', [])
+        #signals_plus = kw.get('SigMultiP',{}).get('signals_plus', [])
+        signals_plus = kw.get('signals_plus', [])
         if not isinstance(signals_plus, list): signals_plus = [signals_plus]
-        signals_minus = kw.get('SigMultiM',{}).get('signals_minus', [])
+        #signals_minus = kw.get('SigMultiM',{}).get('signals_minus', [])
+        signals_minus = kw.get('signals_minus', [])
         if not isinstance(signals_minus, list): signals_minus = [signals_minus]
-        features = kw.get('FeatMulti',{}).get('features', [])
+        #features = kw.get('FeatMulti',{}).get('features', [])
+        features = kw.get('features', [])
         if not isinstance(features, list): features = [features]
         sptracks = [track(sig,chrmeta=assembly) for sig in signals_plus if os.path.exists(sig)]
         smtracks = [track(sig,chrmeta=assembly) for sig in signals_minus if os.path.exists(sig)]

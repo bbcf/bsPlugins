@@ -46,7 +46,8 @@ class FilteringPlugin(BasePlugin):
         'meta': meta}
 
     def __call__(self, **kw):
-        tracks = kw['TrackMulti']['tracks']
+        #tracks = kw['TrackMulti']['tracks']
+        tracks = kw['tracks']
         if not isinstance(tracks, list): tracks = [tracks]
         minscore = kw.get('minscore')
         maxscore = kw.get('maxscore')

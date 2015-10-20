@@ -142,7 +142,8 @@ Rules (possibly empty) must be specified in the same order as column numbers.
             nsamples = len(col_ind)
             combn = ['|'.join(y) for x in combn for y in x]
         elif intype == "Tracks":
-            filenames = kw['TrMulti']['files']
+            #filenames = kw['TrMulti']['files']
+            filenames = kw['files']
             if not isinstance(filenames,(list,tuple)): filenames = [filenames]
             for f in filenames: assert os.path.exists(f), "File not found: %s ." % f
             tracks = [track(f,chrmeta='guess') for f in filenames]
@@ -193,7 +194,7 @@ Rules (possibly empty) must be specified in the same order as column numbers.
 
 
         if nsamples <= 4:
-            format = kw.get('format') or 'pdf'
+            format = kw.get('output') or 'pdf'
             output = self.temporary_path(fname='venn_diagram.'+format)
             venn(c2,legend=legend,options=venn_options,output=output,format=format)
             self.new_file(output, 'venn_diagram')
