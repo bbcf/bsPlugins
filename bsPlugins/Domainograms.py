@@ -41,7 +41,7 @@ meta = {'version': "1.0.0",
 
 in_parameters = [
         {'id':'sample', 'type':'track', 'required':True, 'label': 'Input file: ', 'help_text': 'Select the signal file' },
-        {'id':'name', 'type':'text', 'required': True, 'label': 'Name: ', 'help_text': 'Prefix name', 'placeholder': '(No space or special character)'},
+        {'id':'name', 'type':'text', 'label': 'Name: ', 'help_text': 'Prefix name', 'placeholder': '(No space or special character)'},
         {'id':'region', 'type':'text', 'label': 'Region: ', 'help_text': 'Chromosome to treat or region to exclude', 'placeholder': '(chr2 or chr2:75450000-75500000)'},
         {'id': 'wmax_BRICKS', 'type': 'int', 'required': True, 'label': 'Window size: ', 'help_text': 'maximum window size (for BRICKS)', 'value': size_def},
         {'id': 'wmax_domainograms', 'type': 'int', 'required': True, 'label': 'Plot height: ', 'help_text': 'maximum window size (for plots)', 'value': height_def}]

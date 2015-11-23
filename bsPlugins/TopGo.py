@@ -16,7 +16,7 @@ in_parameters = [{'id': 'gene_list', 'type': 'userfile', 'required': True, 'labe
                  {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text': 'Reference genome', 'options': mart_map, 'prompt_text': None},
                  {'id': 'num_terms', 'type': 'int', 'label': 'Number of significant terms: ', 'help_text': 'Maximum number of significant terms to return', 'value': 10},
                  {'id': 'pval', 'type': 'float', 'label': 'P-value threshold: ', ' help_text': 'p-value threshold for significance', 'value': 0.05},
-                 {'id': 'txid', 'type':'boolean', 'required': True, 'label': 'Transcript identifiers: ', 'help_text': 'Check if this a list of transcript ids (default is gene ids)', 'value': False}]
+                 {'id': 'txid', 'type':'boolean', 'label': 'Transcript identifiers: ', 'help_text': 'Check if this a list of transcript ids (default is gene ids)', 'value': False}]
 out_parameters = [{'id': 'TopGO_table_tar', 'type': 'file'},
                   {'id': 'TopGO_plots_tar', 'type': 'file'},
                   {'id': 'TopGO_table', 'type': 'txt'},

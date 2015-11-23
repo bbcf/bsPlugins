@@ -65,7 +65,7 @@ meta = {'version': "1.0.0",
         'contact': "webmaster-bbcf@epfl.ch"}
 
 in_parameters = [
-        {'id': 'input_type', 'type': 'radio', 'label': 'Input type: ','help_text': 'Select input type (Formatted table, or signal tracks)', 'options': input_opts, 'value': 'Table', 'mapping': input_map },
+        {'id': 'input_type', 'type': 'radio', 'required': True, 'label': 'Input type: ','help_text': 'Select input type (Formatted table, or signal tracks)', 'options': input_opts, 'value': 'Table', 'mapping': input_map },
         {'id': 'signals1', 'type': 'track', 'required': True, 'multiple': 'Group1', 'label': 'Signals group 1: ', 'help_text': 'Select signal files (position and score, e.g. bedgraph)'},
         {'id': 'signals2', 'type': 'track', 'required': True, 'multiple': 'Group2', 'label': 'Signals group 2: ', 'help_text': 'Select signal files (position and score, e.g. bedgraph)'},
         {'id': 'table', 'type': 'txt', 'required': True, 'lable': 'Table: ', 'help_text': 'Select scores table'},

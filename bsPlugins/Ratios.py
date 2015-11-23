@@ -23,8 +23,8 @@ in_parameters = [{'id': 'numerator', 'type': 'track', 'required': True, 'label':
                  {'id': 'window_size', 'type': 'int', 'label': 'Window size: ', 'help_text': 'Size of the sliding window in bp (default: 1)', 'value': size_def},
                  {'id': 'pseudo', 'type': 'float', 'label': 'Pseudo-count: ', 'help_text': 'Value to be added to both signals (default: 0.5)', 'value': pseudo_def},
                  {'id': 'threshold', 'type': 'float', 'label': 'Threshold: ', 'help_text': 'This sets ratio=1 at each genomic position satisfying numerator value < threshold (default: 0)', 'value': threshold_def},
-                 {'id': 'log', 'type':'boolean', 'required': True, 'label': 'Log ratios: ','help_text': 'Computes the log2 of the ratios', 'value': False},
-                 {'id': 'distribution', 'type':'boolean', 'required': True, 'label': 'Plot distribution: ', 'help_text': 'Creates a graphical representation of the distributions of the ratios based on a sample of genomic regions', 'value': False}]
+                 {'id': 'log', 'type':'boolean', 'label': 'Log ratios: ','help_text': 'Computes the log2 of the ratios', 'value': False},
+                 {'id': 'distribution', 'type':'boolean', 'label': 'Plot distribution: ', 'help_text': 'Creates a graphical representation of the distributions of the ratios based on a sample of genomic regions', 'value': False}]
 out_parameters = [{'id': 'ratios', 'type': 'track'}, 
                   {'id': 'boxplot', 'type': 'pdf'}]
 
