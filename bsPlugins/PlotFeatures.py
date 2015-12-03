@@ -25,7 +25,7 @@ in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': 'SigMulti', 'req
                  {'id': 'upstream', 'type': 'int', 'label': 'Upstream flank: ', 'help_text':'Size of upstream flank in bp', 'value':prom_up_def },
                  {'id': 'downstream', 'type': 'int', 'label': 'Downstream flank: ', 'help_text':'Size of downstream flank in bp', 'value':prom_down_def },
                  {'id': 'nbins', 'type': 'int', 'label': 'Number of bins: ', 'help_text': 'Number of bins each feature is divided into', 'value':_nbins},
-                 {'id': 'noclust', 'type':'boolean', 'required':True, 'label': 'do not cluster features: ', 'help_text':'Keep features in the same order as input', 'value':False},
+                 {'id': 'noclust', 'type':'boolean', 'label': 'do not cluster features: ', 'help_text':'Keep features in the same order as input', 'value':False},
                  {'id': 'ymin', 'type': 'float', 'label':'Minimal signal value: ','help_text':'Minimum value displayed in graphs (optional)'},
                  {'id': 'ymax', 'type': 'float', 'label':'Maximal signal value: ','help_text':'Maximum value displayed in graphs (optional)'},
                  {'id': 'output', 'type': 'listing', 'required': True, 'label':'Output: ', 'help_text':'Pdf only or data+pdf','options':output_list, 'prompt_text':None}]

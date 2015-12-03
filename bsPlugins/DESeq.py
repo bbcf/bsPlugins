@@ -13,7 +13,7 @@ __requires__ = ["ryp2", "numpy"]
 
 input_opts=['Table', 'Signals'],
 input_map={'Table': ['table'],
-        'Signals': ['Group1','Group2','feature_type','assembly'],}
+        'Signals': ['signals1','signals2','feature_type','assembly'],}
 f_map={ftypes[-1][0]: ['features'],
                  1: ['upstream', 'downstream']}
 class DESeqForm(BaseForm):

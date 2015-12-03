@@ -11,10 +11,11 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 inmap = {'Table': ['table','id_columns','filters'],
-        'Tracks': ['TrMulti','type']}
+        'Tracks': ['files','type']}
+#        'Tracks': ['TrMulti','type']}
 
 in_parameters = [{'id': 'input_type', 'type': 'radio', 'label': 'Input from: ', 'help_text': 'Select input type (Formatted table, or genomic tracks)', 'options': ['Table', 'Tracks'], 'mapping': inmap, 'value': 'Table'},
-                {'id': 'files', 'type':'track', 'multiple':'TrMulti', 'required': True, 'label': 'Files: ', 'help_text': 'Select your track files'},
+                {'id': 'files', 'type':'track', 'multiple': True, 'required': True, 'label': 'Files: ', 'help_text': 'Select your track files'},
                 {'id': 'type', 'type':'list', 'label': 'Type: ','prompt_text': None, 'options': ['intervals','score'],'help_text':'Type of statistics (distribution of scores or of genomic intervals'},
                 {'id': 'table', 'type': 'txt', 'required': True, 'label': 'Table: ', 'help_text': 'Select table'},
                 {'id': 'id_columns', 'type': 'text', 'required': True, 'label': 'Column id: ', 'help_text':'Comma separated list of columns id (e.g. 3,5)'},
