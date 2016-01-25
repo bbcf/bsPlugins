@@ -197,7 +197,7 @@ class PairsPlotPlugin(BasePlugin):
         if narr is None:
             raise ValueError("No data")
         pairs(narr, xarr, labels=snames, output=pdf, highlights=[set_index,set_labels], new=_new, last=True)
-        self.new_file(table, 'table')
+        if int(kw['mode']) == 1: self.new_file(table, 'table')
         self.new_file(pdf, 'plot_pairs')
         return self.display_time()
 
