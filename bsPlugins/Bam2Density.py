@@ -120,10 +120,11 @@ each alignment will be considered, default is read length).
             if len(all_s_files) > 1:
                 x = self.temporary_path(fname="Density_average_"+suf+".sql")
                 tsql = track( x, fields=['start', 'end', 'score'],
-                              chrmeta=chrmeta, info={'datatype': 'quantitative'} )
+                              chrmeta=chrmeta, info=info )
                 insql = []
                 for f in all_s_files:
-                    t = track(f, format='sql', chrmeta=chrmeta)
+                    t = track( f, format='sql', fields=['start', 'end', 'score'],
+                               chrmeta=chrmeta, info=info )
                     t.save()
                     insql.append(t)
                 for c in tsql.chrmeta:

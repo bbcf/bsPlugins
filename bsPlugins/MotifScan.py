@@ -85,6 +85,7 @@ The sequences will be scanned with the PWM and occurrences exceeding the thresho
             background = self.temporary_path(fname='background.txt')
             stats = {'A': 0.25,'C': 0.25, 'G': 0.25, 'T': 0.25}
             if fasta_file:
+                fasta_file = os.path.abspath(fasta_file)
                 with execution(None) as ex:
                     stats = fasta_composition(ex,fasta_file,frequency=True)
             with open(background,"w") as bgr:
