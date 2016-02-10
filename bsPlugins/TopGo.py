@@ -2,9 +2,10 @@ from bsPlugins import *
 import rpy2.robjects as robjects
 import os, tarfile
 
-mart_map = [("GRCh37.p6",'hg19'), ("GRCh38",'hg38'), 
-            ("NCBIM37",'mm9'), ("GRCm38.p2",'mm10'), 
-            ("EF3","sacCer2"), ("BDGP5.25",'dm3'),("Zv9",'zv9')]
+mart_map = [("GRCh37",'hg19'), ("GRCh38",'hg38'), 
+            ("NCBIM37",'mm9'), ("GRCm38",'mm10'), 
+            ("EF3","sacCer2"), ("BDGP5",'dm3'),
+            ("Zv9",'zv9')]
 
 default_path = "/mnt/common/epfl/share"
 
