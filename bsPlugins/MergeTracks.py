@@ -17,7 +17,6 @@ in_parameters = [{'id': 'forward', 'type': 'track', 'required': True},
 out_parameters = [{'id': 'density_merged', 'type': 'track'}]
 
 
-
 class MergeTracksForm(BaseForm):
     forward = twb.BsFileField(label='Forward: ',
                               help_text='Select forward density file',
@@ -97,12 +96,13 @@ The output is the average of all the input signals, position by position.
 
         output = self.temporary_path(fname=tfwd.name+'-'+trev.name+'_merged', 
                                      ext=kw.get('format',tfwd.format))
-        tout = track(output, chrmeta=chrmeta,
+        outfields = [f for f in tfwd.fields if f in trev.fields]
+        tout = track(output, chrmeta=chrmeta, fields=outfields,
                      info={'datatype': 'quantitative', 'shift': shiftval})
         mode = 'write'
         method = kw.get("method","mean")
         for chrom in chrmeta.keys():
-            tout.write(merge_scores([_shift(tfwd.read(selection=chrom), shiftval),
+            tout.write(merge_scores([_shift(tfwd.read(selection=chrom),  shiftval),
                                      _shift(trev.read(selection=chrom), -shiftval)],
                                     method=method),
                        chrom=chrom, mode=mode, clip=True)
