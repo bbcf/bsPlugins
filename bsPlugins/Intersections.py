@@ -22,7 +22,7 @@ meta = {'version': "1.0.0",
         'contact': "webmaster-bbcf@epfl.ch"}
 
 in_parameters = [{'id': 'files', 'type': 'track', 'multiple': 'SigMulti', 'required': True, 'label': 'Files: ', 'help_text': 'Select signal files (e.g. bedgraph)'},
-                 {'id': 'column', 'type': 'text', 'label': 'Column(s): ', 'help_text': 'Column(s) number (1-based).', 'value': 1, 'prompt_text': '1'}]
+                 {'id': 'column', 'type': 'int', 'label': 'Column(s): ', 'help_text': 'Column(s) number (1-based).', 'value': 1, 'prompt_text': '1'}]
 out_parameters = [{'id': 'intersections', 'type': 'track'},
                   {'id': 'venn_diagram', 'type': 'file'}]
 
@@ -108,11 +108,11 @@ intersections, i.e. for each intersection one text file with the list of common 
         tar = tarfile.open(output_targz, 'w:gz')
         tar.add(output)
         tar.close()
-        self.new_file(output+'.tar.gz', 'intersections')
+        self.new_file(output+'tar.gz', 'intersections')
         if len(files_list) <= 4:
             # Venn diagram
             venn_format = 'png'
-            venn_outname = self.temporary_path(fname='venn'+venn_format)
+            venn_outname = self.temporary_path(fname='venn.'+venn_format)
             venn(counts,legend=None,options={},output=venn_outname,format=venn_format)
             self.new_file(venn_outname, 'venn_diagram')
         return self.display_time()
