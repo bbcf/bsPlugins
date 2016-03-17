@@ -8,9 +8,9 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'signals_plus', 'type': 'track', 'multiple': 'SigMultiP', 'label': 'Positive signals: ', 'help_text': 'Signal files (e.g. bedgraph) to plot above the axis'},
-                 {'id': 'signals_minus', 'type': 'track', 'multiple': 'SigMultiM', 'label': 'Negative signals: ', 'help_text': 'Signal files (e.g. bedgraph) to plot below the axis'},
-                 {'id': 'features', 'type': 'track', 'multiple': 'FeatMulti', 'label': 'Features: ','help_text': 'Features files (e.g. bed) to plot as segments on the axis'},
+in_parameters = [{'id': 'signals_plus', 'type': 'track', 'multiple': True, 'label': 'Positive signals: ', 'help_text': 'Signal files (e.g. bedgraph) to plot above the axis'},
+                 {'id': 'signals_minus', 'type': 'track', 'multiple': True, 'label': 'Negative signals: ', 'help_text': 'Signal files (e.g. bedgraph) to plot below the axis'},
+                 {'id': 'features', 'type': 'track', 'multiple': True, 'label': 'Features: ','help_text': 'Features files (e.g. bed) to plot as segments on the axis'},
                  {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text': 'Reference genome', 'options': genrep.GenRep().assemblies_available()}]
 out_parameters = [{'id': 'genome_graph', 'type': 'pdf'}]
 

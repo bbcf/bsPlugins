@@ -21,7 +21,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'files', 'type': 'track', 'multiple': 'SigMulti', 'required': True, 'label': 'Files: ', 'help_text': 'Select signal files (e.g. bedgraph)'},
+in_parameters = [{'id': 'files', 'type': 'track', 'multiple': True, 'required': True, 'label': 'Files: ', 'help_text': 'Select signal files (e.g. bedgraph)'},
                  {'id': 'column', 'type': 'int', 'label': 'Column(s): ', 'help_text': 'Column(s) number (1-based).', 'value': 1, 'prompt_text': '1'}]
 out_parameters = [{'id': 'intersections', 'type': 'track'},
                   {'id': 'venn_diagram', 'type': 'file'}]

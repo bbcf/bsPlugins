@@ -8,7 +8,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple': 'BamMulti', 'label': 'Paired-end BAM files: ', 'help_text': 'Select bam files'},
+in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple': True, 'label': 'Paired-end BAM files: ', 'help_text': 'Select bam files'},
                  {'id': 'output', 'type': 'listing', 'label': 'Output format: ', 'help_text': 'Format of the output file', 'options': ['sql', 'bedGraph', 'bigWig'], 'prompt_text':None},
                  {'id': 'midpoint', 'type': 'boolean', 'label': 'At fragment midpoint: ', 'help_text': 'Attribute fragment length to its midpoint only (default: all positions in the fragment)', 'value': False},
                  {'id': 'plot_only', 'type': 'boolean', 'label': 'Only the plot: ', 'help_text':'Do not compute the density', 'value': False}]

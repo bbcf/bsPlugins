@@ -5,7 +5,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple': 'BamMulti', 'label': 'Paired-ended BAM files: ' },
+in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple': True, 'label': 'Paired-ended BAM files: ' },
                  {'id': 'minlength', 'type': 'int', 'label': 'Minimum fragment length: '},
                  {'id': 'maxlength', 'type': 'int', 'label': 'Maximum fragment length: '}]
 out_parameters = [{'id': 'fragment_track', 'type': 'track'},

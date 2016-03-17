@@ -13,7 +13,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple': 'BamMulti', 'label': 'Paired-end BAM files: '},
+in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple': True, 'label': 'Paired-end BAM files: '},
                  {'id': 'features', 'type': 'track', 'required': True, 'label': 'Feaures', 'help_text': 'Select a feature file (e.g. bed) in which all regions have the same length'},
                  {'id': 'left_right', 'type': 'boolean', 'label': 'Left-right: ', 'help_text': 'Plot the mean fragment length associated to left and right fragment ends (default: false)', 'value': False},
                  {'id': 'linear', 'type': 'boolean', 'label': 'Linear scale: ', 'help_text': 'Plot the mean fragment length in linear scale (default: log scale)', 'value': False},

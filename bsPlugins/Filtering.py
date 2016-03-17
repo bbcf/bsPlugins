@@ -25,7 +25,7 @@ class FilteringForm(BaseForm):
 meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
-in_parameters = [{'id': 'tracks', 'type': 'track', 'required': True, 'multiple':'TrackMulti', 'label': 'Tracks: ', 'help_text': 'Select files (e.g. bedgraph)'},
+in_parameters = [{'id': 'tracks', 'type': 'track', 'required': True, 'multiple': True, 'label': 'Tracks: ', 'help_text': 'Select files (e.g. bedgraph)'},
                  {'id': 'minscore', 'type': 'float', 'label': 'Minimum score: '},
                  {'id': 'maxscore', 'type': 'float', 'label': 'Maximum score: '},
                  {'id': 'minlength', 'type': 'int', 'label': 'Minimum length: '},

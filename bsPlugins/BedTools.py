@@ -56,7 +56,7 @@ all_params = dict((y, '') for x in tools_map.values() for y in x).keys()
 file_params = {"simple": [x for x in all_params if x[-4:] == "file"],
                "multiple": [x for x in all_params if x[-5:] == "files"]}
 
-all_file_params = [{'id': x[1:], 'type': 'track', 'multiple': x} for x in all_params if x[-5:] == 'files']+\
+all_file_params = [{'id': x[1:], 'type': 'track', 'multiple': True} for x in all_params if x[-5:] == 'files']+\
                   [{'id': x, 'type': 'track'} for x in all_params if x[-4:] == 'file']
 
 gr_operations = ["sum", "count", "count_distinct", "min", "max",

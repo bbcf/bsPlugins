@@ -19,7 +19,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': 'SigMulti', 'required': True, 'label': 'Signal: ', 'help_text':'Select signal file (e.g. bedgraph)'},
+in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': True, 'required': True, 'label': 'Signal: ', 'help_text':'Select signal file (e.g. bedgraph)'},
                  {'id': 'features', 'type': 'track', 'label': 'Features: ', 'help_text':'Select a feature file (e.g. bed)'},
                  {'id': 'mode', 'type': 'list', 'required': True, 'label': 'Plot type: ', 'options': plot_types, 'mapping': {0:['noclust']}, 'prompt_text':None},
                  {'id': 'upstream', 'type': 'int', 'label': 'Upstream flank: ', 'help_text':'Size of upstream flank in bp', 'value':prom_up_def },

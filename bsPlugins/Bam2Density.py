@@ -13,7 +13,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'sample', 'type': 'bam', 'required': True, 'multiple': 'BamMulti', 'label': ' Test BAMs: ', 'help_text': 'Select main bam file(s)'},
+in_parameters = [{'id': 'sample', 'type': 'bam', 'required': True, 'multiple': True, 'label': ' Test BAMs: ', 'help_text': 'Select main bam file(s)'},
                  {'id': 'control', 'type': 'bam', 'label': 'Control BAM: ', 'help_text': 'Select control bam file to compute enrichment' },
                  {'id': 'output', 'type': 'listing', 'label': 'Output format: ', 'help_text': 'Format of the output file', 'options': output_opts, 'prompt_text': None},
                  {'id': 'normalization', 'type': 'int', 'label': 'Normalization: ', 'help_text': 'Normalization factor, default is total number of reads'},

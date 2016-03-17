@@ -26,7 +26,7 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'track', 'type': 'track', 'required': True, 'multiple':'SigMulti', 'label': 'Signals: ', 'help_text': 'Select files (e.g. bedgraph)'},
+in_parameters = [{'id': 'track', 'type': 'track', 'required': True, 'multiple': True, 'label': 'Signals: ', 'help_text': 'Select files (e.g. bedgraph)'},
                 {'id': 'function', 'type': 'listing', 'label': 'Operation: ', 'help_text': 'Select a function', 'options': ["log2","log10","sqrt"], 'prompt_text': None},
                 {'id': 'output', 'type': 'listing', 'label': 'Output format: ', 'help_text': 'Output file(s) format, by default: same format as input file(s) format(s)', 'options': ["sql","bedgraph","bigwig","wig"] }]
 out_parameters = [{'id': 'converted_track_tar', 'type': 'file'},
