@@ -16,11 +16,11 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'input_type', 'type': 'radio'},
-                 {'id': 'fastafile', 'type': 'userfile'},
-                 {'id': 'assembly', 'type': 'assembly'},
-                 {'id': 'regions', 'type': 'track'},
-                 {'id': 'nmotifs', 'type': 'int'}]
+in_parameters = [{'id': 'input_type', 'type': 'radio', 'label': 'Sequence source: ', 'options': input_types, 'mapping': input_map, 'value': 0},
+                 {'id': 'fastafile', 'type': 'userfile', 'label': 'Fasta file: ', 'help_text': 'Sequence to scan'},
+                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text':'Assembly to fetch sequences from', 'options': assembly_list,'prompt_text': None},
+                 {'id': 'regions', 'type': 'track', 'label': 'Regions: ', 'help_text': 'Genomic regions to search (e.g. bed)'},
+                 {'id': 'nmotifs', 'type': 'int', 'label': 'Number of motifs: ', 'help_text': 'Number of motifs to search', 'value': _nm}]
 out_parameters = [{'id': 'meme_archive', 'type': 'file'}]
 
 
@@ -51,7 +51,7 @@ class MotifSearchPlugin(BasePlugin):
         'title': 'Motif search by MEME',
         'description': __doc__,
         'path': ['Sequence analysis', 'Motif search'],
-        'output': MotifSearchForm,
+#        'output': MotifSearchForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,

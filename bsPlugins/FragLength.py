@@ -5,9 +5,9 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple': 'BamMulti'},
-                 {'id': 'minlength', 'type': 'int'},
-                 {'id': 'maxlength', 'type': 'int'}]
+in_parameters = [{'id': 'bamfiles', 'type': 'bam', 'required': True, 'multiple': 'BamMulti', 'label': 'Paired-ended BAM files: ' },
+                 {'id': 'minlength', 'type': 'int', 'label': 'Minimum fragment length: '},
+                 {'id': 'maxlength', 'type': 'int', 'label': 'Maximum fragment length: '}]
 out_parameters = [{'id': 'fragment_track', 'type': 'track'},
                   {'id': 'fragment_track_tar', 'type': 'file'}]
 
@@ -28,13 +28,14 @@ class FragLengthPlugin(BasePlugin):
         'title': 'Filtering of paired-end BAM files by fragment length',
         'description': __doc__,
         'path': ['Files', 'Fragment length filtering'],
-        'output': FragLengthForm,
+#        'output': FragLengthForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta}
 
     def __call__(self, **kw):
-        bamfiles = kw.get('BamMulti',{}).get('bamfiles',[])
+        #bamfiles = kw.get('BamMulti',{}).get('bamfiles',[])
+        bamfiles = kw.get('bamfiles',[])
         if not isinstance(bamfiles, (tuple,list)): bamfiles = [bamfiles]
         bamfiles = [pysam.Samfile(bam) for bam in bamfiles]
         minlength = kw.get('minlength')

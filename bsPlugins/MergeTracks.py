@@ -4,16 +4,20 @@ from bbcflib.gfminer.numeric import correlation
 from bbcflib.track import track, FeatureStream
 from bbcflib import genrep
 
+output_opts = ['sql','bed','bedGraph','wig','bigWig','sga']
+
+method_opts = ['mean','min','max','geometric','median','sum']
+
 meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'forward', 'type': 'track', 'required': True},
-                 {'id': 'reverse', 'type': 'track', 'required': True},
-                 {'id': 'assembly', 'type': 'assembly'},
-                 {'id': 'shift', 'type': 'int', 'required': True},
-                 {'id': 'format', 'type': 'list'},
-                 {'id': 'method', 'type': 'radio'}]
+in_parameters = [{'id': 'forward', 'type': 'track', 'required': True, 'label': 'Forward: ', 'help_text': 'Select forward density file' },
+                 {'id': 'reverse', 'type': 'track', 'required': True, 'label': 'Reverse: ', 'help_text': 'Select reverse density file' },
+                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text': 'Reference genome', 'options': genrep.GenRep().assemblies_available()},
+                 {'id': 'shift', 'type': 'int', 'required': True, 'label': 'Shift: ', 'help_text': 'Enter positive downstream shift ([fragment_size-read_length]/2), \nor a negative value to estimate shift by cross-correlation', 'value': 0},
+                 {'id': 'output', 'type': 'listing', 'label': 'Output format: ', 'help_text': 'Format of the output file', 'options': output_opts, 'prompt_text': None},
+                 {'id': 'method', 'type': 'radio', 'label': 'Method: ', 'help_text': 'Select the score combination method', 'options': ['mean','min','max','geometric','median','sum'], 'value': 'mean'}]
 out_parameters = [{'id': 'density_merged', 'type': 'track'}]
 
 
@@ -55,7 +59,7 @@ The output is the average of all the input signals, position by position.
         'title': 'Merge strands',
         'description': __doc__,
         'path': ['Signal', 'Merge strands'],
-        'output': MergeTracksForm,
+#        'output': MergeTracksForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,

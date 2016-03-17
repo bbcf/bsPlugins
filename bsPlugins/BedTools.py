@@ -59,19 +59,20 @@ file_params = {"simple": [x for x in all_params if x[-4:] == "file"],
 all_file_params = [{'id': x[1:], 'type': 'track', 'multiple': x} for x in all_params if x[-5:] == 'files']+\
                   [{'id': x, 'type': 'track'} for x in all_params if x[-4:] == 'file']
 
-other_params = [
-    {'id': 'tool', 'type': 'list'},
-    {'id': 'column', 'type': 'int', 'required': True},
-    {'id': 'groupcol', 'type': 'int', 'required': True},
-    {'id': 'opcol', 'type': 'int', 'required': True},
-    {'id': 'labels', 'type': 'text'},
-    {'id': 'operation', 'type': 'list'},
-    {'id': 'useropts', 'type': 'text'}]
-
-
 gr_operations = ["sum", "count", "count_distinct", "min", "max",
                  "mean", "median", "mode", "antimode", "stdev", "sstdev",
                  "collapse", "distinct", "concat", "freqdesc", "freqasc"]
+
+
+other_params = [
+    {'id': 'tool', 'type': 'list', 'label': 'Tool: ', 'help_text': 'Select BedTool', 'value': 0, 'options':list(enumerate(all_tools)), 'mapping': tools_map},
+    {'id': 'column', 'type': 'int', 'required': True, 'label': 'column: ', 'value': 1},
+    {'id': 'groupcol', 'type': 'int', 'required': True, 'label': 'groupcol: ', 'value': 1},
+    {'id': 'opcol', 'type': 'int', 'required': True, 'label': 'opcol: ', 'value': 1},
+    {'id': 'labels', 'type': 'text', 'label': 'labels: '},
+    {'id': 'operation', 'type': 'list', 'label': 'operations: ', 'options': gr_operations},
+    {'id': 'useropts', 'type': 'text', 'label': 'Options: ', 'help_text': 'Additional command-line options'}]
+
 
 
 class BedToolsForm(BaseForm):
@@ -128,7 +129,7 @@ class BedToolsPlugin(BasePlugin):
         'title': 'BedTools',
         'description': __doc__,
         'path': ['Intervals', 'Bedtools'],
-        'output': BedToolsForm,
+#        'output': BedToolsForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,

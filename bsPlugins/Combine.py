@@ -26,10 +26,10 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'tracks', 'type': 'track', 'multiple': 'TrackMulti', 'required': True},
-                 {'id': 'format', 'type': 'text'},
-                 {'id': 'assembly', 'type': 'assembly'},
-                ]
+output_opts=["sql","bed","sga"],
+in_parameters = [{'id': 'tracks', 'type': 'track', 'multiple': 'TrackMulti', 'required': True, 'label': 'Tracks: ', 'help_text': 'Select files to combine', },
+                 {'id': 'output', 'type': 'listing', 'required': True, 'label': 'Otput format: ', 'help_text': 'Format of the output file', 'options': output_opts, 'prompt_text': None},
+                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text': 'Reference genome', 'options': genrep.GenRep().assemblies_available()}]
 out_parameters = [{'id': 'combined', 'type': 'track'}]
 
 
@@ -43,9 +43,10 @@ def _get_chrmeta(**kw):
 
 def _combine(func,output,**kw):
     chrmeta = _get_chrmeta(**kw)
-    format = kw.get('format') or 'sql'
+    format = kw.get('output') or 'sql'
     output += format
-    tracks = kw['TrackMulti']['tracks']
+    #tracks = kw['TrackMulti']['tracks']
+    tracks = kw['tracks']
     if not isinstance(tracks, list):
         tracks = [tracks]
     tracks = [track(sig, chrmeta=chrmeta) for sig in tracks]
@@ -65,7 +66,7 @@ class IntersectPlugin(BasePlugin):
         'title': 'Intersection of a set of tracks',
         'description': 'Returns a new track with only regions covered in every input track.',
         'path': ['Intervals', 'Intersect'],
-        'output': CombineForm,
+#        'output': CombineForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
@@ -83,7 +84,7 @@ class UnionPlugin(BasePlugin):
         'title': 'Union of a set of tracks',
         'description': 'Returns a new track with regions covered in at least one of the input tracks.',
         'path': ['Intervals', 'Union'],
-        'output': CombineForm,
+#        'output': CombineForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
@@ -101,7 +102,7 @@ class SubtractPlugin(BasePlugin):
         'title': 'Subtract',
         'description': 'Returns a new track with regions present in the first input track, but not in the others.',
         'path': ['Intervals', 'Subtract'],
-        'output': CombineForm,
+#        'output': CombineForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
@@ -119,7 +120,7 @@ class ComplementPlugin(BasePlugin):
         'title': 'Complement',
         'description': 'Returns a new track with all regions not covered by a set of input tracks.',
         'path': ['Intervals', 'Complement'],
-        'output': CombineForm,
+#        'output': CombineForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
@@ -131,7 +132,8 @@ class ComplementPlugin(BasePlugin):
     def __call__(self, **kw):
         # Create a track with the whole chromosome
         chrmeta = _get_chrmeta(**kw)
-        sig0 = track(kw['TrackMulti']['tracks'][0])
+        #sig0 = track(kw['TrackMulti']['tracks'][0])
+        sig0 = track(kw['tracks'][0])
         fields = sig0.fields
         format = sig0.format
         is_chr = 'chr' in fields
@@ -151,7 +153,8 @@ class ComplementPlugin(BasePlugin):
         with track(temp,fields=fields) as wc:
             wc.write(whole_chr)
 
-        kw['TrackMulti']['tracks'] = [temp] + kw['TrackMulti']['tracks']
+        #kw['TrackMulti']['tracks'] = [temp] + kw['TrackMulti']['tracks']
+        kw['tracks'] = [temp] + kw['tracks']
         output = self.temporary_path(fname='combined.')
         output = _combine(self._func,output,**kw)
         self.new_file(output, 'combined')

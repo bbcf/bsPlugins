@@ -21,8 +21,8 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'files', 'type': 'track', 'multiple': 'SigMulti', 'required': True},
-                 {'id': 'column', 'type': 'text'}]
+in_parameters = [{'id': 'files', 'type': 'track', 'multiple': 'SigMulti', 'required': True, 'label': 'Files: ', 'help_text': 'Select signal files (e.g. bedgraph)'},
+                 {'id': 'column', 'type': 'int', 'label': 'Column(s): ', 'help_text': 'Column(s) number (1-based).', 'value': 1, 'prompt_text': '1'}]
 out_parameters = [{'id': 'intersections', 'type': 'track'},
                   {'id': 'venn_diagram', 'type': 'file'}]
 
@@ -46,7 +46,7 @@ intersections, i.e. for each intersection one text file with the list of common 
         'title': 'Intersections',
         'description': __doc__,
         'path': ['Analysis', 'Intersections of lists'],
-        'output': IntersectionsForm,
+#        'output': IntersectionsForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
@@ -98,7 +98,8 @@ intersections, i.e. for each intersection one text file with the list of common 
         return counts, legend
 
     def __call__(self,**kw):
-        files_list = kw['SigMulti']['files']
+        #files_list = kw['SigMulti']['files']
+        files_list = kw['files']
         column = int(kw['column'])-1
         output = self.temporary_path(fname='intersections.')
         counts,legend = self.compare(files_list, output, column)
@@ -107,11 +108,11 @@ intersections, i.e. for each intersection one text file with the list of common 
         tar = tarfile.open(output_targz, 'w:gz')
         tar.add(output)
         tar.close()
-        self.new_file(output+'.tar.gz', 'intersections')
+        self.new_file(output+'tar.gz', 'intersections')
         if len(files_list) <= 4:
             # Venn diagram
             venn_format = 'png'
-            venn_outname = self.temporary_path(fname='venn'+venn_format)
+            venn_outname = self.temporary_path(fname='venn.'+venn_format)
             venn(counts,legend=None,options={},output=venn_outname,format=venn_format)
             self.new_file(venn_outname, 'venn_diagram')
         return self.display_time()

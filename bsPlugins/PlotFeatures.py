@@ -19,16 +19,16 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': 'SigMulti', 'required': True},
-                 {'id': 'features', 'type': 'track'},
-                 {'id': 'mode', 'type': 'list', 'required': True},
-                 {'id': 'upstream', 'type': 'int'},
-                 {'id': 'downstream', 'type': 'int'},
-                 {'id': 'nbins', 'type': 'int'},
-                 {'id': 'noclust', 'type':'boolean', 'required':True},
-                 {'id': 'ymin', 'type': 'float'},
-                 {'id': 'ymax', 'type': 'float'},
-                 {'id': 'output', 'type': 'list', 'required': True}]
+in_parameters = [{'id': 'signals', 'type': 'track', 'multiple': 'SigMulti', 'required': True, 'label': 'Signal: ', 'help_text':'Select signal file (e.g. bedgraph)'},
+                 {'id': 'features', 'type': 'track', 'label': 'Features: ', 'help_text':'Select a feature file (e.g. bed)'},
+                 {'id': 'mode', 'type': 'list', 'required': True, 'label': 'Plot type: ', 'options': plot_types, 'mapping': {0:['noclust']}, 'prompt_text':None},
+                 {'id': 'upstream', 'type': 'int', 'label': 'Upstream flank: ', 'help_text':'Size of upstream flank in bp', 'value':prom_up_def },
+                 {'id': 'downstream', 'type': 'int', 'label': 'Downstream flank: ', 'help_text':'Size of downstream flank in bp', 'value':prom_down_def },
+                 {'id': 'nbins', 'type': 'int', 'label': 'Number of bins: ', 'help_text': 'Number of bins each feature is divided into', 'value':_nbins},
+                 {'id': 'noclust', 'type':'boolean', 'label': 'do not cluster features: ', 'help_text':'Keep features in the same order as input', 'value':False},
+                 {'id': 'ymin', 'type': 'float', 'label':'Minimal signal value: ','help_text':'Minimum value displayed in graphs (optional)'},
+                 {'id': 'ymax', 'type': 'float', 'label':'Maximal signal value: ','help_text':'Maximum value displayed in graphs (optional)'},
+                 {'id': 'output', 'type': 'listing', 'required': True, 'label':'Output: ', 'help_text':'Pdf only or data+pdf','options':output_list, 'prompt_text':None}]
 out_parameters = [{'id': 'plot_features', 'type': 'pdf'},
                   {'id':'data_archive', 'type':'file'}]
 
@@ -84,7 +84,7 @@ class PlotFeaturesPlugin(BasePlugin):
         'title': 'Plot signals in genomic regions',
         'description': __doc__,
         'path': ['Graphics', 'Plot features'],
-        'output': PlotFeaturesForm,
+#        'output': PlotFeaturesForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
@@ -108,7 +108,8 @@ class PlotFeaturesPlugin(BasePlugin):
 
         chrmeta = "guess"
         features = track(kw.get('features'), chrmeta=chrmeta)
-        signals = kw.get('SigMulti',{}).get('signals', [])
+        #signals = kw.get('SigMulti',{}).get('signals', [])
+        signals = kw.get('signals', [])
         if not isinstance(signals, list): signals = [signals]
         signals = [track(sig) for sig in signals]
         snames = [sig.name for sig in signals]

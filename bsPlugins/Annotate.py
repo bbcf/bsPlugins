@@ -12,11 +12,11 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'track', 'type': 'track', 'required': True},
-                 {'id': 'assembly', 'type': 'assembly'},
-                 {'id': 'promoter', 'type': 'int', 'required': True},
-                 {'id': 'intergenic', 'type': 'int', 'required': True},
-                 {'id': 'UTR', 'type': 'int', 'required': True}]
+in_parameters = [{'id': 'track', 'type': 'track', 'required': True, 'label': 'Features', 'help_text': 'Select features file (e.g. bed)'},
+                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly', 'help_text': 'Reference genome', 'options': genrep.GenRep().assemblies_available(), 'prompt_text': None},
+                 {'id': 'promoter', 'type': 'int', 'required': True, 'label': 'Promoter size: ', 'help_text': 'Upstream distance from TSS in bp to be included in the promoter', 'value': prom_def},
+                 {'id': 'intergenic', 'type': 'int', 'required': True, 'label': 'Intergenic distance: ', 'help_text': 'Maximum distance to be associated with a gene', 'value': inter_def},
+                 {'id': 'UTR', 'type': 'int', 'required': True, 'label': "3' UTR ratio: ", 'help_text': "3' UTR to promoter ratio in %", 'value': utr_def}]
 out_parameters = [{'id': 'table', 'type': 'file'}]
 
 
@@ -49,7 +49,7 @@ class AnnotatePlugin(BasePlugin):
         'title': 'Associate features with genome annotations',
         'description': __doc__,
         'path': ['Analysis', 'Annotate'],
-        'output': AnnotateForm,
+#        'output': AnnotateForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,

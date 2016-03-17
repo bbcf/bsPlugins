@@ -11,7 +11,11 @@ prom_down_def = 100
 
 __requires__ = ["ryp2", "numpy"]
 
-
+input_opts=['Table', 'Signals'],
+input_map={'Table': ['table'],
+        'Signals': ['signals1','signals2','feature_type','assembly'],}
+f_map={ftypes[-1][0]: ['features'],
+                 1: ['upstream', 'downstream']}
 class DESeqForm(BaseForm):
     child = twd.HidingTableLayout()
     input_type = twd.HidingRadioButtonList(label='Input type: ',
@@ -63,15 +67,15 @@ meta = {'version': "1.0.0",
         'contact': "webmaster-bbcf@epfl.ch"}
 
 in_parameters = [
-        {'id': 'input_type', 'type': 'radio'},
-        {'id': 'signals1', 'type': 'track', 'required': True, 'multiple': 'Group1'},
-        {'id': 'signals2', 'type': 'track', 'required': True, 'multiple': 'Group2'},
-        {'id': 'table', 'type': 'txt', 'required': True},
-        {'id': 'feature_type', 'type': 'int'},
-        {'id': 'upstream', 'type': 'int'},
-        {'id': 'downstream', 'type': 'int'},
-        {'id': 'assembly', 'type': 'assembly'},
-        {'id': 'features', 'type': 'track'},
+        {'id': 'input_type', 'type': 'radio', 'label': 'Input type: ','help_text': 'Select input type (Formatted table, or signal tracks)', 'options': ['Table', 'Signals'], 'value': 'Table', 'mapping': input_map },
+        {'id': 'signals1', 'type': 'track', 'required': True, 'multiple': 'Group1', 'label': 'Signals group 1: ', 'help_text': 'Select signal files (position and score, e.g. bedgraph)'},
+        {'id': 'signals2', 'type': 'track', 'required': True, 'multiple': 'Group2', 'label': 'Signals group 2: ', 'help_text': 'Select signal files (position and score, e.g. bedgraph)'},
+        {'id': 'table', 'type': 'txt', 'required': True, 'lable': 'Table: ', 'help_text': 'Select scores table'},
+        {'id': 'feature_type', 'type': 'list', 'required': True, 'label': 'Feature type: ', 'help_text': 'Choose a feature set or upload your own', 'options': ftypes, 'prompt_text': None, 'mapping': f_map},
+        {'id': 'upstream', 'type': 'int', 'required': True, 'label': 'Promoter upstream distance: ', 'help_text': 'Size of promoter upstream of TSS', 'value': prom_up_def},
+        {'id': 'downstream', 'type': 'int', 'required': True, 'label': 'Promoter downstream distance: ', 'help_text': 'Size of promoter downstream of TSS', 'value': prom_down_def},
+        {'id': 'assembly', 'type': 'assembly', 'required': True, 'label': 'Assembly: ', 'help_text': 'Reference genome', 'options': genrep.GenRep().assemblies_available()},
+        {'id': 'features', 'type': 'track', 'required': True, 'label': 'Custom feature set: ', 'help_text': 'Select a feature file (e.g. bed)'},
 ]
 out_parameters = [{'id': 'differential_expression', 'type': 'file'}]
 
@@ -102,7 +106,7 @@ The input can be of two different types:
         'title': 'Differential expression analysis',
         'description': __doc__,
         'path': ['Analysis', 'DE analysis'],
-        'output': DESeqForm,
+#        'output': DESeqForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
@@ -147,12 +151,15 @@ conds = sapply(strsplit(colnames(Mdata),".",fixed=T),"[[",1)
             assembly = genrep.Assembly(kw.get('assembly'))
             chrmeta = assembly.chrmeta or "guess"
             kw['score_op'] = 'sum'
-            signals1 = kw['Group1']['signals1']
-            signals2 = kw['Group2']['signals2']
+            #signals1 = kw['Group1']['signals1']
+            signals1 = kw['signals1']
+            #signals2 = kw['Group2']['signals2']
+            signals2 = kw['signals2']
             if not isinstance(signals1,(list,tuple)): signals1 = [signals1]
             if not isinstance(signals2,(list,tuple)): signals2 = [signals2]
             signals = signals1+signals2
-            kw['SigMulti'] = {'signals': signals} # to pass it to QuantifyTable plugin
+            #kw['SigMulti'] = {'signals': signals} # to pass it to QuantifyTable plugin
+            kw['signals'] = signals # to pass it to QuantifyTable plugin
             table = QuantifyTablePlugin().quantify(**kw)
             stracks = []
             norm_factors = []

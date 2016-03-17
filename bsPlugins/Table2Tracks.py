@@ -26,11 +26,11 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'table', 'type': 'txt', 'required': True},
-                {'id': 'id_columns', 'type': 'text', 'required': True},
-                {'id': 'assembly', 'type': 'assembly', 'required': True},
-                {'id': 'format', 'type': 'format'}
-]
+in_parameters = [{'id': 'table', 'type': 'txt', 'required': True, 'label': 'Table: ', 'help_text': 'Select table'},
+                {'id': 'id_columns', 'type': 'text', 'required': True, 'label': 'Column id: ', 'help_text':'Comma separated list of columns id for which signal tracks will be generated (e.g. 3,5)'},
+                {'id': 'assembly', 'type': 'assembly', 'required': True, 'label': 'Assembly: ', 'help_text': 'Reference genome', 'options': genrep.GenRep().assemblies_available()},
+                {'id': 'output', 'type': 'listing', 'label': 'Output format: ', 'help_text': 'Output file(s) format (default: bedGraph)', 'options' :["sql","bedgraph","bigwig","wig"]}
+                ]
 
 out_parameters = [{'id': 'output_tar', 'type': 'file'},
                 {'id': 'output', 'type':'track'}]
@@ -42,7 +42,7 @@ class Table2TracksPlugin(BasePlugin):
         'title': 'Genome tracks from scores table',
         'description': __doc__,
         'path': ['Files', 'Table2Tracks'],
-        'output': Table2TracksForm,
+#        'output': Table2TracksForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
@@ -66,7 +66,7 @@ class Table2TracksPlugin(BasePlugin):
 
         outfiles=[]
         for _f in colnames:
-            output_name = self.temporary_path(fname=shortname+'_'+_f,ext=kw.get('format',"bedGraph"))
+            output_name = self.temporary_path(fname=shortname+'_'+_f,ext=kw.get('output',"bedGraph"))
             out_track = track(output_name,chrmeta=chrmeta)
             s = t.read(fields=['chr','start','end',_f])
             s.fields[3] = "score"

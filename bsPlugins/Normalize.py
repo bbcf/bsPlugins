@@ -24,9 +24,10 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
+method_opts = ['total','deseq','quantile']
 in_parameters = [
-        {'id': 'table', 'type': 'txt', 'required': True, 'multiple': True},
-        {'id': 'method', 'type': 'radio'}]
+        {'id': 'table', 'type': 'txt', 'required': True, 'label': 'Table: ', 'help_text': 'Select scores table'},
+        {'id': 'method', 'type': 'radio', 'label': 'Method: ', 'help_text': 'Select the normalization method', 'options': method_opts}]
 
 out_parameters = [{'id': 'normalized', 'type': 'file'}]
 
@@ -36,7 +37,7 @@ class NormalizePlugin(BasePlugin):
         'title': 'Normalization',
         'description': __doc__,
         'path': ['Signal', 'Normalization'],
-        'output': NormalizeForm,
+#        'output': NormalizeForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,

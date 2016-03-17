@@ -16,15 +16,15 @@ meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'numerator', 'type': 'track', 'required': True},
-                 {'id': 'denominator', 'type': 'track', 'required': True},
-                 {'id': 'assembly', 'type': 'assembly'},
-                 {'id': 'format', 'type': 'text'},
-                 {'id': 'window_size', 'type': 'int'},
-                 {'id': 'pseudo', 'type': 'float'},
-                 {'id': 'threshold', 'type': 'float'},
-                 {'id': 'log', 'type':'boolean', 'required': True},
-                 {'id': 'distribution', 'type':'boolean', 'required': True}]
+in_parameters = [{'id': 'numerator', 'type': 'track', 'required': True, 'label':'Numerator: ', 'help_text':'Select the track with the numerators'},
+                 {'id': 'denominator', 'type': 'track', 'required': True, 'label': 'Denominator', 'help_text':'Select the track with the denominators' },
+                 {'id': 'assembly', 'type': 'assembly', 'label':'Assembly: ', 'help_text': 'Reference genome', 'options': genrep.GenRep().assemblies_available()},
+                 {'id': 'output', 'type': 'listing', 'required': True, 'label': 'Output format: ', 'help_text': 'Format of the output file', 'options':['bedGraph','sql','wig','bigWig','sga'], 'prompt_text': None },
+                 {'id': 'window_size', 'type': 'int', 'label': 'Window size: ', 'help_text': 'Size of the sliding window in bp (default: 1)', 'value': size_def},
+                 {'id': 'pseudo', 'type': 'float', 'label': 'Pseudo-count: ', 'help_text': 'Value to be added to both signals (default: 0.5)', 'value': pseudo_def},
+                 {'id': 'threshold', 'type': 'float', 'label': 'Threshold: ', 'help_text': 'This sets ratio=1 at each genomic position satisfying numerator value < threshold (default: 0)', 'value': threshold_def},
+                 {'id': 'log', 'type':'boolean', 'label': 'Log ratios: ','help_text': 'Computes the log2 of the ratios', 'value': False},
+                 {'id': 'distribution', 'type':'boolean', 'label': 'Plot distribution: ', 'help_text': 'Creates a graphical representation of the distributions of the ratios based on a sample of genomic regions', 'value': False}]
 out_parameters = [{'id': 'ratios', 'type': 'track'}, 
                   {'id': 'boxplot', 'type': 'pdf'}]
 
@@ -84,7 +84,7 @@ class RatiosPlugin(BasePlugin):
         'title': 'Score ratios',
         'description': __doc__,
         'path': ['Signal', 'Ratios'],
-        'output': RatiosForm,
+#        'output': RatiosForm,
         'in': in_parameters,
         'out': out_parameters,
         'meta': meta,
@@ -140,7 +140,7 @@ class RatiosPlugin(BasePlugin):
         assembly = kw.get('assembly') or 'guess'
         t1 = track(kw['numerator'],chrmeta=assembly)
         t2 = track(kw['denominator'],chrmeta=assembly)
-        format = kw.get('format') or t1.format
+        format = kw.get('output') or t1.format
         wsize = int(kw.get('window_size') or size_def)
         self.log = kw.get('log',False)
         if isinstance(self.log, basestring):
