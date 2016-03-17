@@ -14,7 +14,7 @@ meta = {'version': "1.0.0",
         'contact': "webmaster-bbcf@epfl.ch"}
 fmap = {ftypes[-1][0]: ['features'],1: ['upstream', 'downstream']}
                                                
-in_parameters = [{'id': 'signals', 'type': 'track', 'required': True, 'multiple': 'SigMulti', 'label': 'Signal: ', 'help_text': 'Select signal file (e.g. bedgraph)'},
+in_parameters = [{'id': 'signals', 'type': 'track', 'required': True, 'multiple': True, 'label': 'Signal: ', 'help_text': 'Select signal file (e.g. bedgraph)'},
                  {'id': 'feature_type', 'type': 'list', 'required': True, 'label': 'Feature type: ', 'help_text': 'Choose a feature set or upload your own', 'options': ftypes, 'mapping': fmap, 'prompt_text': None},
                  {'id': 'features', 'type': 'track', 'label':'Custom feature set: ', 'help_text':'Select a feature file (e.g. bed)'},
                  {'id': 'score_op', 'type': 'list', 'label': 'Score operation: ', 'help_text': 'Operation performed on scores within each feature', 'options': funcs, 'prompt_text':None},
