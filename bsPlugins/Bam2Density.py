@@ -18,7 +18,8 @@ in_parameters = [{'id': 'sample', 'type': 'bam', 'required': True, 'multiple': T
                  {'id': 'output', 'type': 'listing', 'label': 'Output format: ', 'help_text': 'Format of the output file', 'options': output_opts, 'prompt_text': None},
                  {'id': 'normalization', 'type': 'int', 'label': 'Normalization: ', 'help_text': 'Normalization factor, default is total number of reads'},
                  {'id': 'merge_strands', 'type': 'int', 'label': 'Shift and merge strands: ', 'help_text': 'Shift value (in bp) if you want to merge strand-specific densities (will not merge if negative)', 'value': -1},
-                 {'id': 'read_extension', 'type': 'int', 'label': 'Read extension: ','help_text': 'Read extension (in bp) to be applied when constructing densities (will use read length if negative)', 'value': -1 }]
+                 {'id': 'read_extension', 'type': 'int', 'label': 'Read extension: ','help_text': 'Read extension (in bp) to be applied when constructing densities (will use read length if negative)', 'value': -1 },
+                 {'id': 'single_end', 'type':'boolean', 'required':True, 'label': 'As single end: ', 'help_text': 'Considered a paired-end bam as single-end (default: False, namely whole-fragment densities instead of read densities)', 'value': False}]
 out_parameters = [{'id': 'density_merged', 'type': 'track'},
                   {'id': 'density_fwd', 'type': 'track'},
                   {'id': 'density_rev', 'type': 'track'}]
@@ -48,6 +49,9 @@ class Bam2DensityForm(BaseForm):
                                    validator=twc.IntValidator(),
                                    value=-1,
                                    help_text='Read extension (in bp) to be applied when constructing densities (will use read length if negative)')
+    single_end = twf.CheckBox(label='As single end: ',
+                              value=False,
+                              help_text='Considered a paired-end bam as single-end (default: False, namely whole-fragment densities instead of read densities)')
     submit = twf.SubmitButton(id="submit", value='bam2density')
 
 
@@ -102,13 +106,16 @@ each alignment will be considered, default is read length).
             read_extension = int(kw.get('read_extension'))
         except (ValueError, TypeError):
             read_extension = -1
+        single_end = kw.get('single_end',False)
+        if isinstance(single_end, basestring):
+            single_end = (single_end.lower() in ['1', 'true', 't','on'])
         output = [self.temporary_path(fname=b.name+'_density_') for b in bamfiles]
         format = kw.get('output', 'sql')
         with execution(None) as ex:
             files = [bam_to_density( ex, s, output[n], nreads=_nreads[n],
                                      merge=merge_strands,
                                      read_extension=read_extension,
-                                     sql=True, args=b2wargs )
+                                     sql=True, se=single_end, args=b2wargs )
                      for n,s in enumerate(samples)]
         info = {'datatype': 'quantitative', 'read_extension': read_extension}
         if merge_strands >= 0:
