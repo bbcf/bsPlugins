@@ -116,7 +116,7 @@ each alignment will be considered, default is read length).
         nh_flag = kw.get('nh_flag',True)
         if isinstance(nh_flag, basestring):
             nh_flag = (nh_flag.lower() in ['1', 'true', 't','on'])
-        if (!nh_flag)  b2wargs += ["--no_nh"]
+        if not nh_flag:  b2wargs += ["--no_nh"]
         output = [self.temporary_path(fname=b.name+'_density_') for b in bamfiles]
         format = kw.get('output', 'sql')
         with execution(None) as ex:
