@@ -19,6 +19,7 @@ in_parameters = [{'id': 'sample', 'type': 'bam', 'required': True, 'multiple': T
                  {'id': 'normalization', 'type': 'int', 'label': 'Normalization: ', 'help_text': 'Normalization factor, default is total number of reads'},
                  {'id': 'merge_strands', 'type': 'int', 'label': 'Shift and merge strands: ', 'help_text': 'Shift value (in bp) if you want to merge strand-specific densities (will not merge if negative)', 'value': -1},
                  {'id': 'read_extension', 'type': 'int', 'label': 'Read extension: ','help_text': 'Read extension (in bp) to be applied when constructing densities (will use read length if negative)', 'value': -1 },
+                 {'id': 'nh_flag', 'type':'boolean', 'required':True, 'label': 'Use NH flag: ', 'help_text': 'Use NH (multiple mapping counts) as weights', 'value': True},
                  {'id': 'single_end', 'type':'boolean', 'required':True, 'label': 'As single end: ', 'help_text': 'Considered a paired-end bam as single-end (default: False, namely whole-fragment densities instead of read densities)', 'value': False}]
 out_parameters = [{'id': 'density_merged', 'type': 'track'},
                   {'id': 'density_fwd', 'type': 'track'},
@@ -52,6 +53,9 @@ class Bam2DensityForm(BaseForm):
     single_end = twf.CheckBox(label='As single end: ',
                               value=False,
                               help_text='Considered a paired-end bam as single-end (default: False, namely whole-fragment densities instead of read densities)')
+    nh_flag = twf.CheckBox(label='Use NH flag: ',
+                              value=True,
+                              help_text='Use NH (multiple mapping counts) as weights')
     submit = twf.SubmitButton(id="submit", value='bam2density')
 
 
@@ -109,6 +113,10 @@ each alignment will be considered, default is read length).
         single_end = kw.get('single_end',False)
         if isinstance(single_end, basestring):
             single_end = (single_end.lower() in ['1', 'true', 't','on'])
+        nh_flag = kw.get('nh_flag',True)
+        if isinstance(nh_flag, basestring):
+            nh_flag = (nh_flag.lower() in ['1', 'true', 't','on'])
+        if (!nh_flag)  b2wargs += ["--no_nh"]
         output = [self.temporary_path(fname=b.name+'_density_') for b in bamfiles]
         format = kw.get('output', 'sql')
         with execution(None) as ex:
