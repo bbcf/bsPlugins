@@ -3,7 +3,7 @@ from bein import execution
 from bbcflib.track import track, convert
 from bbcflib.mapseq import bam_to_density
 from bbcflib.gfminer.stream import merge_scores
-import os
+import os, pysam
 
 __requires__ = ["pysam"]
 output_opts=["sql", "bedGraph", "bigWig"]
@@ -20,10 +20,18 @@ in_parameters = [{'id': 'sample', 'type': 'bam', 'required': True, 'multiple': T
                  {'id': 'merge_strands', 'type': 'int', 'label': 'Shift and merge strands: ', 'help_text': 'Shift value (in bp) if you want to merge strand-specific densities (will not merge if negative)', 'value': -1},
                  {'id': 'read_extension', 'type': 'int', 'label': 'Read extension: ','help_text': 'Read extension (in bp) to be applied when constructing densities (will use read length if negative)', 'value': -1 },
                  {'id': 'no_nh_flag', 'type':'boolean', 'required':True, 'label': 'Do not use NH flag: ', 'help_text': 'Do not use NH (multiple mapping counts) as weights', 'value': False},
-                 {'id': 'single_end', 'type':'boolean', 'required':True, 'label': 'As single end: ', 'help_text': 'Considered a paired-end bam as single-end (default: False, namely whole-fragment densities instead of read densities)', 'value': False}]
+                 {'id': 'single_end', 'type':'boolean', 'required':True, 'label': 'As single end: ', 'help_text': 'Considered a paired-end bam as single-end (default: False, namely whole-fragment densities instead of read densities)', 'value': False},
+                 {'id': 'stranded', 'type':'boolean', 'required':True, 'label': 'As strand-specific: ', 'help_text': 'If the sequencing protocol was paired-end strand-specific, generate plus and minus densities (default: False)', 'value': False}
+]
 out_parameters = [{'id': 'density_merged', 'type': 'track'},
                   {'id': 'density_fwd', 'type': 'track'},
-                  {'id': 'density_rev', 'type': 'track'}]
+                  {'id': 'density_rev', 'type': 'track'},
+                  {'id': 'density_plus_merged', 'type': 'track'},
+                  {'id': 'density_plus_fwd', 'type': 'track'},
+                  {'id': 'density_plus_rev', 'type': 'track'},
+                  {'id': 'density_minus_merged', 'type': 'track'},
+                  {'id': 'density_minus_fwd', 'type': 'track'},
+                  {'id': 'density_minus_rev', 'type': 'track'}]
 
 
 class Bam2DensityForm(BaseForm):
@@ -56,6 +64,9 @@ class Bam2DensityForm(BaseForm):
     no_nh_flag = twf.CheckBox(label='Do not use NH flag: ',
                               value=False,
                               help_text='Do not use NH (multiple mapping counts) as weights')
+    stranded = twf.CheckBox(label='As strand-specific: ',
+                              value=False,
+                              help_text='If the sequencing protocol was paired-end strand-specific, generate plus and minus densities (default: False)')
     submit = twf.SubmitButton(id="submit", value='bam2density')
 
 
@@ -118,13 +129,39 @@ each alignment will be considered, default is read length).
             no_nh = (no_nh.lower() in ['1', 'true', 't','on'])
         if no_nh:  b2wargs += ["--no_nh"]
         output = [self.temporary_path(fname=b.name+'_density_') for b in bamfiles]
+        stranded = kw.get('stranded',False)
+        if stranded:
+            if single_end:
+                print "Error: this option works only with paired-end data"
+            output1 = []; output2 = []
+            samples1 = []; samples2 = []
+            for bam in bamfiles:
+                tname1 = bam.name+"_plus.bam"
+                tname2 = bam.name+"_minus.bam"
+                outname1 = self.temporary_path(fname=tname1)
+                outname2 = self.temporary_path(fname=tname2)
+                trout1 = pysam.Samfile(outname1, "wb", template=bam.filehandle)
+                trout2 = pysam.Samfile(outname2, "wb", template=bam.filehandle)
+                bam.open()
+                for read in bam.filehandle:
+                    if not read.is_paired: continue
+                    if not read.is_proper_pair: continue
+                    if (read.is_read1 and read.is_reverse) or (read.is_read2 and read.mate_is_reverse):
+                        trout1.write(read)
+                    elif (read.is_read2 and read.is_reverse) or (read.is_read1 and read.mate_is_reverse):
+                        trout2.write(read)
+                samples1.append(os.path.abspath(outname1))
+                samples2.append(os.path.abspath(outname2))
+                trout1.close()
+                trout2.close()
+
+                tname1 = bam.name+"_plus_"
+                tname2 = bam.name+"_minus_"
+                outname1 = self.temporary_path(fname=tname1)
+                outname2 = self.temporary_path(fname=tname2)
+                output1.append(os.path.abspath(outname1))
+                output2.append(os.path.abspath(outname2))
         format = kw.get('output', 'sql')
-        with execution(None) as ex:
-            files = [bam_to_density( ex, s, output[n], nreads=_nreads[n],
-                                     merge=merge_strands,
-                                     read_extension=read_extension,
-                                     sql=True, se=single_end, args=b2wargs )
-                     for n,s in enumerate(samples)]
         info = {'datatype': 'quantitative', 'read_extension': read_extension}
         if merge_strands >= 0:
             suffixes = ["merged"]
@@ -132,29 +169,102 @@ each alignment will be considered, default is read length).
         else:
             suffixes = ["fwd", "rev"]
         chrmeta = bamfiles[0].chrmeta
-        for suf in suffixes:
-            all_s_files = [x for y in files for x in y if x.endswith(suf+".sql")]
-            if len(all_s_files) > 1:
-                x = self.temporary_path(fname="Density_average_"+suf+".sql")
-                tsql = track( x, fields=['start', 'end', 'score'],
-                              chrmeta=chrmeta, info=info )
-                insql = []
-                for f in all_s_files:
-                    t = track( f, format='sql', fields=['start', 'end', 'score'],
-                               chrmeta=chrmeta, info=info )
-                    t.save()
-                    insql.append(t)
-                for c in tsql.chrmeta:
-                    tsql.write(merge_scores([t.read(c) for t in insql]),chrom=c)
-            else:
-                x = all_s_files[0]
-                tsql = track( x, format='sql', fields=['start', 'end', 'score'],
-                              chrmeta=chrmeta, info=info )
-                tsql.save()
-            if format in [None,"sql"]:
-                outname = x
-            else:
-                outname = os.path.splitext(x)[0]+"."+format
-                convert(x, outname, mode="overwrite")
-            self.new_file(outname, 'density_'+suf)
-        return self.display_time()
+        if stranded:
+            with execution(None) as ex1:
+                files = [bam_to_density( ex1, s, output1[n], nreads=_nreads[n],
+                                     merge=merge_strands,
+                                     read_extension=read_extension,
+                                     sql=True, se=single_end, args=b2wargs )
+                         for n,s in enumerate(samples1)]
+            for suf in suffixes:
+                all_s_files = [x for y in files for x in y if x.endswith(suf+".sql")]
+                if len(all_s_files) > 1:
+                    x = self.temporary_path(fname="Density_average_plus_"+suf+".sql")
+                    tsql = track( x, fields=['start', 'end', 'score'],
+                                  chrmeta=chrmeta, info=info )
+                    insql = []
+                    for f in all_s_files:
+                        t = track( f, format='sql', fields=['start', 'end', 'score'],
+                                   chrmeta=chrmeta, info=info )
+                        t.save()
+                        insql.append(t)
+                    for c in tsql.chrmeta:
+                        tsql.write(merge_scores([t.read(c) for t in insql]),chrom=c)
+                else:
+                    x = all_s_files[0]
+                    tsql = track( x, format='sql', fields=['start', 'end', 'score'],
+                                  chrmeta=chrmeta, info=info )
+                    tsql.save()
+                if format in [None,"sql"]:
+                    outname = x
+                else:
+                    outname = os.path.splitext(x)[0]+"."+format
+                    convert(x, outname, mode="overwrite")
+                self.new_file(outname, 'density_plus_'+suf)
+
+            with execution(None) as ex2:
+                files = [bam_to_density( ex2, s, output2[n], nreads=_nreads[n],
+                                     merge=merge_strands,
+                                     read_extension=read_extension,
+                                     sql=True, se=single_end, args=b2wargs )
+                         for n,s in enumerate(samples2)]
+            for suf in suffixes:
+                all_s_files = [x for y in files for x in y if x.endswith(suf+".sql")]
+                if len(all_s_files) > 1:
+                    x = self.temporary_path(fname="Density_average_minus_"+suf+".sql")
+                    tsql = track( x, fields=['start', 'end', 'score'],
+                                  chrmeta=chrmeta, info=info )
+                    insql = []
+                    for f in all_s_files:
+                        t = track( f, format='sql', fields=['start', 'end', 'score'],
+                                   chrmeta=chrmeta, info=info )
+                        t.save()
+                        insql.append(t)
+                    for c in tsql.chrmeta:
+                        tsql.write(merge_scores([t.read(c) for t in insql]),chrom=c)
+                else:
+                    x = all_s_files[0]
+                    tsql = track( x, format='sql', fields=['start', 'end', 'score'],
+                                  chrmeta=chrmeta, info=info )
+                    tsql.save()
+                if format in [None,"sql"]:
+                    outname = x
+                else:
+                    outname = os.path.splitext(x)[0]+"."+format
+                    convert(x, outname, mode="overwrite")
+                self.new_file(outname, 'density_minus_'+suf)
+            return self.display_time()
+
+        else:
+            with execution(None) as ex:
+                files = [bam_to_density( ex, s, output[n], nreads=_nreads[n],
+                                         merge=merge_strands,
+                                         read_extension=read_extension,
+                                         sql=True, se=single_end, args=b2wargs )
+                         for n,s in enumerate(samples)]
+            for suf in suffixes:
+                all_s_files = [x for y in files for x in y if x.endswith(suf+".sql")]
+                if len(all_s_files) > 1:
+                    x = self.temporary_path(fname="Density_average_"+suf+".sql")
+                    tsql = track( x, fields=['start', 'end', 'score'],
+                                  chrmeta=chrmeta, info=info )
+                    insql = []
+                    for f in all_s_files:
+                        t = track( f, format='sql', fields=['start', 'end', 'score'],
+                                   chrmeta=chrmeta, info=info )
+                        t.save()
+                        insql.append(t)
+                    for c in tsql.chrmeta:
+                        tsql.write(merge_scores([t.read(c) for t in insql]),chrom=c)
+                else:
+                    x = all_s_files[0]
+                    tsql = track( x, format='sql', fields=['start', 'end', 'score'],
+                                  chrmeta=chrmeta, info=info )
+                    tsql.save()
+                if format in [None,"sql"]:
+                    outname = x
+                else:
+                    outname = os.path.splitext(x)[0]+"."+format
+                    convert(x, outname, mode="overwrite")
+                self.new_file(outname, 'density_'+suf)
+            return self.display_time()
