@@ -130,11 +130,15 @@ each alignment will be considered, default is read length).
         if no_nh:  b2wargs += ["--no_nh"]
         output = [self.temporary_path(fname=b.name+'_density_') for b in bamfiles]
         stranded = kw.get('stranded',False)
+        if isinstance(stranded, basestring):
+            stranded = (stranded.lower() in ['1', 'true', 't','on'])
         if stranded:
             if single_end:
                 print "Error: this option works only with paired-end data"
-            output1 = []; output2 = []
-            samples1 = []; samples2 = []
+            output1 = []
+            output2 = []
+            samples1 = []
+            samples2 = []
             for bam in bamfiles:
                 tname1 = bam.name+"_plus.bam"
                 tname2 = bam.name+"_minus.bam"
@@ -154,7 +158,6 @@ each alignment will be considered, default is read length).
                 samples2.append(os.path.abspath(outname2))
                 trout1.close()
                 trout2.close()
-
                 tname1 = bam.name+"_plus_"
                 tname2 = bam.name+"_minus_"
                 outname1 = self.temporary_path(fname=tname1)
