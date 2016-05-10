@@ -14,7 +14,7 @@ all_tools = ["annotateBed", "bamToBed", "bamToFastq", "bed12ToBed6",
              "unionBedGraphs", "windowBed", "windowMaker"]
 
 tools_map = {
-    0: ["bedfile", "Mfiles"],
+    0: ["bedfile", "files"],
     1: ["bamfile"],
     2: ["bamfile"],
     3: ["bedfile"],
@@ -36,8 +36,8 @@ tools_map = {
     19: ["afile", "bfile"],
     20: ["bedfile", "fastafile"],
     21: ["bedfile"],
-    22: ["bedfile", "Mbamfiles"],
-    23: ["Mbedfiles"],
+    22: ["bedfile", "bamfiles"],
+    23: ["bedfiles"],
     24: ["bedfile", "fastafile"],
     25: ["bfile", "afile", "bamfile"],
     26: ["afile", "bfile"],
@@ -46,8 +46,8 @@ tools_map = {
     29: ["bedfile", "genomefile"],
     30: ["bedfile"],
     31: ["afile", "bfile"],
-    32: ["Mbedfiles", "labels", "bamfile"],
-    33: ["Mfiles"],
+    32: ["bedfiles", "labels", "bamfile"],
+    33: ["files"],
     34: ["bfile", "afile", "bamfile"],
     35: ["bedfile", "genomefile"]}
 
@@ -56,7 +56,7 @@ all_params = dict((y, '') for x in tools_map.values() for y in x).keys()
 file_params = {"simple": [x for x in all_params if x[-4:] == "file"],
                "multiple": [x for x in all_params if x[-5:] == "files"]}
 
-all_file_params = [{'id': x[1:], 'type': 'track', 'multiple': x} for x in all_params if x[-5:] == 'files']+\
+all_file_params = [{'id': x[0:], 'type': 'track', 'multiple': x} for x in all_params if x[-5:] == 'files']+\
                   [{'id': x, 'type': 'track'} for x in all_params if x[-4:] == 'file']
 
 gr_operations = ["sum", "count", "count_distinct", "min", "max",
