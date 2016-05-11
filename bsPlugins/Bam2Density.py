@@ -3,7 +3,7 @@ from bein import execution
 from bbcflib.track import track, convert
 from bbcflib.mapseq import bam_to_density
 from bbcflib.gfminer.stream import merge_scores
-import os, pysam
+import os, sys, pysam
 
 __requires__ = ["pysam"]
 output_opts=["sql", "bedGraph", "bigWig"]
@@ -134,7 +134,7 @@ each alignment will be considered, default is read length).
             stranded = (stranded.lower() in ['1', 'true', 't','on'])
         if stranded:
             if single_end:
-                print "Error: this option works only with paired-end data"
+                sys.exit("Error: the option stranded only works with paired-end data")
             output1 = []
             output2 = []
             samples1 = []
