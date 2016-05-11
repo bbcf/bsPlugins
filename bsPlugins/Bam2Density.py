@@ -133,8 +133,6 @@ each alignment will be considered, default is read length).
         if isinstance(stranded, basestring):
             stranded = (stranded.lower() in ['1', 'true', 't','on'])
         if stranded:
-            if single_end:
-                sys.exit("Error: the option stranded only works with paired-end data")
             output1 = []
             output2 = []
             samples1 = []
