@@ -106,13 +106,13 @@ each alignment will be considered, default is read length).
             nreads = int(kw.get('normalization'))
         except (ValueError, TypeError):
             nreads = -1
-        bamfiles = [track(s, format='bam') for s in samples]
+        bamfiles = [track(s, format='bam') for s in samples['_']]
         if nreads < 0:
-            _nreads = [0]*len(samples)
+            _nreads = [0]*len(samples['_'])
             if control is not None:
                 b2wargs += ["-r"]
         else:
-            _nreads = [nreads for s in samples]
+            _nreads = [nreads for s in samples['_']]
         try:
             merge_strands = int(kw.get('merge_strands'))
         except (ValueError, TypeError):
@@ -133,7 +133,6 @@ each alignment will be considered, default is read length).
         if isinstance(stranded, basestring):
             stranded = (stranded.lower() in ['1', 'true', 't','on'])
         if stranded:
-            if single_end: sys.exit("Error: the option stranded only works with paired-end data")
             output = {'_plus_': [], '_minus_': []}
             samples = {'_plus_': [], '_minus_': []}
             trout = {}
@@ -169,6 +168,7 @@ each alignment will be considered, default is read length).
                              for n,s in enumerate(s)]) for o,s in samples.items())
         for suf in suffixes:
             all_s_files = dict((o,[x for y in files for x in y if x.endswith(suf+".sql")]) for o,f in files.items())
+
             for orient, sfiles in all_s_files.iteritems():
                 if len(sfiles) > 1:
                     x = self.temporary_path(fname="Density_average"+orient+suf+".sql")
