@@ -96,7 +96,7 @@ each alignment will be considered, default is read length).
         #samples = kw.get('BamMulti',{}).get('sample', [])
         samples = kw.get('sample', [])
         if not isinstance(samples, list): samples = [samples]
-        samples = [os.path.abspath(s) for s in samples if os.path.exists(s)]
+        samples = {'_': [os.path.abspath(s) for s in samples if os.path.exists(s)]}
         if kw.get('control'):
             control = kw['control']
             b2wargs = ["-c", str(control)]
@@ -128,42 +128,30 @@ each alignment will be considered, default is read length).
         if isinstance(no_nh, basestring):
             no_nh = (no_nh.lower() in ['1', 'true', 't','on'])
         if no_nh:  b2wargs += ["--no_nh"]
-        output = [self.temporary_path(fname=b.name+'_density_') for b in bamfiles]
+        output = {'_': [self.temporary_path(fname=b.name+'_density_') for b in bamfiles]}
         stranded = kw.get('stranded',False)
         if isinstance(stranded, basestring):
             stranded = (stranded.lower() in ['1', 'true', 't','on'])
         if stranded:
-            if single_end:
-                sys.exit("Error: the option stranded only works with paired-end data")
-            output1 = []
-            output2 = []
-            samples1 = []
-            samples2 = []
+            if single_end: sys.exit("Error: the option stranded only works with paired-end data")
+            output = {'_plus_': [], '_minus_': []}
+            samples = {'_plus_': [], '_minus_': []}
+            trout = {}
             for bam in bamfiles:
-                tname1 = bam.name+"_plus.bam"
-                tname2 = bam.name+"_minus.bam"
-                outname1 = self.temporary_path(fname=tname1)
-                outname2 = self.temporary_path(fname=tname2)
-                trout1 = pysam.Samfile(outname1, "wb", template=bam.filehandle)
-                trout2 = pysam.Samfile(outname2, "wb", template=bam.filehandle)
+                for orient in output:
+                    bamname = self.temporary_path(fname= bam.name+orient+".bam")
+                    trout[orient] = pysam.Samfile(bamname, "wb", template=bam.filehandle)
+                    samples[orient].append(os.path.abspath(bamname))
+                    outname = self.temporary_path(fname=bam.name+orient)
+                    output[orient].append(os.path.abspath(outname))
                 bam.open()
                 for read in bam.filehandle:
-                    if not read.is_paired: continue
-                    if not read.is_proper_pair: continue
+                    if not (read.is_paired and read.is_proper_pair): continue
                     if (read.is_read1 and read.is_reverse) or (read.is_read2 and read.mate_is_reverse):
-                        trout1.write(read)
+                        trout['_plus_'].write(read)
                     elif (read.is_read2 and read.is_reverse) or (read.is_read1 and read.mate_is_reverse):
-                        trout2.write(read)
-                samples1.append(os.path.abspath(outname1))
-                samples2.append(os.path.abspath(outname2))
-                trout1.close()
-                trout2.close()
-                tname1 = bam.name+"_plus_"
-                tname2 = bam.name+"_minus_"
-                outname1 = self.temporary_path(fname=tname1)
-                outname2 = self.temporary_path(fname=tname2)
-                output1.append(os.path.abspath(outname1))
-                output2.append(os.path.abspath(outname2))
+                        trout['_minus_'].write(read)
+                (t.close() for t in trout.values())
         format = kw.get('output', 'sql')
         info = {'datatype': 'quantitative', 'read_extension': read_extension}
         if merge_strands >= 0:
@@ -172,21 +160,21 @@ each alignment will be considered, default is read length).
         else:
             suffixes = ["fwd", "rev"]
         chrmeta = bamfiles[0].chrmeta
-        if stranded:
-            with execution(None) as ex1:
-                files = [bam_to_density( ex1, s, output1[n], nreads=_nreads[n],
-                                     merge=merge_strands,
-                                     read_extension=read_extension,
-                                     sql=True, se=single_end, args=b2wargs )
-                         for n,s in enumerate(samples1)]
-            for suf in suffixes:
-                all_s_files = [x for y in files for x in y if x.endswith(suf+".sql")]
-                if len(all_s_files) > 1:
-                    x = self.temporary_path(fname="Density_average_plus_"+suf+".sql")
-                    tsql = track( x, fields=['start', 'end', 'score'],
-                                  chrmeta=chrmeta, info=info )
+        files = {}
+        with execution(None) as ex:
+            files = dict((o,[bam_to_density( ex, s, output[o][n], nreads=_nreads[n],
+                                             merge=merge_strands,
+                                             read_extension=read_extension,
+                                             sql=True, se=single_end, args=b2wargs )
+                             for n,s in enumerate(s)]) for o,s in samples.items())
+        for suf in suffixes:
+            all_s_files = dict((o,[x for y in files for x in y if x.endswith(suf+".sql")]) for o,f in files.items())
+            for orient, sfiles in all_s_files.iteritems():
+                if len(sfiles) > 1:
+                    x = self.temporary_path(fname="Density_average"+orient+suf+".sql")
+                    tsql = track( x, fields=['start', 'end', 'score'], chrmeta=chrmeta, info=info )
                     insql = []
-                    for f in all_s_files:
+                    for f in sfiles:
                         t = track( f, format='sql', fields=['start', 'end', 'score'],
                                    chrmeta=chrmeta, info=info )
                         t.save()
@@ -194,7 +182,7 @@ each alignment will be considered, default is read length).
                     for c in tsql.chrmeta:
                         tsql.write(merge_scores([t.read(c) for t in insql]),chrom=c)
                 else:
-                    x = all_s_files[0]
+                    x = sfiles[0]
                     tsql = track( x, format='sql', fields=['start', 'end', 'score'],
                                   chrmeta=chrmeta, info=info )
                     tsql.save()
@@ -203,71 +191,5 @@ each alignment will be considered, default is read length).
                 else:
                     outname = os.path.splitext(x)[0]+"."+format
                     convert(x, outname, mode="overwrite")
-                self.new_file(outname, 'density_plus_'+suf)
-
-            with execution(None) as ex2:
-                files = [bam_to_density( ex2, s, output2[n], nreads=_nreads[n],
-                                     merge=merge_strands,
-                                     read_extension=read_extension,
-                                     sql=True, se=single_end, args=b2wargs )
-                         for n,s in enumerate(samples2)]
-            for suf in suffixes:
-                all_s_files = [x for y in files for x in y if x.endswith(suf+".sql")]
-                if len(all_s_files) > 1:
-                    x = self.temporary_path(fname="Density_average_minus_"+suf+".sql")
-                    tsql = track( x, fields=['start', 'end', 'score'],
-                                  chrmeta=chrmeta, info=info )
-                    insql = []
-                    for f in all_s_files:
-                        t = track( f, format='sql', fields=['start', 'end', 'score'],
-                                   chrmeta=chrmeta, info=info )
-                        t.save()
-                        insql.append(t)
-                    for c in tsql.chrmeta:
-                        tsql.write(merge_scores([t.read(c) for t in insql]),chrom=c)
-                else:
-                    x = all_s_files[0]
-                    tsql = track( x, format='sql', fields=['start', 'end', 'score'],
-                                  chrmeta=chrmeta, info=info )
-                    tsql.save()
-                if format in [None,"sql"]:
-                    outname = x
-                else:
-                    outname = os.path.splitext(x)[0]+"."+format
-                    convert(x, outname, mode="overwrite")
-                self.new_file(outname, 'density_minus_'+suf)
-            return self.display_time()
-
-        else:
-            with execution(None) as ex:
-                files = [bam_to_density( ex, s, output[n], nreads=_nreads[n],
-                                         merge=merge_strands,
-                                         read_extension=read_extension,
-                                         sql=True, se=single_end, args=b2wargs )
-                         for n,s in enumerate(samples)]
-            for suf in suffixes:
-                all_s_files = [x for y in files for x in y if x.endswith(suf+".sql")]
-                if len(all_s_files) > 1:
-                    x = self.temporary_path(fname="Density_average_"+suf+".sql")
-                    tsql = track( x, fields=['start', 'end', 'score'],
-                                  chrmeta=chrmeta, info=info )
-                    insql = []
-                    for f in all_s_files:
-                        t = track( f, format='sql', fields=['start', 'end', 'score'],
-                                   chrmeta=chrmeta, info=info )
-                        t.save()
-                        insql.append(t)
-                    for c in tsql.chrmeta:
-                        tsql.write(merge_scores([t.read(c) for t in insql]),chrom=c)
-                else:
-                    x = all_s_files[0]
-                    tsql = track( x, format='sql', fields=['start', 'end', 'score'],
-                                  chrmeta=chrmeta, info=info )
-                    tsql.save()
-                if format in [None,"sql"]:
-                    outname = x
-                else:
-                    outname = os.path.splitext(x)[0]+"."+format
-                    convert(x, outname, mode="overwrite")
-                self.new_file(outname, 'density_'+suf)
-            return self.display_time()
+                self.new_file(outname, 'density'+orient+suf)
+        return self.display_time()
