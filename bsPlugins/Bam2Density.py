@@ -165,9 +165,11 @@ each alignment will be considered, default is read length).
                                              merge=merge_strands,
                                              read_extension=read_extension,
                                              sql=True, se=single_end, args=b2wargs )
-                             for n,s in enumerate(s)]) for o,s in samples.items())
+                             for n,s in enumerate(sample)])
+                         for o,sample in samples.items())
         for suf in suffixes:
-            all_s_files = dict((o,[x for y in files for x in y if x.endswith(suf+".sql")]) for o,f in files.items())
+            all_s_files = dict((o,[x for y in files for x in y if x.endswith(suf+".sql")])
+                               for o,f in files.items())
 
             for orient, sfiles in all_s_files.iteritems():
                 if len(sfiles) > 1:
