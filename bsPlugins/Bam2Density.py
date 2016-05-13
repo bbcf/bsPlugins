@@ -168,7 +168,7 @@ each alignment will be considered, default is read length).
                              for n,s in enumerate(sample)])
                          for o,sample in samples.items())
         for suf in suffixes:
-            all_s_files = dict((o,[x for y in files for x in y if x.endswith(suf+".sql")])
+            all_s_files = dict((o,[x for y in f for x in y if x.endswith(suf+".sql")])
                                for o,f in files.items())
 
             for orient, sfiles in all_s_files.iteritems():
