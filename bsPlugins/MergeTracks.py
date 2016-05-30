@@ -5,19 +5,26 @@ from bbcflib.track import track, FeatureStream
 from bbcflib import genrep
 
 output_opts = ['sql','bed','bedGraph','wig','bigWig','sga']
-
 method_opts = ['mean','min','max','geometric','median','sum']
 
 meta = {'version': "1.0.0",
         'author': "BBCF",
         'contact': "webmaster-bbcf@epfl.ch"}
 
-in_parameters = [{'id': 'forward', 'type': 'track', 'required': True, 'label': 'Forward: ', 'help_text': 'Select forward density file' },
-                 {'id': 'reverse', 'type': 'track', 'required': True, 'label': 'Reverse: ', 'help_text': 'Select reverse density file' },
-                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ', 'help_text': 'Reference genome', 'options': genrep.GenRep().assemblies_available()},
-                 {'id': 'shift', 'type': 'int', 'required': True, 'label': 'Shift: ', 'help_text': 'Enter positive downstream shift ([fragment_size-read_length]/2), \nor a negative value to estimate shift by cross-correlation', 'value': 0},
-                 {'id': 'output', 'type': 'listing', 'label': 'Output format: ', 'help_text': 'Format of the output file', 'options': output_opts, 'prompt_text': None},
-                 {'id': 'method', 'type': 'radio', 'label': 'Method: ', 'help_text': 'Select the score combination method', 'options': ['mean','min','max','geometric','median','sum'], 'value': 'mean'}]
+in_parameters = [{'id': 'forward', 'type': 'track', 'required': True, 'label': 'Forward: ',
+                  'help_text': 'Select forward density file' },
+                 {'id': 'reverse', 'type': 'track', 'required': True, 'label': 'Reverse: ',
+                  'help_text': 'Select reverse density file' },
+                 {'id': 'assembly', 'type': 'assembly', 'label': 'Assembly: ',
+                  'help_text': 'Reference genome', 'options': genrep.GenRep().assemblies_available()},
+                 {'id': 'shift', 'type': 'int', 'required': True, 'label': 'Shift: ',
+                  'help_text': 'Enter positive downstream shift ([fragment_size-read_length]/2), \nor a negative value to estimate shift by cross-correlation', 'value': 0},
+                 {'id': 'format', 'type': 'listing', 'label': 'Output format: ',
+                  'help_text': 'Format of the output file',
+                  'options': output_opts, 'prompt_text': None},
+                 {'id': 'method', 'type': 'radio', 'label': 'Method: ',
+                  'help_text': 'Select the score combination method',
+                  'options': method_opts, 'value': 'mean'}]
 out_parameters = [{'id': 'density_merged', 'type': 'track'}]
 
 
@@ -37,11 +44,11 @@ class MergeTracksForm(BaseForm):
                           help_text='Enter positive downstream shift ([fragment_size-read_length]/2), \
                                      or a negative value to estimate shift by cross-correlation')
     format = twf.SingleSelectField(label='Output format: ',
-                                   options=['sql','bed','bedGraph','wig','bigWig','sga'],
+                                   options=output_opts,
                                    prompt_text=None,
                                    help_text='Format of the output file', )
     method = twf.RadioButtonList(label='Method: ',
-                                 options=['mean','min','max','geometric','median','sum'],
+                                 options=method_opts,
                                  value='mean',
                                  help_text='Select the score combination method')
     submit = twf.SubmitButton(id="submit", value='Merge tracks')
