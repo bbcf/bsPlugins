@@ -120,7 +120,7 @@ title(main=main,outer=T)
 
         for bam in bamfiles:
             if not plot_only:
-                tname = "%s_frags.%s" %(bam.name, format)
+                tname = "%s_frags.%s" %(bam.name.rsplit("/", -1), format)
                 outname = self.temporary_path(fname=tname)
                 all_tracks.append(outname)
                 trout = track(outname, fields=_f, chrmeta=bam.chrmeta,
